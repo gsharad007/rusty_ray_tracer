@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Packaging
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    name: Packaging
+    env:
+      PROJECT_NAME_UNDERSCORE: rusty_ray_tracer
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        profile: [release, dev]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - name: Build
+        run: cargo build --profile ${{ matrix.profile }}
+      - name: Archive Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PROJECT_NAME_UNDERSCORE }}-${{ matrix.profile }}-${{ runner.os }}-${{ runner.arch }}-x86_64
+          path: |
+            target/*/${{ env.PROJECT_NAME_UNDERSCORE }}
+            target/*/${{ env.PROJECT_NAME_UNDERSCORE }}.exe
+      - name: Archive Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-${{ env.PROJECT_NAME_UNDERSCORE }}-${{ matrix.profile }}-${{ runner.os }}-${{ runner.arch }}-x86_64
+          path: target/

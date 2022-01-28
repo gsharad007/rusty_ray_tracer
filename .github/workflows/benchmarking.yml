@@ -1,0 +1,46 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Benchmarks
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  bench:
+    name: Benchmark
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - name: Run bench
+        run: cargo bench | tee output.txt
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bench-results-${{ runner.os }}-${{ runner.arch }}
+          path: output.txt
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: ${{ runner.os }}-${{ runner.arch }}
+          tool: 'cargo'
+          output-file-path: output.txt          
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '150%'
+          comment-on-alert: true
+          comment-always: true
