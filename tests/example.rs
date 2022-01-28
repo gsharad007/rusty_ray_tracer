@@ -1,18 +1,26 @@
 use std::convert::Infallible;
 
 use async_trait::async_trait;
-use cucumber::{given, when, then, World, WorldInit};
+use cucumber::{given, then, when, World, WorldInit};
 
 // These `Cat` definitions would normally be inside your project's code,
 // not test code, but we create them here for the show case.
 #[derive(Debug)]
 struct Cat {
-    pub hungry: bool,
+    pub fullness: u32,
+    pub exploded: bool,
 }
 
 impl Cat {
-    fn feed(&mut self) {
-        self.hungry = false;
+    fn feed(&mut self, count: u32) {
+        self.fullness += count;
+        self.exploded |= self.fullness > 2;
+    }
+    fn is_full(&self) -> bool {
+        self.fullness > 0
+    }
+    fn has_exploded(&self) -> bool {
+        self.exploded
     }
 }
 
@@ -31,26 +39,44 @@ impl World for AnimalWorld {
 
     async fn new() -> Result<Self, Infallible> {
         Ok(Self {
-            cat: Cat { hungry: false },
+            cat: Cat {
+                fullness: 0,
+                exploded: false,
+            },
         })
     }
 }
 
 // Steps are defined with `given`, `when` and `then` attributes.
-#[given("a hungry cat")]
-fn hungry_cat(world: &mut AnimalWorld) {
-    world.cat.hungry = true;
+#[given(regex = r"^a (hungry|satiated) cat$")]
+async fn hungry_cat(world: &mut AnimalWorld, state: String) {
+    match state.as_str() {
+        "hungry" => world.cat.fullness = 0,
+        "satiated" => world.cat.fullness = 1,
+        _ => unreachable!(),
+    }
+}
+// #[given(expr = "a {word} cat")]
+// fn hungry_cat(world: &mut AnimalWorld, state: String) {
+//     match state.as_str() {
+//         "hungry" =>  world.cat.hungry = true,
+//         "satiated" =>  world.cat.hungry = false,
+//         s => panic!("expected 'hungry' or 'satiated', found: {}", s),
+//     }
+// }
+
+#[when(regex = r"^I feed the cat (\d+) times$")]
+async fn feed_cat(world: &mut AnimalWorld, count: u32) {
+    world.cat.feed(count);
 }
 
-// Don't forget to additionally `use cucumber::when;`.
-#[when("I feed the cat")]
-fn feed_cat(world: &mut AnimalWorld) {
-    world.cat.feed();
-}
-
-#[then("the cat is not hungry")]
-fn cat_is_fed(world: &mut AnimalWorld) {
-    assert!(world.cat.hungry);
+#[then(regex = r"^the cat (is not hungry|has exploded)?$")]
+async fn cat_is_fed(world: &mut AnimalWorld, result: String) {
+    match result.as_str() {
+        "is not hungry" => assert!(world.cat.is_full()),
+        "has exploded" => assert!(world.cat.has_exploded()),
+        _ => unreachable!(),
+    };
 }
 
 // This runs before everything else, so you can setup things here.
@@ -58,5 +84,5 @@ fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).
     // You may even have an `async` main, it doesn't matter. The point is that
     // Cucumber is composable. :)
-    futures::executor::block_on(AnimalWorld::run("/tests/features/example"));
+    futures::executor::block_on(AnimalWorld::run("tests/features/example"));
 }
