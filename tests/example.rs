@@ -49,7 +49,7 @@ impl World for AnimalWorld {
 
 // Steps are defined with `given`, `when` and `then` attributes.
 #[given(regex = r"^a (hungry|satiated) cat$")]
-async fn hungry_cat(world: &mut AnimalWorld, state: String) {
+fn hungry_cat(world: &mut AnimalWorld, state: String) {
     match state.as_str() {
         "hungry" => world.cat.fullness = 0,
         "satiated" => world.cat.fullness = 1,
@@ -66,12 +66,12 @@ async fn hungry_cat(world: &mut AnimalWorld, state: String) {
 // }
 
 #[when(regex = r"^I feed the cat (\d+) times$")]
-async fn feed_cat(world: &mut AnimalWorld, count: u32) {
+fn feed_cat(world: &mut AnimalWorld, count: u32) {
     world.cat.feed(count);
 }
 
 #[then(regex = r"^the cat (is not hungry|has exploded)?$")]
-async fn cat_is_fed(world: &mut AnimalWorld, result: String) {
+fn cat_is_fed(world: &mut AnimalWorld, result: String) {
     match result.as_str() {
         "is not hungry" => assert!(world.cat.is_full()),
         "has exploded" => assert!(world.cat.has_exploded()),
