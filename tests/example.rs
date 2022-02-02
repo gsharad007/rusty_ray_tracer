@@ -53,7 +53,7 @@ async fn hungry_cat(world: &mut AnimalWorld, state: String) {
     match state.as_str() {
         "hungry" => world.cat.fullness = 0,
         "satiated" => world.cat.fullness = 1,
-        "full" => world.cat.fullness = 1,
+        "full" => world.cat.fullness = 2,
         _ => unreachable!(),
     }
 }
