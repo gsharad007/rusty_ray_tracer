@@ -19,7 +19,7 @@ jobs:
       # RUSTDOCFLAGS: -Cpanic=abort
       #     zip -0 ccov.zip `find . \( -name "PROJECT_NAME_UNDERSCORE*.gc*" \) -print`;
       #     grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
-      RUSTFLAGS: -Z instrument-coverage 
+      RUSTFLAGS: -Z instrument-coverage
       LLVM_PROFILE_FILE: $PROJECT_NAME_UNDERSCORE-%p-%m.profraw
       RUST_BACKTRACE: full
     runs-on: ubuntu-latest
