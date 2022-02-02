@@ -48,11 +48,12 @@ impl World for AnimalWorld {
 }
 
 // Steps are defined with `given`, `when` and `then` attributes.
-#[given(regex = r"^a (hungry|satiated) cat$")]
+#[given(regex = r"^a (hungry|satiated|full) cat$")]
 async fn hungry_cat(world: &mut AnimalWorld, state: String) {
     match state.as_str() {
         "hungry" => world.cat.fullness = 0,
         "satiated" => world.cat.fullness = 1,
+        "full" => world.cat.fullness = 2,
         _ => unreachable!(),
     }
 }
