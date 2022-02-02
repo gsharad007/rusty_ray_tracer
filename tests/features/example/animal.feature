@@ -1,5 +1,4 @@
 Feature: Animal feature
-
   @hungry
   Scenario: If we feed a hungry cat it will no longer be hungry
     Given a hungry cat
@@ -18,7 +17,7 @@ Feature: Animal feature
     When I feed the cat 2 times
     Then the cat has exploded
 
-  @satiated @fourth
+  @full @fourth
   Scenario: If we feed a full cat it will explode
     Given a full cat
     When I feed the cat 1 times
