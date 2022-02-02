@@ -15,10 +15,10 @@ permissions:
 jobs:
   bench:
     name: Benchmark
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu, windows]
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1

@@ -22,7 +22,10 @@ jobs:
       RUSTFLAGS: -Z instrument-coverage
       LLVM_PROFILE_FILE: $PROJECT_NAME_UNDERSCORE-%p-%m.profraw
       RUST_BACKTRACE: full
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, windows]
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -54,12 +57,12 @@ jobs:
       - name: Archive test
         uses: actions/upload-artifact@v2
         with:
-          name: test-results-${{ runner.os }}
+          name: test-results--${{ runner.os }}-${{ runner.arch }}
           path: results.xml
       - name: Archive codecoverage
         uses: actions/upload-artifact@v2
         with:
-          name: codecoverage-results-${{ runner.os }}
+          name: codecoverage-results--${{ runner.os }}-${{ runner.arch }}
           path: lcov.info
       - name: Upload test results
         uses: EnricoMi/publish-unit-test-result-action@v1

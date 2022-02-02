@@ -13,10 +13,11 @@ jobs:
     name: Packaging
     env:
       PROJECT_NAME_UNDERSCORE: rusty_ray_tracer
-    runs-on: ${{ matrix.os }}
+      CARGO_INCREMENTAL: 0
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu, windows]
         profile: [release, dev]
     steps:
       - uses: actions/checkout@v2
@@ -32,8 +33,7 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}-${{ matrix.profile }}-${{ runner.os }}-${{ runner.arch }}-x86_64
           path: |
-            target/*/${{ env.PROJECT_NAME_UNDERSCORE }}
-            target/*/${{ env.PROJECT_NAME_UNDERSCORE }}.exe
+            target/*/lib${{ env.PROJECT_NAME_UNDERSCORE }}.rlib
       - name: Archive Build
         uses: actions/upload-artifact@v2
         with:
