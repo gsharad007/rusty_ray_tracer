@@ -65,7 +65,7 @@ jobs:
           name: codecoverage-results--${{ runner.os }}-${{ runner.arch }}
           path: lcov.info
       - name: Upload test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
           check_name: Test Results
           github_token: ${{ secrets.GITHUB_TOKEN }}
