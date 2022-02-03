@@ -20,8 +20,8 @@ jobs:
         os: [ubuntu, windows]
         profile: [release, dev]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
@@ -29,13 +29,13 @@ jobs:
       - name: Build
         run: cargo build --profile ${{ matrix.profile }}
       - name: Archive Executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}-${{ matrix.profile }}-${{ runner.os }}-${{ runner.arch }}-x86_64
           path: |
             target/*/lib${{ env.PROJECT_NAME_UNDERSCORE }}.rlib
       - name: Archive Build
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
           name: build-${{ env.PROJECT_NAME_UNDERSCORE }}-${{ matrix.profile }}-${{ runner.os }}-${{ runner.arch }}-x86_64
           path: target/

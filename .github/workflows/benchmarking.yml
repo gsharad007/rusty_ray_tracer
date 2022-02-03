@@ -20,8 +20,8 @@ jobs:
       matrix:
         os: [ubuntu, windows]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
@@ -29,12 +29,12 @@ jobs:
       - name: Run bench
         run: cargo bench | tee output.txt
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
           name: bench-results-${{ runner.os }}-${{ runner.arch }}
           path: output.txt
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
+        uses: benchmark-action/github-action-benchmark@master
         with:
           name: ${{ runner.os }}-${{ runner.arch }}
           tool: 'cargo'
