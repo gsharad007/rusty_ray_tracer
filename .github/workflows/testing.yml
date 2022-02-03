@@ -64,12 +64,6 @@ jobs:
         with:
           name: codecoverage-results-${{ runner.os }}-${{ runner.arch }}
           path: lcov.info
-      - name: Upload test results
-        uses: EnricoMi/publish-unit-test-result-action/composite@master
-        with:
-          check_name: Test Results
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: results.xml
       - name: Upload to CodeCov
         uses: codecov/codecov-action@master
         with:
@@ -80,3 +74,9 @@ jobs:
           verbose: true
           env_vars: OS
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}-${{ runner.os }}
+      - name: Upload test results
+        uses: EnricoMi/publish-unit-test-result-action/composite@master
+        with:
+          check_name: Test Results
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: results.xml
