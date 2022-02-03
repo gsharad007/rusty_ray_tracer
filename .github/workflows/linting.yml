@@ -84,7 +84,7 @@ jobs:
           toolchain: nightly
           override: true
       - name: Run super-linter
-        uses: github/super-linter@master
+        uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
           DISABLE_ERRORS: true
