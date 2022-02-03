@@ -20,17 +20,20 @@ jobs:
       RUSTFLAGS: -Z instrument-coverage
       LLVM_PROFILE_FILE: $PROJECT_NAME_UNDERSCORE-%p-%m.profraw
       RUST_BACKTRACE: full
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, windows]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
           override: true
           components: llvm-tools-preview
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@master
         env:
           cache-name: cache-dependencies
         with:
@@ -49,26 +52,28 @@ jobs:
           cargo test $CARGO_OPTIONS -- -Z unstable-options --report-time --format json | cargo2junit > results.xml;
           grcov . --binary-path ./target/debug/ -s . -t lcov --ignore-not-existing --ignore "/*" -o lcov.info
       - name: Archive test
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
-          name: test-results-${{ runner.os }}
+          name: test-results-${{ runner.os }}-${{ runner.arch }}
           path: results.xml
       - name: Archive codecoverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@master
         with:
-          name: codecoverage-results-${{ runner.os }}
+          name: codecoverage-results-${{ runner.os }}-${{ runner.arch }}
           path: lcov.info
       - name: Upload test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action/composite@master
         with:
           check_name: Test Results
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: results.xml
       - name: Upload to CodeCov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@master
         with:
           # required for private repositories:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./lcov.info
           fail_ci_if_error: true
           verbose: true
+          env_vars: OS
+          name: ${{ env.PROJECT_NAME_UNDERSCORE }}-${{ runner.os }}

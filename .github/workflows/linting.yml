@@ -14,14 +14,14 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
           override: true
       - name: Run check
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         with:
           command: check
 
@@ -29,15 +29,15 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
           components: rustfmt
           override: true
       - name: Run fmt
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         with:
           command: fmt
           args: --all -- --check
@@ -46,15 +46,15 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: nightly
           components: clippy
           override: true
       - name: Run clippy
-        uses: actions-rs/clippy-check@v1
+        uses: actions-rs/clippy-check@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
@@ -64,13 +64,13 @@ jobs:
     name: Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           toolchain: nightly
           override: true
       - name: Run audit
-        uses: actions-rs/audit-check@v1.2.0
+        uses: actions-rs/audit-check@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -78,13 +78,13 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@master
         with:
           toolchain: nightly
           override: true
       - name: Run super-linter
-        uses: github/super-linter@v4
+        uses: github/super-linter@master
         env:
           VALIDATE_ALL_CODEBASE: true
           DISABLE_ERRORS: true
