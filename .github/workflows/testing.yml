@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [ubuntu, windows]
+        os: [ubuntu]
     steps:
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@master
