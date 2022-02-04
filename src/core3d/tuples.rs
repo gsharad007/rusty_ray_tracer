@@ -3,7 +3,7 @@ pub type Tuple = [f32; 4];
 
 /// # 3D Coordinates
 /// ## Left Handed Coordinates (default setup here)
-/// With the y axis pointing up, and the x axis pointing to the right, the z axis can be defined to point away from 
+/// With the y axis pointing up, and the x axis pointing to the right, the z axis can be defined to point away from
 /// you.
 /// ## Right Handed Coordinates
 /// With the y axis pointing up, and the x axis pointing to the right, the z axis can be defined to point toward you.
@@ -20,7 +20,7 @@ pub trait Coord3D {
     #[must_use]
     fn z(&self) -> f32;
 
-    /// Gets the fourth element `w` (usually 1.0 for absolute points, 0.0 for vectors) which helps with matrix 
+    /// Gets the fourth element `w` (usually 1.0 for absolute points, 0.0 for vectors) which helps with matrix
     /// multiplication
     #[must_use]
     fn w(&self) -> f32;
