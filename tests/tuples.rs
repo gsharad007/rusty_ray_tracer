@@ -1,5 +1,4 @@
-use rusty_ray_tracer::core3d::tuples::Coord3D;
-use rusty_ray_tracer::core3d::tuples::Tuple;
+use rusty_ray_tracer::core3d::tuples::*;
 
 use std::convert::Infallible;
 
@@ -26,15 +25,23 @@ impl World for TuplesWorld {
     }
 }
 
-// // Steps are defined with `given`, `when` and `then` attributes.
 // #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
 // async fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
 //     world.tuple = [x, y, z, w];
 // }
-// Steps are defined with `given`, `when` and `then` attributes.
-#[given(expr = "{word} ← tuple\\({float}, {float}, {float}, {float})")]
+#[given(expr = r"{word} ← tuple\({float}, {float}, {float}, {float})")]
 async fn a_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
     world.tuple = [x, y, z, w];
+}
+
+#[given(expr = r"{word} ← point\({float}, {float}, {float})")]
+async fn a_point(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+    world.tuple = new_point(x, y, z);
+}
+
+#[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
+async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+    world.tuple = new_vector(x, y, z);
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
@@ -48,24 +55,29 @@ async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f
     };
 }
 
-#[then(expr = "a is a point")]
-async fn is_a_point(world: &mut TuplesWorld) {
-    assert!(world.tuple.is_point());
+#[then(expr = r"{word} = tuple\({float}, {float}, {float}, {float})")]
+async fn equal_to_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
+    assert_eq!(world.tuple, [x, y, z, w]);
 }
 
-#[then(expr = "a is not a point")]
-async fn is_not_a_point(world: &mut TuplesWorld) {
-    assert!(!world.tuple.is_point());
+#[then(expr = r"{word} is a point")]
+async fn is_a_point(world: &mut TuplesWorld, _name: String) {
+    assert!(world.tuple.is_point() == true);
 }
 
-#[then(regex = r"^a is a vector$")]
-async fn is_a_vector(world: &mut TuplesWorld) {
-    assert!(world.tuple.is_vector());
+#[then(expr = r"{word} is not a point")]
+async fn is_not_a_point(world: &mut TuplesWorld, _name: String) {
+    assert!(world.tuple.is_point() == false);
 }
 
-#[then(regex = r"^a is not a vector$")]
-async fn is_not_a_vector(world: &mut TuplesWorld) {
-    assert!(!world.tuple.is_vector());
+#[then(expr = r"{word} is a vector")]
+async fn is_a_vector(world: &mut TuplesWorld, _name: String) {
+    assert!(world.tuple.is_vector() == true);
+}
+
+#[then(expr = r"{word} is not a vector")]
+async fn is_not_a_vector(world: &mut TuplesWorld, _name: String) {
+    assert!(world.tuple.is_vector() == false);
 }
 
 // This runs before everything else, so you can setup things here.
