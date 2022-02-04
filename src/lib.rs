@@ -1,3 +1,5 @@
+pub mod core3d;
+
 #[cfg(test)]
 mod tests {
     #[test]
