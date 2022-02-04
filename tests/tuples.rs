@@ -1,4 +1,6 @@
+use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuples::*;
+use rusty_ray_tracer::core3d::vector::*;
 
 use std::convert::Infallible;
 
