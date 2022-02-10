@@ -10,7 +10,7 @@ use cucumber::{given, then, World, WorldInit};
 // `World` is your shared, likely mutable state.
 #[derive(Debug, WorldInit)]
 pub struct TuplesWorld {
-    tuple: Tuple,
+    tuple: Tuplef32,
 }
 
 // `World` needs to be implemented, so Cucumber knows how to construct it
@@ -33,18 +33,18 @@ impl World for TuplesWorld {
 // }
 #[given(expr = r"{word} ← tuple\({float}, {float}, {float}, {float})")]
 async fn a_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
-    world.tuple = [x, y, z, w];
+    world.tuple = Tuplef32::new(x, y, z, w);
 }
 
-#[given(expr = r"{word} ← point\({float}, {float}, {float})")]
-async fn a_point(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
-    world.tuple = new_point(x, y, z);
-}
+// #[given(expr = r"{word} ← point\({float}, {float}, {float})")]
+// async fn a_point(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+//     world.tuple = Point::new_point(x, y, z);
+// }
 
-#[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
-async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
-    world.tuple = new_vector(x, y, z);
-}
+// #[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
+// async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+//     world.tuple = Vector::new_vector(x, y, z);
+// }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
@@ -59,7 +59,7 @@ async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f
 
 #[then(expr = r"{word} = tuple\({float}, {float}, {float}, {float})")]
 async fn equal_to_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
-    assert_eq!(world.tuple, [x, y, z, w]);
+    assert_eq!(world.tuple, Tuplef32::new(x, y, z, w));
 }
 
 #[then(expr = r"{word} is a point")]

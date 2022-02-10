@@ -28,3 +28,8 @@ Feature: Tuples
         Then v = tuple(4, -4, 3, 0)
         And v is a vector
         And v is not a point
+
+    Scenario: Adding two tuples
+        Given a1 ← tuple(3, -2, 5, 1)
+        And a2 ← tuple(-2, 3, 1, 0)
+        Then a1 + a2 = tuple(1, 1, 6, 1)
