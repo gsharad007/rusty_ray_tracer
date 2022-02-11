@@ -21,8 +21,20 @@ use float_cmp::ApproxEq;
 /// you.
 /// ## Right Handed Coordinates
 /// With the y axis pointing up, and the x axis pointing to the right, the z axis can be defined to point toward you.
-pub trait Tuple: Sized {
+/// todo! Matrix maybe a better name for this
+pub trait Tuple: Sized + IntoIterator {
     /// Gets the specified dimension from the tuple
+    ///
+    /// # Examples
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuples::Tuplef32;
+    /// let tuple = Tuplef32::new(0.0, 1.0, 2.0, 3.0);
+    /// assert_eq!(0.0, tuple.get_at(0));
+    /// assert_eq!(1.0, tuple.get_at(1));
+    /// assert_eq!(2.0, tuple.get_at(2));
+    /// assert_eq!(3.0, tuple.get_at(3));
+    /// ```
     #[must_use]
     fn get_at(&self, dim: usize) -> f32;
 
@@ -84,30 +96,27 @@ pub trait Tuple: Sized {
     }
 
     /// Debug asserts to make sure the tuple is valid
-    fn check_tuple(&self) {
+    fn is_valid(&self) -> bool {
         debug_assert!(self.is_point() || self.is_vector());
+        self.is_point() || self.is_vector()
     }
 
-    /// .
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// // Example template not implemented for trait functions
-    /// ```
     fn iter(&self) -> Iter<'_, f32>;
 
     fn iter_mut(&mut self) -> IterMut<'_, f32>;
 
     // Combines both Tuples into one using a closure
     #[must_use]
-    fn zip_for_each_collect(a: Self, b: Self, f: impl Fn(f32, f32) -> f32) -> Self {
+    fn zip_for_each_collect<B>(a: Self, b: B, f: impl Fn(f32, f32) -> f32) -> Self
+    where
+        B: IntoIterator<Item = f32>,
+    {
         let mut result = a;
         result
             .iter_mut()
-            .zip(b.iter())
-            .for_each(|(i, j)| *i = f(*i, *j));
-        result.check_tuple();
+            .zip(b.into_iter())
+            .for_each(|(i, j)| *i = f(*i, j));
+        result.is_valid();
         result
     }
 
@@ -115,6 +124,15 @@ pub trait Tuple: Sized {
     #[must_use]
     fn zip<'a, 'b>(a: &'a Self, b: &'b Self) -> Zip<Iter<'a, f32>, Iter<'b, f32>> {
         a.iter().zip(b.iter())
+    }
+
+    // Combines both Tuples into one using a closure
+    #[must_use]
+    fn into_zip(
+        a: Self,
+        b: Self,
+    ) -> Zip<<Self as IntoIterator>::IntoIter, <Self as IntoIterator>::IntoIter> {
+        a.into_iter().zip(b.into_iter())
     }
 }
 
@@ -144,6 +162,7 @@ impl Tuple for Tuplef32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::panic;
 
     #[test]
     fn assign_array() {
@@ -152,13 +171,9 @@ mod tests {
         assert_eq!(1.0, tuple.get_at(1));
         assert_eq!(2.0, tuple.get_at(2));
         assert_eq!(3.0, tuple.get_at(3));
-    }
 
-    #[test]
-    #[should_panic]
-    fn invalid_get_at() {
-        let tuple = Tuplef32::new(0.0, 1.0, 2.0, 3.0);
-        assert_eq!(0.0, tuple.get_at(4));
+        assert!(panic::catch_unwind(|| tuple.get_at(4)).is_err());
+        assert!(panic::catch_unwind(|| tuple.get_at(usize::MAX)).is_err());
     }
 
     #[test]
@@ -182,7 +197,7 @@ mod tests {
     #[test]
     fn is_point() {
         let tuple = Tuplef32::new(1.23, 4.56, 7.89, 1.0);
-        tuple.check_tuple();
+        tuple.is_valid();
         assert!(tuple.is_point() == true);
         assert!(tuple.is_vector() == false);
     }
@@ -190,18 +205,26 @@ mod tests {
     #[test]
     fn is_vector() {
         let tuple = Tuplef32::new(1.23, 4.56, 7.89, 0.0);
-        tuple.check_tuple();
+        tuple.is_valid();
         assert!(tuple.is_vector() == true);
         assert!(tuple.is_point() == false);
     }
 
     #[test]
-    #[should_panic]
     fn invalid_point_or_vector() {
         let tuple = Tuplef32::new(1.23, 4.56, 7.89, 1.01);
         assert!(tuple.is_point() == false);
         assert!(tuple.is_vector() == false);
-        tuple.check_tuple();
+        assert!(panic::catch_unwind(|| tuple.is_valid()).is_err());
+    }
+}
+
+impl IntoIterator for Tuplef32 {
+    type Item = f32;
+    type IntoIter = std::array::IntoIter<Self::Item, 4_usize>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.coords.into_iter()
     }
 }
 
@@ -283,33 +306,33 @@ impl ApproxEq for Tuplef32 {
     /// ```
     /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use rusty_ray_tracer::core3d::tuples::Tuplef32;
-    /// # use float_cmp::assert_approx_eq;
+    /// # use float_cmp::ApproxEq;
     /// let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000000);
     /// let b = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000001);
-    /// assert_approx_eq!(Tuplef32, a, b);
+    /// assert!(a.approx_eq(b, <Tuplef32 as ApproxEq>::Margin::default()));
     /// ```
     ///
     /// ```
     /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use rusty_ray_tracer::core3d::tuples::Tuplef32;
-    /// # use float_cmp::assert_approx_eq;
+    /// # use float_cmp::ApproxEq;
     /// let a = Tuplef32::new(1.23, 4.56, 7.89, 1.0000000);
     /// let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0000001);
-    /// assert_approx_eq!(Tuplef32, a, b, ulps = 2);
+    /// assert!(a.approx_eq(b, <Tuplef32 as ApproxEq>::Margin::default().ulps(2)));
     /// ```
     ///
     /// ```
     /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use rusty_ray_tracer::core3d::tuples::Tuplef32;
-    /// # use float_cmp::assert_approx_eq;
+    /// # use float_cmp::ApproxEq;
     /// let a = Tuplef32::new(1.23, 4.56, 7.89, 0.0);
     /// let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0);
-    /// assert_approx_eq!(Tuplef32, a, b, epsilon = 1.0);
+    /// assert!(a.approx_eq(b, <Tuplef32 as ApproxEq>::Margin::default().epsilon(1.0)));
     /// ```
     fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
         let margin = margin.into();
 
-        Self::zip(&self, &other).all(|(a, b)| a.approx_eq(*b, margin))
+        Self::into_zip(self, other).all(|(a, b)| a.approx_eq(b, margin))
     }
 }
 
@@ -317,48 +340,46 @@ impl ApproxEq for Tuplef32 {
 mod tests_approx_eq {
     use super::*;
     use float_cmp::assert_approx_eq;
+    use std::panic;
 
     #[test]
     fn eq() {
+        assert_approx_eq!(
+            Tuplef32,
+            Tuplef32::new(1.23, 4.56, 7.89, 0.000000000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 0.000000000001)
+        );
+        assert_approx_eq!(
+            Tuplef32,
+            Tuplef32::new(1.23, 4.56, 7.89, 1.0000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 1.0000001),
+            ulps = 2
+        );
+        assert_approx_eq!(
+            Tuplef32,
+            Tuplef32::new(1.23, 4.56, 7.89, 0.0),
+            Tuplef32::new(1.23, 4.56, 7.89, 1.0),
+            epsilon = 1.0
+        );
+    }
+
+    #[test]
+    fn ne() {
         {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000001);
-            assert_approx_eq!(Tuplef32, a, b);
+            let a = Tuplef32::new(1.23, 4.56, 7.89, 1.000000);
+            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
+            assert!(a.approx_ne(b, <Tuplef32 as ApproxEq>::Margin::default()));
         }
         {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 1.0000000);
+            let a = Tuplef32::new(1.23, 4.56, 7.89, 1.000000);
+            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
+            assert!(a.approx_ne(b, <Tuplef32 as ApproxEq>::Margin::default().ulps(2)));
+        }
+        {
+            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.0000000);
             let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0000001);
-            assert_approx_eq!(Tuplef32, a, b, ulps = 2);
+            assert!(a.approx_ne(b, <Tuplef32 as ApproxEq>::Margin::default().epsilon(1.0)));
         }
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.0);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0);
-            assert_approx_eq!(Tuplef32, a, b, epsilon = 1.0);
-        }
-    }
-
-    #[test]
-    #[should_panic]
-    fn ne_1() {
-        let a = Tuplef32::new(1.23, 4.56, 7.89, 1.000000);
-        let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
-        assert_approx_eq!(Tuplef32, a, b);
-    }
-
-    #[test]
-    #[should_panic]
-    fn ne_2() {
-        let a = Tuplef32::new(1.23, 4.56, 7.89, 1.000000);
-        let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
-        assert_approx_eq!(Tuplef32, a, b, ulps = 2);
-    }
-
-    #[test]
-    #[should_panic]
-    fn ne_3() {
-        let a = Tuplef32::new(1.23, 4.56, 7.89, 0.0000000);
-        let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0000001);
-        assert_approx_eq!(Tuplef32, a, b, epsilon = 1.0);
     }
 }
 
