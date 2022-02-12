@@ -101,8 +101,10 @@ pub trait Tuple: Sized + IntoIterator {
         self.is_point() || self.is_vector()
     }
 
+    #[must_use]
     fn iter(&self) -> Iter<'_, f32>;
 
+    #[must_use]
     fn iter_mut(&mut self) -> IterMut<'_, f32>;
 
     // Combines both Tuples into one using a closure
@@ -197,7 +199,7 @@ mod tests {
     #[test]
     fn is_point() {
         let tuple = Tuplef32::new(1.23, 4.56, 7.89, 1.0);
-        tuple.is_valid();
+        assert!(tuple.is_valid());
         assert!(tuple.is_point() == true);
         assert!(tuple.is_vector() == false);
     }
@@ -205,7 +207,7 @@ mod tests {
     #[test]
     fn is_vector() {
         let tuple = Tuplef32::new(1.23, 4.56, 7.89, 0.0);
-        tuple.is_valid();
+        assert!(tuple.is_valid());
         assert!(tuple.is_vector() == true);
         assert!(tuple.is_point() == false);
     }
@@ -244,8 +246,8 @@ impl PartialEq for Tuplef32 {
     /// ```
     /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use rusty_ray_tracer::core3d::tuples::Tuplef32;
-    /// let a = Tuplef32::new(1.23, 4.56, 7.89, 0.0);
-    /// let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0);
+    /// let a = Tuplef32::new(1.23, 4.56, 7.89, 1.000000);
+    /// let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
     /// assert_ne!(a, b);
     /// ```
     fn eq(&self, other: &Self) -> bool {
@@ -259,40 +261,38 @@ mod tests_eq {
 
     #[test]
     fn eq() {
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 0.000000000001);
-            assert_eq!(a, b);
-        }
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 1.0000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.0000001);
-            assert_eq!(a, b);
-        }
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 1000000.0);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1000000.1);
-            assert_eq!(a, b);
-        }
+        assert_eq!(
+            Tuplef32::new(1.23, 4.56, 7.89, 0.00000000000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 0.00000000000001)
+        );
+        assert_eq!(
+            Tuplef32::new(1.23, 4.56, 7.89, 0.0000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 0.0000001)
+        );
+        assert_eq!(
+            Tuplef32::new(1.23, 4.56, 7.89, 1.0000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 1.0000001)
+        );
+        assert_eq!(
+            Tuplef32::new(1.23, 4.56, 7.89, 1000000.0),
+            Tuplef32::new(1.23, 4.56, 7.89, 1000000.1)
+        );
     }
 
     #[test]
     fn ne() {
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
-            assert_ne!(a, b);
-        }
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
-            assert_ne!(a, b);
-        }
-        {
-            let a = Tuplef32::new(1.23, 4.56, 7.89, 0.000000);
-            let b = Tuplef32::new(1.23, 4.56, 7.89, 1.000001);
-            assert_ne!(a, b);
-        }
+        assert_ne!(
+            Tuplef32::new(1.23, 4.56, 7.89, 0.000010),
+            Tuplef32::new(1.23, 4.56, 7.89, 0.000011)
+        );
+        assert_ne!(
+            Tuplef32::new(1.23, 4.56, 7.89, 1.000000),
+            Tuplef32::new(1.23, 4.56, 7.89, 1.000001)
+        );
+        assert_ne!(
+            Tuplef32::new(1.23, 4.56, 7.89, 100000.0),
+            Tuplef32::new(1.23, 4.56, 7.89, 100000.1)
+        );
     }
 }
 
@@ -382,11 +382,6 @@ mod tests_approx_eq {
         }
     }
 }
-
-// pub trait Coord3DMath{
-//     #[must_use]
-//     fn
-// }
 
 impl Add for Tuplef32 {
     /// The resulting type after applying the `+` operator.
