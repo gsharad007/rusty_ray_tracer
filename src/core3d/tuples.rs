@@ -123,13 +123,11 @@ pub trait Tuple: Sized + IntoIterator {
     }
 
     // Combines both Tuples into one using a closure
-    #[must_use]
     fn zip<'a, 'b>(a: &'a Self, b: &'b Self) -> Zip<Iter<'a, f32>, Iter<'b, f32>> {
         a.iter().zip(b.iter())
     }
 
     // Combines both Tuples into one using a closure
-    #[must_use]
     fn into_zip(
         a: Self,
         b: Self,
