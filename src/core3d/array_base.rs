@@ -11,9 +11,9 @@ pub trait ArrayBase: Sized {
     ///
     /// # Examples
     /// ```
-    /// let tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.get_array());
     /// ```
     #[must_use]
@@ -23,9 +23,9 @@ pub trait ArrayBase: Sized {
     ///
     /// # Examples
     /// ```
-    /// let tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
     /// ```
     #[must_use]
@@ -35,9 +35,9 @@ pub trait ArrayBase: Sized {
     ///
     /// # Examples
     /// ```
-    /// let mut tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let mut tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_mut());
     /// tuple.get_array_mut()[0] += 10.0;
     /// tuple.get_array_mut()[1] += 10.0;
@@ -56,9 +56,9 @@ pub trait ArrayBase: Sized {
     ///
     /// # Examples
     /// ```
-    /// let tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!(
     ///     vec![1.0, 2.0, 3.0, 4.0],
     ///     tuple.clone().into_iter().collect::<Vec<_>>()
@@ -80,9 +80,9 @@ pub trait ArrayBase: Sized {
     /// # Examples
     ///
     /// ```
-    /// let tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!(
     ///     vec![&1.0, &2.0, &3.0, &4.0],
     ///     tuple.iter().collect::<Vec<_>>()
@@ -104,9 +104,9 @@ pub trait ArrayBase: Sized {
     /// # Examples
     ///
     /// ```
-    /// let mut tuple = Tuple {
-    ///     coords: [1.0, 2.0, 3.0, 4.0],
-    /// };
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let mut tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// tuple.iter_mut().for_each(|a| *a += 10.0);
     /// assert_eq!(
     ///     vec![&11.0, &12.0, &13.0, &14.0],
@@ -124,7 +124,26 @@ pub trait ArrayBase: Sized {
         self.get_array_mut().iter_mut()
     }
 
-    // Combines both Tuples into one using a closure
+    /// Creates an iterator from zipping both Tuples iterators into one using a closure consuming them both
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// let b = Tuple::new(4.0, 3.0, 2.0, 1.0);
+    /// assert_eq!(
+    ///     vec![(1.0, 4.0), (2.0, 3.0), (3.0, 2.0), (4.0, 1.0)],
+    ///     a.clone().into_zip(b.clone()).collect::<Vec<_>>()
+    /// );
+    /// let mut it = a.into_zip(b);
+    /// assert_eq!(Some((1.0, 4.0)), it.next());
+    /// assert_eq!(Some((2.0, 3.0)), it.next());
+    /// assert_eq!(Some((3.0, 2.0)), it.next());
+    /// assert_eq!(Some((4.0, 1.0)), it.next());
+    /// assert_eq!(None, it.next());
+    /// ```
     fn into_zip(
         self,
         other: Self,
@@ -135,12 +154,43 @@ pub trait ArrayBase: Sized {
         self.into_iter().zip(other.into_iter())
     }
 
-    // Combines both Tuples into one using a closure
+    /// Creates an iterator from zipping both Tuples iterators into one using a closure by reference
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// let b = Tuple::new(4.0, 3.0, 2.0, 1.0);
+    /// assert_eq!(
+    ///     vec![(&1.0, &4.0), (&2.0, &3.0), (&3.0, &2.0), (&4.0, &1.0)],
+    ///     a.zip(&b).collect::<Vec<_>>()
+    /// );
+    /// let mut it = a.zip(&b);
+    /// assert_eq!(Some((&1.0, &4.0)), it.next());
+    /// assert_eq!(Some((&2.0, &3.0)), it.next());
+    /// assert_eq!(Some((&3.0, &2.0)), it.next());
+    /// assert_eq!(Some((&4.0, &1.0)), it.next());
+    /// assert_eq!(None, it.next());
+    /// ```
     fn zip<'a, 'b>(&'a self, other: &'b Self) -> Zip<Iter<'a, Self::Item>, Iter<'b, Self::Item>> {
         self.iter().zip(other.iter())
     }
 
-    // Combines both Tuples into one using a closure
+    /// Combines both Tuples into one using a closure
+    ///
+    /// # Examples
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// let b = Tuple::new(4.0, 3.0, 2.0, 1.0);
+    /// assert_eq!(
+    ///     [5.0, 5.0, 5.0, 5.0],
+    ///     Tuple::zip_for_each_collect(a, b, |a, b| a + b).get_array()
+    /// );
+    /// ```
     #[must_use]
     fn zip_for_each_collect(
         self,

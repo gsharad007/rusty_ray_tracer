@@ -17,7 +17,7 @@ use float_cmp::ApproxEq;
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
-    coords: [f32; 4],
+    pub coords: [f32; 4],
 }
 impl Tuple {
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
