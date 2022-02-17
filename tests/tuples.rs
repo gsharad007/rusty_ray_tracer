@@ -1,3 +1,4 @@
+use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuples::*;
 use rusty_ray_tracer::core3d::vector::*;
@@ -10,7 +11,7 @@ use cucumber::{given, then, World, WorldInit};
 // `World` is your shared, likely mutable state.
 #[derive(Debug, WorldInit)]
 pub struct TuplesWorld {
-    tuple: Tuplef32,
+    tuple: Tuple,
 }
 
 // `World` needs to be implemented, so Cucumber knows how to construct it
@@ -33,7 +34,7 @@ impl World for TuplesWorld {
 // }
 #[given(expr = r"{word} ← tuple\({float}, {float}, {float}, {float})")]
 async fn a_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
-    world.tuple = Tuplef32::new(x, y, z, w);
+    world.tuple = Tuple::new(x, y, z, w);
 }
 
 // #[given(expr = r"{word} ← point\({float}, {float}, {float})")]
@@ -59,7 +60,7 @@ async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f
 
 #[then(expr = r"{word} = tuple\({float}, {float}, {float}, {float})")]
 async fn equal_to_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32, w: f32) {
-    assert_eq!(world.tuple, Tuplef32::new(x, y, z, w));
+    assert_eq!(world.tuple, Tuple::new(x, y, z, w));
 }
 
 #[then(expr = r"{word} is a point")]
