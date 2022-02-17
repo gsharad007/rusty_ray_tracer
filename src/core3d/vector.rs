@@ -42,8 +42,8 @@ impl From<[f32; 3]> for Vector {
     /// ```
     /// use crate::rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let result = Vector::from([1.0, 2.0, 3.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], result.coords);
+    /// let vector = Vector::from([1.0, 2.0, 3.0]);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
         Vector::new(arr[0], arr[1], arr[2])
@@ -51,15 +51,15 @@ impl From<[f32; 3]> for Vector {
 }
 
 impl From<Tuple> for Vector {
-    /// Creates a new tuple from a tuple
+    /// Creates a new Vector from a Tuple
     ///
     /// # Examples
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let result = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], result.coords);
+    /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
     /// ```
     ///
     /// ```
@@ -76,15 +76,15 @@ impl From<Tuple> for Vector {
 }
 
 impl From<Vector> for Tuple {
-    /// Creates a new tuple from a tuple
+    /// Creates a new Tuple from a Vector
     ///
     /// # Examples
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let result = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], result.coords);
+    /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
     /// ```
     ///
     /// ```
@@ -110,8 +110,8 @@ impl ArrayBase for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let tuple = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.get_array());
+    /// let vector = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
         self.coords
@@ -123,8 +123,8 @@ impl ArrayBase for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let tuple = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *tuple.get_array_ref());
+    /// let vector = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
         &self.coords

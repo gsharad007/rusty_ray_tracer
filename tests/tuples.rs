@@ -37,10 +37,10 @@ async fn a_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32,
     world.tuple = Tuple::new(x, y, z, w);
 }
 
-// #[given(expr = r"{word} ← point\({float}, {float}, {float})")]
-// async fn a_point(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
-//     world.tuple = Point::new_point(x, y, z);
-// }
+#[given(expr = r"{word} ← point\({float}, {float}, {float})")]
+async fn a_point(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+    world.tuple = Point::new(x, y, z).into();
+}
 
 #[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
 async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
