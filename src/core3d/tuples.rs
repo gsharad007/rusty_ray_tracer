@@ -1,43 +1,88 @@
-use crate::core3d::array_base::ArrayBase;
-use crate::core3d::coordinates4::Coordinates4;
+use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use core::ops::Add;
-use float_cmp::approx_eq;
-use float_cmp::ApproxEq;
-
-// /// This Tuple in 3D (x,y,z) space is a 4 unit set (x,y,z,w) to allow passing in either point or vector
-// #[derive(Debug, Default)]
-// pub struct Tuple([f32; 4]);
-
-// impl Tuple {
-//     #[must_use]
-//     pub fn from_array(t: [f32; 4]) -> Tuple {
-//         Tuple(t)
-//     }
-// }
+use float_cmp::{approx_eq, ApproxEq};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
     pub coords: [f32; 4],
 }
 impl Tuple {
+    /// Creates a new tuple from x, y, z, w scaler values
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_ray_tracer::core3d::tuples::Tuple;
+    ///
+    /// let result = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], result.coords);
+    /// ```
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Tuple {
             coords: [x, y, z, w],
         }
     }
 }
+impl From<[f32; 4]> for Tuple {
+    /// Creates a new tuple from an array of scaler values
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rusty_ray_tracer::core3d::tuples::Tuple;
+    ///
+    /// let result = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], result.coords);
+    /// ```
+    fn from(arr: [f32; 4]) -> Self {
+        Tuple { coords: arr }
+    }
+}
+
 impl ArrayBase for Tuple {
     type Item = f32;
     // type SizedArray = [f32; 4];
 
+    /// Returns base array consuming
+    ///
+    /// # Examples
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.get_array());
+    /// ```
     fn get_array(self) -> [f32; 4] {
         self.coords
     }
 
+    /// Returns base array reference
+    ///
+    /// # Examples
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
+    /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
         &self.coords
     }
 
+    /// Returns a mutable base array reference
+    ///
+    /// # Examples
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let mut tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_mut());
+    /// tuple.get_array_mut()[0] += 10.0;
+    /// tuple.get_array_mut()[1] += 10.0;
+    /// tuple.get_array_mut()[2] += 10.0;
+    /// tuple.get_array_mut()[3] += 10.0;
+    /// assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_mut());
+    /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
         &mut self.coords
     }
@@ -110,8 +155,7 @@ mod tests_eq {
     }
 }
 
-impl ApproxEq for Tuple
-{
+impl ApproxEq for Tuple {
     type Margin = <f32 as ApproxEq>::Margin;
 
     /// Performs the `~=` operation.
@@ -198,8 +242,7 @@ mod tests_approx_eq {
     }
 }
 
-impl Add for Tuple
-{
+impl Add for Tuple {
     /// The resulting type after applying the `+` operator.
     type Output = Self;
 

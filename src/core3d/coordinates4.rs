@@ -14,6 +14,7 @@ where
     /// Gets the specified dimension from the tuple
     ///
     /// # Examples
+    ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use rusty_ray_tracer::core3d::tuples::Tuple;
@@ -29,6 +30,18 @@ where
     }
 
     /// Gets the first dimension (right) from the coordinate system
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// let tuple = Tuple::new(1.23, 4.56, 7.89, 10.11);
+    /// assert_eq!(1.23, tuple.x());
+    /// assert_eq!(4.56, tuple.y());
+    /// assert_eq!(7.89, tuple.z());
+    /// assert_eq!(10.11, tuple.w());
+    /// ```
     #[must_use]
     fn x(&self) -> Self::Item {
         self.get_at(0)
@@ -65,8 +78,7 @@ where
     /// assert!(tuple.is_point() == true);
     /// ```
     #[must_use]
-    fn is_point(&self) -> bool
-    {
+    fn is_point(&self) -> bool {
         self.w() == 1.0
     }
 
@@ -94,7 +106,7 @@ where
 }
 
 #[cfg(test)]
-mod tests_coordinates {
+mod tests {
     use super::*;
     use std::panic;
 

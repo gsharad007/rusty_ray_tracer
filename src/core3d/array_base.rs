@@ -10,6 +10,7 @@ pub trait ArrayBase: Sized {
     /// Returns base array consuming
     ///
     /// # Examples
+    /// 
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
@@ -22,6 +23,7 @@ pub trait ArrayBase: Sized {
     /// Returns base array reference
     ///
     /// # Examples
+    /// 
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
@@ -34,6 +36,7 @@ pub trait ArrayBase: Sized {
     /// Returns a mutable base array reference
     ///
     /// # Examples
+    /// 
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
@@ -55,6 +58,7 @@ pub trait ArrayBase: Sized {
     /// [module-level documentation]: crate::iter
     ///
     /// # Examples
+    /// 
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
@@ -181,6 +185,7 @@ pub trait ArrayBase: Sized {
     /// Combines both Tuples into one using a closure
     ///
     /// # Examples
+    /// 
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;

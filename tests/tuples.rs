@@ -42,10 +42,10 @@ async fn a_tuple(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32,
 //     world.tuple = Point::new_point(x, y, z);
 // }
 
-// #[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
-// async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
-//     world.tuple = Vector::new_vector(x, y, z);
-// }
+#[given(expr = r"{word} ← vector\({float}, {float}, {float})")]
+async fn a_vector(world: &mut TuplesWorld, _name: String, x: f32, y: f32, z: f32) {
+    world.tuple = Vector::new(x, y, z).into();
+}
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
