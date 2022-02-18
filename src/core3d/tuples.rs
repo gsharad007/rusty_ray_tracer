@@ -12,10 +12,10 @@ impl Tuple {
     /// # Examples
     ///
     /// ```
-    /// use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     ///
-    /// let result = Tuple::new(1.0, 2.0, 3.0, 4.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], result.coords);
+    /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
     /// ```
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Tuple {
@@ -23,19 +23,42 @@ impl Tuple {
         }
     }
 }
+
+#[cfg(test)]
+mod tests_tuple {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
+    }
+}
+
 impl From<[f32; 4]> for Tuple {
     /// Creates a new tuple from an array of scaler values
     ///
     /// # Examples
     ///
     /// ```
-    /// use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
     ///
-    /// let result = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], result.coords);
+    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
     /// ```
     fn from(arr: [f32; 4]) -> Self {
         Tuple { coords: arr }
+    }
+}
+
+#[cfg(test)]
+mod tests_from {
+    use super::*;
+
+    #[test]
+    fn from_array() {
+        let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
     }
 }
 
@@ -87,6 +110,33 @@ impl ArrayBase for Tuple {
         &mut self.coords
     }
 }
+
+#[cfg(test)]
+mod tests_array_base {
+    use super::*;
+
+    #[test]
+    fn get_array() {
+        let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.clone().get_array());
+        assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
+    }
+
+    #[test]
+    fn get_array_mut() {
+        let mut tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_mut());
+        tuple.get_array_mut()[0] += 10.0;
+        tuple.get_array_mut()[1] += 10.0;
+        tuple.get_array_mut()[2] += 10.0;
+        tuple.get_array_mut()[3] += 10.0;
+        assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_mut());
+        assert_eq!([11.0, 12.0, 13.0, 14.0], tuple.clone().get_array());
+        assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_ref());
+    }
+}
+
 impl Coordinates4 for Tuple {}
 
 impl PartialEq for Tuple {

@@ -34,13 +34,24 @@ impl Vector {
     }
 }
 
+#[cfg(test)]
+mod tests_vector {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+    }
+}
+
 impl From<[f32; 3]> for Vector {
     /// Creates a new vector from an array of scaler values
     ///
     /// # Examples
     ///
     /// ```
-    /// use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from([1.0, 2.0, 3.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
@@ -100,6 +111,36 @@ impl From<Vector> for Tuple {
     }
 }
 
+#[cfg(test)]
+mod tests_from {
+    use super::*;
+    use std::panic;
+
+    #[test]
+    fn from_array() {
+        let vector = Vector::from([1.0, 2.0, 3.0]);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+    }
+
+    #[test]
+    fn from_tuple() {
+        let vector = Vector::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+
+        let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+        assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
+    }
+
+    #[test]
+    fn into_tuple() {
+        let tuple = Tuple::from(Vector::new(1.0, 2.0, 3.0));
+        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+
+        let tuple: Tuple = Vector::new(1.0, 2.0, 3.0).into();
+        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+    }
+}
+
 impl ArrayBase for Vector {
     type Item = f32;
     // type SizedArray = [f32; 4];
@@ -148,16 +189,43 @@ impl ArrayBase for Vector {
         &mut self.coords
     }
 }
+
+#[cfg(test)]
+mod tests_array_base {
+    use super::*;
+
+    #[test]
+    fn get_array() {
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.clone().get_array());
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
+    }
+
+    #[test]
+    fn get_array_mut() {
+        let mut vector = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_mut());
+        vector.get_array_mut()[0] += 10.0;
+        vector.get_array_mut()[1] += 10.0;
+        vector.get_array_mut()[2] += 10.0;
+        vector.get_array_mut()[3] += 10.0;
+        assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_mut());
+        assert_eq!([11.0, 12.0, 13.0, 10.0], vector.clone().get_array());
+        assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_ref());
+    }
+}
+
 impl Coordinates4 for Vector {}
 
 #[cfg(test)]
-mod tests_vector {
+mod tests_coordinates4 {
     use super::*;
     use crate::core3d::coordinates4::Coordinates4;
 
     #[test]
     fn assign_array() {
-        let vector: Vector = Tuple::from([3.0, 2.0, 1.0, 0.0]).into();
+        let vector: Vector = Vector::from([3.0, 2.0, 1.0]);
         assert_eq!(3.0, vector.x());
         assert_eq!(2.0, vector.y());
         assert_eq!(1.0, vector.z());
