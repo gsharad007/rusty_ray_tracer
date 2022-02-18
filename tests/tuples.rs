@@ -47,7 +47,11 @@ impl FromStr for CaptureTuple {
             .expect("Tuple should start with tuple")
             .trim_matches(|p| p == '(' || p == ')')
             .split(',')
-            .map(|ss| ss.trim().parse::<f32>().expect("Parsing component f32 failed"))
+            .map(|ss| {
+                ss.trim()
+                    .parse::<f32>()
+                    .expect("Parsing component f32 failed")
+            })
             .collect();
 
         Ok(CaptureTuple {
@@ -72,7 +76,11 @@ impl FromStr for CapturePoint {
             .expect("Point should start with point")
             .trim_matches(|p| p == '(' || p == ')')
             .split(',')
-            .map(|ss| ss.trim().parse::<f32>().expect("Parsing component f32 failed"))
+            .map(|ss| {
+                ss.trim()
+                    .parse::<f32>()
+                    .expect("Parsing component f32 failed")
+            })
             .collect();
 
         Ok(CapturePoint {
@@ -97,7 +105,11 @@ impl FromStr for CaptureVector {
             .expect("Vector should start with vector")
             .trim_matches(|p| p == '(' || p == ')')
             .split(',')
-            .map(|ss| ss.trim().parse::<f32>().expect("Parsing component f32 failed"))
+            .map(|ss| {
+                ss.trim()
+                    .parse::<f32>()
+                    .expect("Parsing component f32 failed")
+            })
             .collect();
 
         Ok(CaptureVector {
