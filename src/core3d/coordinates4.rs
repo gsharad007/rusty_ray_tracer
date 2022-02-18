@@ -17,7 +17,7 @@ where
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(0.0, 1.0, 2.0, 3.0);
     /// assert_eq!(0.0, tuple.get_at(0));
     /// assert_eq!(1.0, tuple.get_at(1));
@@ -35,7 +35,7 @@ where
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(1.23, 4.56, 7.89, 10.11);
     /// assert_eq!(1.23, tuple.x());
     /// assert_eq!(4.56, tuple.y());
@@ -73,7 +73,7 @@ where
     /// # Examples
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(1.23, 4.56, 7.89, 1.0);
     /// assert!(tuple.is_point() == true);
     /// ```
@@ -89,7 +89,7 @@ where
     /// # Examples
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(1.23, 4.56, 7.89, 0.0);
     /// assert!(tuple.is_vector() == true);
     /// ```

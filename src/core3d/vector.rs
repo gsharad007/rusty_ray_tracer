@@ -13,7 +13,6 @@ impl Vector {
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuples::*;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
@@ -51,7 +50,6 @@ impl From<[f32; 3]> for Vector {
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from([1.0, 2.0, 3.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
@@ -67,7 +65,7 @@ impl From<Tuple> for Vector {
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
@@ -75,7 +73,7 @@ impl From<Tuple> for Vector {
     ///
     /// ```
     /// # use std::panic;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
     /// assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
@@ -92,7 +90,7 @@ impl From<Vector> for Tuple {
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
@@ -100,7 +98,7 @@ impl From<Vector> for Tuple {
     ///
     /// ```
     /// # use std::panic;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
     /// assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());

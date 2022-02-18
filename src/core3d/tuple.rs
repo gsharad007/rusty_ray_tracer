@@ -12,7 +12,7 @@ impl Tuple {
     /// # Examples
     ///
     /// ```
-    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     ///
     /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
@@ -41,7 +41,7 @@ impl From<[f32; 4]> for Tuple {
     /// # Examples
     ///
     /// ```
-    /// # use rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     ///
     /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
@@ -71,7 +71,7 @@ impl ArrayBase for Tuple {
     /// # Examples
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.get_array());
     /// ```
@@ -84,7 +84,7 @@ impl ArrayBase for Tuple {
     /// # Examples
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
     /// ```
@@ -97,7 +97,7 @@ impl ArrayBase for Tuple {
     /// # Examples
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let mut tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_mut());
     /// tuple.get_array_mut()[0] += 10.0;
@@ -146,7 +146,7 @@ impl PartialEq for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
     /// let b = Tuple::new(1.23, 4.56, 7.89, 0.0);
     /// assert_eq!(a, b);
@@ -154,7 +154,7 @@ impl PartialEq for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 1.000000);
     /// let b = Tuple::new(1.23, 4.56, 7.89, 1.000001);
     /// assert_ne!(a, b);
@@ -214,7 +214,7 @@ impl ApproxEq for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use float_cmp::ApproxEq;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 0.000000000000);
     /// let b = Tuple::new(1.23, 4.56, 7.89, 0.000000000001);
@@ -223,7 +223,7 @@ impl ApproxEq for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use float_cmp::ApproxEq;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 1.0000000);
     /// let b = Tuple::new(1.23, 4.56, 7.89, 1.0000001);
@@ -232,7 +232,7 @@ impl ApproxEq for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use float_cmp::ApproxEq;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
     /// let b = Tuple::new(1.23, 4.56, 7.89, 1.0);
@@ -302,7 +302,7 @@ impl Add for Tuple {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::tuples::Tuple;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
     /// let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
     /// let expected = Tuple::new(2.34, 6.78, 11.22, 1.0);
