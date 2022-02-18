@@ -1,7 +1,7 @@
 use derive_more::Deref;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
-use rusty_ray_tracer::core3d::tuples::*;
+use rusty_ray_tracer::core3d::tuple::*;
 use rusty_ray_tracer::core3d::vector::*;
 
 use std::convert::Infallible;

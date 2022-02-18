@@ -1,5 +1,5 @@
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
-use crate::core3d::tuples::Tuple;
+use crate::core3d::tuple::Tuple;
 
 /// A Point in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 1.0 to allow translations from matrices
 
