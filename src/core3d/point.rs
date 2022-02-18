@@ -41,7 +41,7 @@ mod tests_point {
     #[test]
     fn new() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
     }
 }
 
@@ -119,13 +119,13 @@ mod tests_from {
     #[test]
     fn from_array() {
         let point = Point::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
     }
 
     #[test]
     fn from_tuple() {
-        let point = Point::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], point.coords);
+        let point = Point::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
         assert!(panic::catch_unwind(|| Point::from(tuple)).is_err());
@@ -134,10 +134,10 @@ mod tests_from {
     #[test]
     fn into_tuple() {
         let tuple = Tuple::from(Point::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.coords);
 
         let tuple: Tuple = Point::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.coords);
     }
 }
 
@@ -197,22 +197,22 @@ mod tests_array_base {
     #[test]
     fn get_array() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *point.get_array_ref());
-        assert_eq!([1.0, 2.0, 3.0, 0.0], point.clone().get_array());
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *point.get_array_ref());
+        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.clone().get_array());
+        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
     }
 
     #[test]
     fn get_array_mut() {
         let mut point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *point.get_array_mut());
+        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_mut());
         point.get_array_mut()[0] += 10.0;
         point.get_array_mut()[1] += 10.0;
         point.get_array_mut()[2] += 10.0;
         point.get_array_mut()[3] += 10.0;
-        assert_eq!([11.0, 12.0, 13.0, 10.0], *point.get_array_mut());
-        assert_eq!([11.0, 12.0, 13.0, 10.0], point.clone().get_array());
-        assert_eq!([11.0, 12.0, 13.0, 10.0], *point.get_array_ref());
+        assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_mut());
+        assert_eq!([11.0, 12.0, 13.0, 11.0], point.clone().get_array());
+        assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_ref());
     }
 }
 
