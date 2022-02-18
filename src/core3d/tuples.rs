@@ -313,3 +313,39 @@ impl Add for Tuple {
         Self::zip_for_each_collect(self, rhs, |a, b| a + b)
     }
 }
+
+#[cfg(test)]
+mod tests_add {
+    use super::*;
+
+    #[test]
+    fn test_add() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
+        let expected = Tuple::new(2.34, 6.78, 11.22, 1.0);
+        assert_eq!(expected, a + b);
+    }
+
+    #[test]
+    fn test_add_identity() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = Tuple::default();
+        assert_eq!(a + b, a);
+    }
+
+    #[test]
+    fn test_add_commutative() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
+        assert_eq!(a + b, b + a);
+    }
+
+    #[test]
+    fn test_add_associative() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 1.01);
+        let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
+        let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
+        assert_eq!(a + (b + c), (a + b) + c);
+        assert_eq!(c + (a + b), (c + a) + b);
+    }
+}
