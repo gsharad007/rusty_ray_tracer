@@ -15,6 +15,8 @@ use cucumber::{given, then, Parameter, World, WorldInit};
 #[derive(Debug, WorldInit)]
 pub struct TuplesWorld {
     tuple: Tuple,
+    a1: Tuple,
+    a2: Tuple,
 }
 
 // `World` needs to be implemented, so Cucumber knows how to construct it
@@ -27,6 +29,8 @@ impl World for TuplesWorld {
     async fn new() -> Result<Self, Infallible> {
         Ok(Self {
             tuple: Default::default(),
+            a1: Default::default(),
+            a2: Default::default(),
         })
     }
 }
@@ -124,7 +128,12 @@ impl FromStr for CaptureVector {
 // }
 #[given(expr = r"{word} ← {tuple}")]
 fn a_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
-    world.tuple = *tuple;
+    let world_tuple = match _name.as_str() {
+        "a1" => &mut world.a1,
+        "a2" => &mut world.a2,
+        _ => &mut world.tuple,
+    };
+    *world_tuple = *tuple;
 }
 
 #[given(expr = r"{word} ← {point}")]
@@ -140,10 +149,10 @@ fn a_vector(world: &mut TuplesWorld, _name: String, vector: CaptureVector) {
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
     match dim.as_str() {
-        "x" => assert!(world.tuple.x() == value),
-        "y" => assert!(world.tuple.y() == value),
-        "z" => assert!(world.tuple.z() == value),
-        "w" => assert!(world.tuple.w() == value),
+        "x" => assert_eq!(value, world.tuple.x()),
+        "y" => assert_eq!(value, world.tuple.y()),
+        "z" => assert_eq!(value, world.tuple.z()),
+        "w" => assert_eq!(value, world.tuple.w()),
         _ => unreachable!(),
     };
 }
@@ -171,6 +180,12 @@ fn is_a_vector(world: &mut TuplesWorld, _name: String) {
 #[then(expr = r"{word} is not a vector")]
 fn is_not_a_vector(world: &mut TuplesWorld, _name: String) {
     assert!(world.tuple.is_vector() == false);
+}
+
+#[then(expr = r"a1 + a2 = {tuple}")]
+fn a1_add_a2_eq_tuple(world: &mut TuplesWorld, tuple: CaptureTuple) {
+    let result = world.a1 + world.a2;
+    assert_eq!(result, *tuple);
 }
 
 // This runs before everything else, so you can setup things here.
