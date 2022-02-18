@@ -119,26 +119,26 @@ impl FromStr for CaptureVector {
 }
 
 // #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
-// async fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
+// fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
 //     world.tuple = [x, y, z, w];
 // }
 #[given(expr = r"{word} ← {tuple}")]
-async fn a_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
+fn a_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
     world.tuple = *tuple;
 }
 
 #[given(expr = r"{word} ← {point}")]
-async fn a_point(world: &mut TuplesWorld, _name: String, point: CapturePoint) {
+fn a_point(world: &mut TuplesWorld, _name: String, point: CapturePoint) {
     world.tuple = (*point).into();
 }
 
 #[given(expr = r"{word} ← {vector}")]
-async fn a_vector(world: &mut TuplesWorld, _name: String, vector: CaptureVector) {
+fn a_vector(world: &mut TuplesWorld, _name: String, vector: CaptureVector) {
     world.tuple = (*vector).into();
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
-async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
+fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
     match dim.as_str() {
         "x" => assert!(world.tuple.x() == value),
         "y" => assert!(world.tuple.y() == value),
@@ -149,27 +149,27 @@ async fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f
 }
 
 #[then(expr = r"{word} = {tuple}")]
-async fn equal_to_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
+fn equal_to_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
     assert_eq!(world.tuple, *tuple);
 }
 
 #[then(expr = r"{word} is a point")]
-async fn is_a_point(world: &mut TuplesWorld, _name: String) {
+fn is_a_point(world: &mut TuplesWorld, _name: String) {
     assert!(world.tuple.is_point() == true);
 }
 
 #[then(expr = r"{word} is not a point")]
-async fn is_not_a_point(world: &mut TuplesWorld, _name: String) {
+fn is_not_a_point(world: &mut TuplesWorld, _name: String) {
     assert!(world.tuple.is_point() == false);
 }
 
 #[then(expr = r"{word} is a vector")]
-async fn is_a_vector(world: &mut TuplesWorld, _name: String) {
+fn is_a_vector(world: &mut TuplesWorld, _name: String) {
     assert!(world.tuple.is_vector() == true);
 }
 
 #[then(expr = r"{word} is not a vector")]
-async fn is_not_a_vector(world: &mut TuplesWorld, _name: String) {
+fn is_not_a_vector(world: &mut TuplesWorld, _name: String) {
     assert!(world.tuple.is_vector() == false);
 }
 
