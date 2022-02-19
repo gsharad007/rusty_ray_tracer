@@ -443,9 +443,11 @@ mod tests_sub {
     fn not_identity() {
         let a = Point::new(1.23, 4.56, 7.89);
         let b = Point::default();
-        let expected = Vector::new(1.23, 4.56, 7.89);
-        assert_eq!(a - b, expected);
-        assert_ne!(b - a, expected);
+        let ab = Vector::new(1.23, 4.56, 7.89);
+        assert_eq!(ab, a - b);
+        assert_ne!(ab, b - a);
+        let ba = Vector::new(-1.23, -4.56, -7.89);
+        assert_eq!(ba, b - a);
     }
 
     #[test]
@@ -453,6 +455,11 @@ mod tests_sub {
         let a = Point::new(1.23, 4.56, 7.89);
         let b = Point::new(1.11, 2.22, 3.33);
         assert_ne!(a - b, b - a);
+
+        let ab = Vector::new(0.12, 2.34, 4.56);
+        let ba = Vector::new(-0.12, -2.34, -4.56);
+        assert_eq!(ab, a - b);
+        assert_eq!(ba, b - a);
     }
 }
 
@@ -504,5 +511,13 @@ mod tests_sub_vector {
         let b = Point::new(1.11, 2.22, 3.33);
         let c = Point::new(5.55, 6.66, 7.77);
         assert_ne!(a - (b - c), c - (a - b));
+        assert_ne!(b - (c - a), a - (b - c));
+
+        let a_bc = Point::new(5.67, 9.0, 12.33);
+        let c_ab = Point::new(5.43, 4.32, 3.21);
+        let b_ca = Point::new(-3.21, 0.120000124, 3.45);
+        assert_eq!(a_bc, a - (b - c));
+        assert_eq!(c_ab, c - (a - b));
+        assert_eq!(b_ca, b - (c - a));
     }
 }

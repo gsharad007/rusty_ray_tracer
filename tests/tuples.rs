@@ -21,6 +21,8 @@ pub struct TuplesWorld {
     p1: Point,
     p2: Point,
     v: Vector,
+    v1: Vector,
+    v2: Vector,
 }
 impl TuplesWorld {
     fn get_tuple(&mut self, name: String) -> &mut Tuple {
@@ -39,8 +41,8 @@ impl TuplesWorld {
     }
     fn get_vector(&mut self, name: String) -> &mut Vector {
         match name.as_str() {
-            // "v1" => &mut self.v1,
-            // "v2" => &mut self.v2,
+            "v1" => &mut self.v1,
+            "v2" => &mut self.v2,
             _ => &mut self.v,
         }
     }
@@ -237,6 +239,12 @@ fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
 fn p_sub_v_eq_vector(world: &mut TuplesWorld, point: CapturePoint) {
     let result = world.p - world.v;
     assert_eq!(result, *point);
+}
+
+#[then(expr = r"v1 - v2 = {vector}")]
+fn v1_sub_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = world.v1 - world.v2;
+    assert_eq!(result, *vector);
 }
 
 // This runs before everything else, so you can setup things here.

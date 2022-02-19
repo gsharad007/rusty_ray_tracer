@@ -1,3 +1,5 @@
+use std::ops::Sub;
+
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use crate::core3d::tuple::Tuple;
 use float_cmp::{approx_eq, ApproxEq};
@@ -397,5 +399,81 @@ mod tests_approx_eq {
             let b = Vector::new(1.23, 4.56, 1.0000001);
             assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default().epsilon(1.0)));
         }
+    }
+}
+
+impl Sub for Vector {
+    /// The resulting type after applying the `+` operator.
+    type Output = Vector;
+
+    /// Performs the `+` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let a = Vector::new(1.23, 4.56, 7.89);
+    /// let b = Vector::new(1.11, 2.22, 3.33);
+    /// let expected = Vector::new(0.12, 2.34, 4.56);
+    /// assert_eq!(expected, a - b);
+    /// ```
+    #[must_use]
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self::zip_for_each_collect(self, rhs, |a, b| a - b)
+    }
+}
+
+#[cfg(test)]
+mod tests_sub {
+    use super::*;
+
+    #[test]
+    fn not_closure() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let expected = Vector::new(0.12, 2.34, 4.56);
+        assert_eq!(expected, a - b);
+    }
+
+    #[test]
+    fn not_identity() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        let ab = Vector::new(1.23, 4.56, 7.89);
+        assert_eq!(ab, a - b);
+        assert_ne!(ab, b - a);
+        let ba = Vector::new(-1.23, -4.56, -7.89);
+        assert_eq!(ba, b - a);
+    }
+
+    #[test]
+    fn not_commutative() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        assert_ne!(a - b, b - a);
+
+        let ab = Vector::new(0.12, 2.34, 4.56);
+        let ba = Vector::new(-0.12, -2.34, -4.56);
+        assert_eq!(ab, a - b);
+        assert_eq!(ba, b - a);
+    }
+
+    #[test]
+    fn not_associative() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let c = Vector::new(5.55, 6.66, 7.77);
+        assert_ne!(a - (b - c), (a - b) - c);
+        assert_ne!(c - (a - b), (c - a) - b);
+
+        let a_bc = Vector::new(5.67, 9.0, 12.33);
+        let ab_c = Vector::new(-5.43, -4.32, -3.21);
+        let c_ab = Vector::new(5.43, 4.32, 3.21);
+        let ca_b = Vector::new(3.21, -0.120000124, -3.45);
+        assert_eq!(a_bc, a - (b - c));
+        assert_eq!(ab_c, (a - b) - c);
+        assert_eq!(c_ab, c - (a - b));
+        assert_eq!(ca_b, (c - a) - b);
     }
 }
