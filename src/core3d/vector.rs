@@ -1,5 +1,6 @@
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use crate::core3d::tuple::Tuple;
+use float_cmp::{approx_eq, ApproxEq};
 
 /// A Vector in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 0.0 to ignore translations from matrices
 
@@ -243,5 +244,158 @@ mod tests_coordinates4 {
         assert!(vector.is_vector() == true);
         assert!(vector.is_point() == false);
         assert!(vector.is_valid());
+    }
+}
+
+impl PartialEq for Vector {
+    /// Performs the `=` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let a = Vector::new(1.23, 4.56, 0.0);
+    /// let b = Vector::new(1.23, 4.56, 0.0);
+    /// assert_eq!(a, b);
+    /// ```
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let a = Vector::new(1.23, 4.56, 1.000000);
+    /// let b = Vector::new(1.23, 4.56, 1.000001);
+    /// assert_ne!(a, b);
+    /// ```
+    fn eq(&self, other: &Self) -> bool {
+        Self::zip(self, other).all(|(a, b)| approx_eq!(f32, *a, *b))
+    }
+}
+
+#[cfg(test)]
+mod tests_eq {
+    use super::*;
+
+    #[test]
+    fn eq() {
+        assert_eq!(
+            Vector::new(1.23, 4.56, 0.00000000000000),
+            Vector::new(1.23, 4.56, 0.00000000000001)
+        );
+        assert_eq!(
+            Vector::new(1.23, 4.56, 0.0000000),
+            Vector::new(1.23, 4.56, 0.0000001)
+        );
+        assert_eq!(
+            Vector::new(1.23, 4.56, 1.0000000),
+            Vector::new(1.23, 4.56, 1.0000001)
+        );
+        assert_eq!(
+            Vector::new(1.23, 4.56, 1000000.0),
+            Vector::new(1.23, 4.56, 1000000.1)
+        );
+    }
+
+    #[test]
+    fn ne() {
+        assert_ne!(
+            Vector::new(1.23, 4.56, 0.000010),
+            Vector::new(1.23, 4.56, 0.000011)
+        );
+        assert_ne!(
+            Vector::new(1.23, 4.56, 1.000000),
+            Vector::new(1.23, 4.56, 1.000001)
+        );
+        assert_ne!(
+            Vector::new(1.23, 4.56, 100000.0),
+            Vector::new(1.23, 4.56, 100000.1)
+        );
+    }
+}
+
+impl ApproxEq for Vector {
+    type Margin = <f32 as ApproxEq>::Margin;
+
+    /// Performs the `~=` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Vector::new(1.23, 4.56, 0.000000000000);
+    /// let b = Vector::new(1.23, 4.56, 0.000000000001);
+    /// assert!(a.approx_eq(b, <Vector as ApproxEq>::Margin::default()));
+    /// ```
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Vector::new(1.23, 4.56, 1.0000000);
+    /// let b = Vector::new(1.23, 4.56, 1.0000001);
+    /// assert!(a.approx_eq(b, <Vector as ApproxEq>::Margin::default().ulps(2)));
+    /// ```
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Vector::new(1.23, 4.56, 0.0);
+    /// let b = Vector::new(1.23, 4.56, 1.0);
+    /// assert!(a.approx_eq(b, <Vector as ApproxEq>::Margin::default().epsilon(1.0)));
+    /// ```
+    fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
+        let margin = margin.into();
+
+        Self::into_zip(self, other).all(|(a, b)| a.approx_eq(b, margin))
+    }
+}
+
+#[cfg(test)]
+mod tests_approx_eq {
+    use super::*;
+    use float_cmp::assert_approx_eq;
+    use std::panic;
+
+    #[test]
+    fn eq() {
+        assert_approx_eq!(
+            Vector,
+            Vector::new(1.23, 4.56, 0.000000000000),
+            Vector::new(1.23, 4.56, 0.000000000001)
+        );
+        assert_approx_eq!(
+            Vector,
+            Vector::new(1.23, 4.56, 1.0000000),
+            Vector::new(1.23, 4.56, 1.0000001),
+            ulps = 2
+        );
+        assert_approx_eq!(
+            Vector,
+            Vector::new(1.23, 4.56, 0.0),
+            Vector::new(1.23, 4.56, 1.0),
+            epsilon = 1.0
+        );
+    }
+
+    #[test]
+    fn ne() {
+        {
+            let a = Vector::new(1.23, 4.56, 1.000000);
+            let b = Vector::new(1.23, 4.56, 1.000001);
+            assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default()));
+        }
+        {
+            let a = Vector::new(1.23, 4.56, 1.000000);
+            let b = Vector::new(1.23, 4.56, 1.000001);
+            assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default().ulps(2)));
+        }
+        {
+            let a = Vector::new(1.23, 4.56, 0.0000000);
+            let b = Vector::new(1.23, 4.56, 1.0000001);
+            assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default().epsilon(1.0)));
+        }
     }
 }

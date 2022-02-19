@@ -12,11 +12,50 @@ use async_trait::async_trait;
 use cucumber::{given, then, Parameter, World, WorldInit};
 
 // `World` is your shared, likely mutable state.
-#[derive(Debug, WorldInit)]
+#[derive(Debug, WorldInit, Default)]
 pub struct TuplesWorld {
-    tuple: Tuple,
+    a: Tuple,
     a1: Tuple,
     a2: Tuple,
+    p: Point,
+    p1: Point,
+    p2: Point,
+    v: Vector,
+}
+impl TuplesWorld {
+    fn get_tuple(&mut self, name: String) -> &mut Tuple {
+        match name.as_str() {
+            "a1" => &mut self.a1,
+            "a2" => &mut self.a2,
+            _ => &mut self.a,
+        }
+    }
+    fn get_point(&mut self, name: String) -> &mut Point {
+        match name.as_str() {
+            "p1" => &mut self.p1,
+            "p2" => &mut self.p2,
+            _ => &mut self.p,
+        }
+    }
+    fn get_vector(&mut self, name: String) -> &mut Vector {
+        match name.as_str() {
+            // "v1" => &mut self.v1,
+            // "v2" => &mut self.v2,
+            _ => &mut self.v,
+        }
+    }
+    fn get_any_as_tuple(&self, name: String) -> Tuple {
+        match name.as_str() {
+            "a" => self.a,
+            "a1" => self.a1,
+            "a2" => self.a2,
+            "p" => self.p.into(),
+            "p1" => self.p1.into(),
+            "p2" => self.p2.into(),
+            "v" => self.v.into(),
+            _ => panic!("Unknown variable name!"),
+        }
+    }
 }
 
 // `World` needs to be implemented, so Cucumber knows how to construct it
@@ -27,11 +66,7 @@ impl World for TuplesWorld {
     type Error = Infallible;
 
     async fn new() -> Result<Self, Infallible> {
-        Ok(Self {
-            tuple: Default::default(),
-            a1: Default::default(),
-            a2: Default::default(),
-        })
+        Ok(Self::default())
     }
 }
 
@@ -127,65 +162,75 @@ impl FromStr for CaptureVector {
 //     world.tuple = [x, y, z, w];
 // }
 #[given(expr = r"{word} ← {tuple}")]
-fn a_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
-    let world_tuple = match _name.as_str() {
-        "a1" => &mut world.a1,
-        "a2" => &mut world.a2,
-        _ => &mut world.tuple,
-    };
+fn a_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
+    let world_tuple = world.get_tuple(name);
     *world_tuple = *tuple;
 }
 
 #[given(expr = r"{word} ← {point}")]
-fn a_point(world: &mut TuplesWorld, _name: String, point: CapturePoint) {
-    world.tuple = (*point).into();
+fn a_point(world: &mut TuplesWorld, name: String, point: CapturePoint) {
+    let world_point = world.get_point(name);
+    *world_point = *point;
 }
 
 #[given(expr = r"{word} ← {vector}")]
-fn a_vector(world: &mut TuplesWorld, _name: String, vector: CaptureVector) {
-    world.tuple = (*vector).into();
+fn a_vector(world: &mut TuplesWorld, name: String, vector: CaptureVector) {
+    let world_vector = world.get_vector(name);
+    *world_vector = *vector;
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
-fn dim_equal(world: &mut TuplesWorld, _name: String, dim: String, value: f32) {
+fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
+    let world_tuple = world.get_any_as_tuple(name);
     match dim.as_str() {
-        "x" => assert_eq!(value, world.tuple.x()),
-        "y" => assert_eq!(value, world.tuple.y()),
-        "z" => assert_eq!(value, world.tuple.z()),
-        "w" => assert_eq!(value, world.tuple.w()),
+        "x" => assert_eq!(value, world_tuple.x()),
+        "y" => assert_eq!(value, world_tuple.y()),
+        "z" => assert_eq!(value, world_tuple.z()),
+        "w" => assert_eq!(value, world_tuple.w()),
         _ => unreachable!(),
     };
 }
 
 #[then(expr = r"{word} = {tuple}")]
-fn equal_to_tuple(world: &mut TuplesWorld, _name: String, tuple: CaptureTuple) {
-    assert_eq!(world.tuple, *tuple);
+fn equal_to_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
+    let world_tuple = world.get_any_as_tuple(name);
+    assert_eq!(world_tuple, *tuple);
 }
 
 #[then(expr = r"{word} is a point")]
-fn is_a_point(world: &mut TuplesWorld, _name: String) {
-    assert!(world.tuple.is_point() == true);
+fn is_a_point(world: &mut TuplesWorld, name: String) {
+    let world_tuple = world.get_any_as_tuple(name);
+    assert!(world_tuple.is_point() == true);
 }
 
 #[then(expr = r"{word} is not a point")]
-fn is_not_a_point(world: &mut TuplesWorld, _name: String) {
-    assert!(world.tuple.is_point() == false);
+fn is_not_a_point(world: &mut TuplesWorld, name: String) {
+    let world_tuple = world.get_any_as_tuple(name);
+    assert!(world_tuple.is_point() == false);
 }
 
 #[then(expr = r"{word} is a vector")]
-fn is_a_vector(world: &mut TuplesWorld, _name: String) {
-    assert!(world.tuple.is_vector() == true);
+fn is_a_vector(world: &mut TuplesWorld, name: String) {
+    let world_tuple = world.get_any_as_tuple(name);
+    assert!(world_tuple.is_vector() == true);
 }
 
 #[then(expr = r"{word} is not a vector")]
-fn is_not_a_vector(world: &mut TuplesWorld, _name: String) {
-    assert!(world.tuple.is_vector() == false);
+fn is_not_a_vector(world: &mut TuplesWorld, name: String) {
+    let world_tuple = world.get_any_as_tuple(name);
+    assert!(world_tuple.is_vector() == false);
 }
 
 #[then(expr = r"a1 + a2 = {tuple}")]
 fn a1_add_a2_eq_tuple(world: &mut TuplesWorld, tuple: CaptureTuple) {
     let result = world.a1 + world.a2;
     assert_eq!(result, *tuple);
+}
+
+#[then(expr = r"p1 - p2 = {vector}")]
+fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = world.p1 - world.p2;
+    assert_eq!(result, *vector);
 }
 
 // This runs before everything else, so you can setup things here.

@@ -1,9 +1,11 @@
-use super::{array_base::ArrayBase, coordinates4::Coordinates4};
+use std::ops::Sub;
+
+use super::{array_base::ArrayBase, coordinates4::Coordinates4, vector::Vector};
 use crate::core3d::tuple::Tuple;
 
 /// A Point in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 1.0 to allow translations from matrices
 
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct Point {
     pub coords: [f32; 4],
 }
@@ -41,6 +43,12 @@ mod tests_point {
     fn new() {
         let point = Point::new(1.0, 2.0, 3.0);
         assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+    }
+}
+
+impl Default for Point {
+    fn default() -> Self {
+        Self::new(Default::default(), Default::default(), Default::default())
     }
 }
 
@@ -93,19 +101,10 @@ impl From<Point> for Tuple {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let point = Point::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
-    /// ```
-    ///
-    /// ```
-    /// # use std::panic;
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert!(panic::catch_unwind(|| Point::from(tuple)).is_err());
+    /// let result = Tuple::from(Point::from([1.0, 2.0, 3.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.coords);
     /// ```
     fn from(point: Point) -> Self {
-        debug_assert!(point.is_point());
         Tuple::from(point.coords)
     }
 }
@@ -245,4 +244,69 @@ mod tests_coordinates4 {
         assert!(point.is_vector() == false);
         assert!(point.is_valid());
     }
+}
+
+impl Sub for Point {
+    /// The resulting type after applying the `+` operator.
+    type Output = Vector;
+
+    /// Performs the `+` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::point::Point;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let a = Point::new(1.23, 4.56, 7.89);
+    /// let b = Point::new(1.11, 2.22, 3.33);
+    /// let expected = Vector::new(0.12, 2.34, 4.56);
+    /// assert_eq!(expected, a - b);
+    /// ```
+    #[must_use]
+    fn sub(self, rhs: Self) -> Self::Output {
+        Vector::from(Tuple::from(Self::zip_for_each_collect(
+            self,
+            rhs,
+            |a, b| a - b,
+        )))
+    }
+}
+
+#[cfg(test)]
+mod tests_sub {
+    use super::*;
+
+    #[test]
+    fn not_closure() {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        let expected = Vector::new(0.12, 2.34, 4.56);
+        assert_eq!(expected, a - b);
+    }
+
+    #[test]
+    fn not_identity() {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::default();
+        let expected = Vector::new(1.23, 4.56, 7.89);
+        assert_eq!(a - b, expected);
+        assert_ne!(b - a, expected);
+    }
+
+    #[test]
+    fn not_commutative() {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        assert_ne!(a - b, b - a);
+    }
+
+    // #[test]
+    // fn not_associative() {
+    //     let a = Point::new(1.23, 4.56, 7.89);
+    //     let b = Point::new(1.11, 2.22, 3.33);
+    //     let c = Point::new(5.55, 6.66, 7.77);
+    //     assert_ne!(a - (b - c), (a - b) - c);
+    //     assert_ne!(c - (a - b), (c - a) - b);
+    // }
 }
