@@ -233,6 +233,12 @@ fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     assert_eq!(result, *vector);
 }
 
+#[then(expr = r"p - v = {point}")]
+fn p_sub_v_eq_vector(world: &mut TuplesWorld, point: CapturePoint) {
+    let result = world.p - world.v;
+    assert_eq!(result, *point);
+}
+
 // This runs before everything else, so you can setup things here.
 fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).

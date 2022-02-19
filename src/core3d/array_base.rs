@@ -254,9 +254,9 @@ pub trait ArrayBase: Sized {
     /// );
     /// ```
     #[must_use]
-    fn zip_for_each_collect(
+    fn zip_for_each_collect<T: ArrayBase<Item = Self::Item>>(
         self,
-        other: Self,
+        other: T,
         f: impl Fn(Self::Item, Self::Item) -> Self::Item,
     ) -> Self
     where
