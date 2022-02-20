@@ -4,6 +4,7 @@ use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
 use rusty_ray_tracer::core3d::vector::*;
 
+use std::collections::HashMap;
 use std::convert::Infallible;
 use std::num::ParseFloatError;
 use std::str::FromStr;
@@ -20,9 +21,7 @@ pub struct TuplesWorld {
     p: Point,
     p1: Point,
     p2: Point,
-    v: Vector,
-    v1: Vector,
-    v2: Vector,
+    vectors: HashMap<String, Vector>,
 }
 impl TuplesWorld {
     fn get_tuple(&mut self, name: String) -> &mut Tuple {
@@ -40,11 +39,7 @@ impl TuplesWorld {
         }
     }
     fn get_vector(&mut self, name: String) -> &mut Vector {
-        match name.as_str() {
-            "v1" => &mut self.v1,
-            "v2" => &mut self.v2,
-            _ => &mut self.v,
-        }
+        self.vectors.entry(name).or_insert(Vector::default())
     }
     fn get_any_as_tuple(&self, name: String) -> Tuple {
         match name.as_str() {
@@ -54,8 +49,7 @@ impl TuplesWorld {
             "p" => self.p.into(),
             "p1" => self.p1.into(),
             "p2" => self.p2.into(),
-            "v" => self.v.into(),
-            _ => panic!("Unknown variable name!"),
+            _ => (*self.vectors.get(&name).unwrap()).into(),
         }
     }
 }
@@ -237,13 +231,19 @@ fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
 
 #[then(expr = r"p - v = {point}")]
 fn p_sub_v_eq_vector(world: &mut TuplesWorld, point: CapturePoint) {
-    let result = world.p - world.v;
+    let result = world.p - *world.get_vector("v".to_string());
     assert_eq!(result, *point);
 }
 
 #[then(expr = r"v1 - v2 = {vector}")]
 fn v1_sub_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
-    let result = world.v1 - world.v2;
+    let result = *world.get_vector("v1".to_string()) - *world.get_vector("v2".to_string());
+    assert_eq!(result, *vector);
+}
+
+#[then(expr = r"zero - v = {vector}")]
+fn zero_sub_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = *world.get_vector("zero".to_string()) - *world.get_vector("v".to_string());
     assert_eq!(result, *vector);
 }
 
