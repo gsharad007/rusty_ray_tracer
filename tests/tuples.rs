@@ -260,6 +260,12 @@ fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureT
     assert_eq!(result, *tuple);
 }
 
+#[then(expr = r"a \/ {float} = {tuple}")]
+fn a_div_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
+    let result = *world.get_tuple("a".to_string()) / scaler;
+    assert_eq!(result, *tuple);
+}
+
 // This runs before everything else, so you can setup things here.
 fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).

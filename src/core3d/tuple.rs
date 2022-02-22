@@ -1,7 +1,7 @@
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
-use std::ops::{Mul, Neg};
+use std::ops::{Div, Mul, Neg};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
@@ -439,5 +439,45 @@ mod tests_mul {
         let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = 1.0;
         assert_eq!(a * b, a);
+    }
+}
+
+impl Div<f32> for Tuple {
+    type Output = Self;
+
+    /// Performs the `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+    /// let result = Tuple::new(1.11, -2.22, 3.33, 0.0) / 11.1;
+    /// let expected = Tuple::new(0.1, -0.2, 0.3, 0.0);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn div(self, rhs: f32) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x /= rhs);
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_div {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Tuple::new(1.11, -2.22, 3.33, 0.0) / 10.0;
+        let expected = Tuple::new(0.111, -0.222, 0.333, 0.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = 1.0;
+        assert_eq!(a / b, a);
     }
 }
