@@ -1,4 +1,5 @@
 use derive_more::Deref;
+use derive_more::FromStr;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
@@ -65,6 +66,10 @@ impl World for TuplesWorld {
         Ok(Self::default())
     }
 }
+
+#[derive(Parameter, Deref, FromStr)]
+#[param(name = "var", regex = r"[\w][^\s]*")]
+struct CaptureVar(String);
 
 #[derive(Parameter, Deref)]
 #[param(
@@ -187,9 +192,15 @@ fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
     };
 }
 
-#[then(expr = r"{word} = {tuple}")]
-fn equal_to_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
-    let world_tuple = world.get_any_as_tuple(name);
+#[then(expr = r"{var} = {tuple}")]
+fn equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: CaptureTuple) {
+    let world_tuple = world.get_any_as_tuple(var.to_string());
+    assert_eq!(world_tuple, *tuple);
+}
+
+#[then(expr = r"-{var} = {tuple}")]
+fn negative_equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: CaptureTuple) {
+    let world_tuple = -world.get_any_as_tuple(var.to_string());
     assert_eq!(world_tuple, *tuple);
 }
 

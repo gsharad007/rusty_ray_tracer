@@ -1,6 +1,7 @@
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
+use std::ops::Neg;
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
@@ -348,5 +349,55 @@ mod tests_add {
         let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
         assert_eq!(a + (b + c), (a + b) + c);
         assert_eq!(c + (a + b), (c + a) + b);
+    }
+}
+
+impl Neg for Tuple {
+    type Output = Self;
+
+    /// Performs the unary `-` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+    /// let result = -Tuple::new(1.11, 2.22, 3.33, 0.0);
+    /// let expected = Tuple::new(-1.11, -2.22, -3.33, 0.0);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn neg(self) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x = -(*x));
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_neg {
+    use super::*;
+
+    #[test]
+    fn neg() {
+        assert_eq!(
+            Tuple::new(-1.23, -4.56, -7.89, 0.0),
+            -Tuple::new(1.23, 4.56, 7.89, 0.0)
+        );
+        assert_eq!(
+            Tuple::new(1.23, -4.56, 7.89, -1.0),
+            -Tuple::new(-1.23, 4.56, -7.89, 1.0)
+        );
+    }
+
+    #[test]
+    fn double_neg() {
+        assert_eq!(
+            Tuple::new(1.23, 4.56, 7.89, 0.0),
+            -(-Tuple::new(1.23, 4.56, 7.89, 0.0))
+        );
+        assert_eq!(
+            Tuple::new(-1.23, 4.56, -7.89, 1.0),
+            -(-Tuple::new(-1.23, 4.56, -7.89, 1.0))
+        );
     }
 }
