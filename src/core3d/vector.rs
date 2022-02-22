@@ -199,7 +199,7 @@ mod tests_array_base {
     fn get_array() {
         let vector = Vector::new(1.0, 2.0, 3.0);
         assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.clone().get_array());
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.get_array());
         assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
     }
 
@@ -212,7 +212,7 @@ mod tests_array_base {
         vector.get_array_mut()[2] += 10.0;
         vector.get_array_mut()[3] += 10.0;
         assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_mut());
-        assert_eq!([11.0, 12.0, 13.0, 10.0], vector.clone().get_array());
+        assert_eq!([11.0, 12.0, 13.0, 10.0], vector.get_array());
         assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_ref());
     }
 }
@@ -231,8 +231,8 @@ mod tests_coordinates4 {
         assert_eq!(2.0, vector.y());
         assert_eq!(1.0, vector.z());
         assert_eq!(0.0, vector.w());
-        assert!(vector.is_vector() == true);
-        assert!(vector.is_point() == false);
+        assert!(vector.is_vector());
+        assert!(!vector.is_point());
         assert!(vector.is_valid());
     }
 
@@ -243,8 +243,8 @@ mod tests_coordinates4 {
         assert_eq!(2.0, vector.y());
         assert_eq!(3.0, vector.z());
         assert_eq!(0.0, vector.w());
-        assert!(vector.is_vector() == true);
-        assert!(vector.is_point() == false);
+        assert!(vector.is_vector());
+        assert!(!vector.is_point());
         assert!(vector.is_valid());
     }
 }

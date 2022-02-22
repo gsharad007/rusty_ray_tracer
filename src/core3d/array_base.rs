@@ -20,7 +20,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], result.get_array());
     /// ```
     #[must_use]
@@ -39,7 +39,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *result.get_array_ref());
     /// ```
     #[must_use]
@@ -58,7 +58,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let mut result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let mut result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *result.get_array_mut());
     /// result.get_array_mut()[0] += 10.0;
     /// result.get_array_mut()[1] += 10.0;
@@ -87,7 +87,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!(
     ///     vec![1.0, 2.0, 3.0, 4.0],
     ///     result.clone().into_iter().collect::<Vec<_>>()
@@ -117,7 +117,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// assert_eq!(
     ///     vec![&1.0, &2.0, &3.0, &4.0],
     ///     result.iter().collect::<Vec<_>>()
@@ -147,7 +147,7 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let mut result = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
+    /// let mut result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
     /// result.iter_mut().for_each(|a| *a += 10.0);
     /// assert_eq!(
     ///     vec![&11.0, &12.0, &13.0, &14.0],
@@ -179,8 +179,8 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let a = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
-    /// let b = ArrayBasedStruct{ 0: [4.0, 3.0, 2.0, 1.0] };
+    /// let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+    /// let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
     /// assert_eq!(
     ///     vec![(1.0, 4.0), (2.0, 3.0), (3.0, 2.0), (4.0, 1.0)],
     ///     a.clone().into_zip(b.clone()).collect::<Vec<_>>()
@@ -215,8 +215,8 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let a = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
-    /// let b = ArrayBasedStruct{ 0: [4.0, 3.0, 2.0, 1.0] };
+    /// let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+    /// let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
     /// assert_eq!(
     ///     vec![(&1.0, &4.0), (&2.0, &3.0), (&3.0, &2.0), (&4.0, &1.0)],
     ///     a.zip(&b).collect::<Vec<_>>()
@@ -246,8 +246,8 @@ pub trait ArrayBase: Sized {
     /// #     fn get_array_ref(&self    ) -> &    [f32; 4] { &self.0     }
     /// #     fn get_array_mut(&mut self) -> &mut [f32; 4] { &mut self.0 }
     /// # }
-    /// let a = ArrayBasedStruct{ 0: [1.0, 2.0, 3.0, 4.0] };
-    /// let b = ArrayBasedStruct{ 0: [4.0, 3.0, 2.0, 1.0] };
+    /// let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+    /// let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
     /// assert_eq!(
     ///     [5.0, 5.0, 5.0, 5.0],
     ///     ArrayBasedStruct::zip_for_each_collect(a, b, |a, b| a + b).get_array()
@@ -292,9 +292,7 @@ mod tests {
 
     #[test]
     fn get_array() {
-        let result = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
+        let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
         assert_eq!([1.0, 2.0, 3.0, 4.0], *result.get_array_ref());
         assert_eq!([1.0, 2.0, 3.0, 4.0], result.clone().get_array());
         assert_eq!([1.0, 2.0, 3.0, 4.0], *result.get_array_ref());
@@ -302,9 +300,7 @@ mod tests {
 
     #[test]
     fn get_array_mut() {
-        let mut result = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
+        let mut result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
         assert_eq!([1.0, 2.0, 3.0, 4.0], *result.get_array_mut());
         result.get_array_mut()[0] += 10.0;
         result.get_array_mut()[1] += 10.0;
@@ -317,17 +313,13 @@ mod tests {
 
     #[test]
     fn get_array_default() {
-        let result: ArrayBasedStruct = ArrayBasedStruct {
-            0: Default::default(),
-        };
+        let result: ArrayBasedStruct = ArrayBasedStruct(Default::default());
         assert_eq!([0.0, 0.0, 0.0, 0.0], result.get_array());
     }
 
     #[test]
     fn into_iter() {
-        let result = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
+        let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
         assert_eq!(
             vec![1.0, 2.0, 3.0, 4.0],
             result.clone().into_iter().collect::<Vec<_>>()
@@ -342,9 +334,7 @@ mod tests {
 
     #[test]
     fn iter() {
-        let result = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
+        let result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
         assert_eq!(
             vec![&1.0, &2.0, &3.0, &4.0],
             result.iter().collect::<Vec<_>>()
@@ -359,9 +349,7 @@ mod tests {
 
     #[test]
     fn iter_mut() {
-        let mut result = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
+        let mut result = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
         result.iter_mut().for_each(|a| *a += 10.0);
         assert_eq!(
             vec![&11.0, &12.0, &13.0, &14.0],
@@ -377,12 +365,8 @@ mod tests {
 
     #[test]
     fn into_zip() {
-        let a = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
-        let b = ArrayBasedStruct {
-            0: [4.0, 3.0, 2.0, 1.0],
-        };
+        let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+        let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
         assert_eq!(
             vec![(1.0, 4.0), (2.0, 3.0), (3.0, 2.0), (4.0, 1.0)],
             a.clone().into_zip(b.clone()).collect::<Vec<_>>()
@@ -397,12 +381,8 @@ mod tests {
 
     #[test]
     fn zip() {
-        let a = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
-        let b = ArrayBasedStruct {
-            0: [4.0, 3.0, 2.0, 1.0],
-        };
+        let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+        let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
         assert_eq!(
             vec![(&1.0, &4.0), (&2.0, &3.0), (&3.0, &2.0), (&4.0, &1.0)],
             a.zip(&b).collect::<Vec<_>>()
@@ -417,12 +397,8 @@ mod tests {
 
     #[test]
     fn zip_for_each_collect() {
-        let a = ArrayBasedStruct {
-            0: [1.0, 2.0, 3.0, 4.0],
-        };
-        let b = ArrayBasedStruct {
-            0: [4.0, 3.0, 2.0, 1.0],
-        };
+        let a = ArrayBasedStruct([1.0, 2.0, 3.0, 4.0]);
+        let b = ArrayBasedStruct([4.0, 3.0, 2.0, 1.0]);
         assert_eq!(
             [5.0, 5.0, 5.0, 5.0],
             ArrayBasedStruct::zip_for_each_collect(a, b, |a, b| a + b).get_array()

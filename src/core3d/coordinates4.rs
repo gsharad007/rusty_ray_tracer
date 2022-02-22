@@ -174,8 +174,8 @@ mod tests {
             coords: [1.23, 4.56, 7.89, 1.0],
         };
         assert!(tuple.is_valid());
-        assert!(tuple.is_point() == true);
-        assert!(tuple.is_vector() == false);
+        assert!(tuple.is_point());
+        assert!(!tuple.is_vector());
     }
 
     #[test]
@@ -184,8 +184,8 @@ mod tests {
             coords: [1.23, 4.56, 7.89, 0.0],
         };
         assert!(tuple.is_valid());
-        assert!(tuple.is_vector() == true);
-        assert!(tuple.is_point() == false);
+        assert!(tuple.is_vector());
+        assert!(!tuple.is_point());
     }
 
     #[test]
@@ -193,8 +193,8 @@ mod tests {
         let tuple = Tuple {
             coords: [1.23, 4.56, 7.89, 1.01],
         };
-        assert!(tuple.is_point() == false);
-        assert!(tuple.is_vector() == false);
+        assert!(!tuple.is_point());
+        assert!(!tuple.is_vector());
         assert!(panic::catch_unwind(|| tuple.is_valid()).is_err());
     }
 }

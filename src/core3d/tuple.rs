@@ -1,7 +1,7 @@
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
-use std::ops::Neg;
+use std::ops::{Mul, Neg};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
@@ -120,7 +120,7 @@ mod tests_array_base {
     fn get_array() {
         let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
         assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
-        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.clone().get_array());
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.get_array());
         assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
     }
 
@@ -133,7 +133,7 @@ mod tests_array_base {
         tuple.get_array_mut()[2] += 10.0;
         tuple.get_array_mut()[3] += 10.0;
         assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_mut());
-        assert_eq!([11.0, 12.0, 13.0, 14.0], tuple.clone().get_array());
+        assert_eq!([11.0, 12.0, 13.0, 14.0], tuple.get_array());
         assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_ref());
     }
 }
@@ -362,8 +362,8 @@ impl Neg for Tuple {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// let result = -Tuple::new(1.11, 2.22, 3.33, 0.0);
-    /// let expected = Tuple::new(-1.11, -2.22, -3.33, 0.0);
+    /// let result = -Tuple::new(1.11, -2.22, 3.33, 0.0);
+    /// let expected = Tuple::new(-1.11, 2.22, -3.33, 0.0);
     /// assert_eq!(expected, result);
     /// ```
     fn neg(self) -> Self::Output {
@@ -399,5 +399,45 @@ mod tests_neg {
             Tuple::new(-1.23, 4.56, -7.89, 1.0),
             -(-Tuple::new(-1.23, 4.56, -7.89, 1.0))
         );
+    }
+}
+
+impl Mul<f32> for Tuple {
+    type Output = Self;
+
+    /// Performs the `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+    /// let result = Tuple::new(1.11, -2.22, 3.33, 0.0) * 100.1;
+    /// let expected = Tuple::new(111.111, -222.222, 333.333, 0.0);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn mul(self, rhs: f32) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x *= rhs);
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_mul {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Tuple::new(1.11, -2.22, 3.33, 0.0) * 100.1;
+        let expected = Tuple::new(111.111, -222.222, 333.333, 0.0);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = 1.0;
+        assert_eq!(a * b, a);
     }
 }

@@ -40,7 +40,7 @@ impl TuplesWorld {
         }
     }
     fn get_vector(&mut self, name: String) -> &mut Vector {
-        self.vectors.entry(name).or_insert(Vector::default())
+        self.vectors.entry(name).or_insert_with(Vector::default)
     }
     fn get_any_as_tuple(&self, name: String) -> Tuple {
         match name.as_str() {
@@ -94,9 +94,9 @@ impl FromStr for CaptureTuple {
             })
             .collect();
 
-        Ok(CaptureTuple {
-            0: Tuple::new(coords[0], coords[1], coords[2], coords[3]),
-        })
+        Ok(CaptureTuple(Tuple::new(
+            coords[0], coords[1], coords[2], coords[3],
+        )))
     }
 }
 
@@ -123,9 +123,7 @@ impl FromStr for CapturePoint {
             })
             .collect();
 
-        Ok(CapturePoint {
-            0: Point::new(coords[0], coords[1], coords[2]),
-        })
+        Ok(CapturePoint(Point::new(coords[0], coords[1], coords[2])))
     }
 }
 
@@ -152,9 +150,7 @@ impl FromStr for CaptureVector {
             })
             .collect();
 
-        Ok(CaptureVector {
-            0: Vector::new(coords[0], coords[1], coords[2]),
-        })
+        Ok(CaptureVector(Vector::new(coords[0], coords[1], coords[2])))
     }
 }
 
@@ -207,25 +203,25 @@ fn negative_equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: Capt
 #[then(expr = r"{word} is a point")]
 fn is_a_point(world: &mut TuplesWorld, name: String) {
     let world_tuple = world.get_any_as_tuple(name);
-    assert!(world_tuple.is_point() == true);
+    assert!(world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is not a point")]
 fn is_not_a_point(world: &mut TuplesWorld, name: String) {
     let world_tuple = world.get_any_as_tuple(name);
-    assert!(world_tuple.is_point() == false);
+    assert!(!world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is a vector")]
 fn is_a_vector(world: &mut TuplesWorld, name: String) {
     let world_tuple = world.get_any_as_tuple(name);
-    assert!(world_tuple.is_vector() == true);
+    assert!(world_tuple.is_vector());
 }
 
 #[then(expr = r"{word} is not a vector")]
 fn is_not_a_vector(world: &mut TuplesWorld, name: String) {
     let world_tuple = world.get_any_as_tuple(name);
-    assert!(world_tuple.is_vector() == false);
+    assert!(!world_tuple.is_vector());
 }
 
 #[then(expr = r"a1 + a2 = {tuple}")]
@@ -256,6 +252,12 @@ fn v1_sub_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
 fn zero_sub_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     let result = *world.get_vector("zero".to_string()) - *world.get_vector("v".to_string());
     assert_eq!(result, *vector);
+}
+
+#[then(expr = r"a * {float} = {tuple}")]
+fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
+    let result = *world.get_tuple("a".to_string()) * scaler;
+    assert_eq!(result, *tuple);
 }
 
 // This runs before everything else, so you can setup things here.
