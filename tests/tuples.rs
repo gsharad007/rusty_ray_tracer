@@ -25,32 +25,34 @@ pub struct TuplesWorld {
     vectors: HashMap<String, Vector>,
 }
 impl TuplesWorld {
-    fn get_tuple(&mut self, name: String) -> &mut Tuple {
-        match name.as_str() {
+    fn get_tuple(&mut self, name: &str) -> &mut Tuple {
+        match name {
             "a1" => &mut self.a1,
             "a2" => &mut self.a2,
             _ => &mut self.a,
         }
     }
-    fn get_point(&mut self, name: String) -> &mut Point {
-        match name.as_str() {
+    fn get_point(&mut self, name: &str) -> &mut Point {
+        match name {
             "p1" => &mut self.p1,
             "p2" => &mut self.p2,
             _ => &mut self.p,
         }
     }
-    fn get_vector(&mut self, name: String) -> &mut Vector {
-        self.vectors.entry(name).or_insert_with(Vector::default)
+    fn get_vector(&mut self, name: &str) -> &mut Vector {
+        self.vectors
+            .entry(name.to_string())
+            .or_insert_with(Vector::default)
     }
-    fn get_any_as_tuple(&self, name: String) -> Tuple {
-        match name.as_str() {
+    fn get_any_as_tuple(&self, name: &str) -> Tuple {
+        match name {
             "a" => self.a,
             "a1" => self.a1,
             "a2" => self.a2,
             "p" => self.p.into(),
             "p1" => self.p1.into(),
             "p2" => self.p2.into(),
-            _ => (*self.vectors.get(&name).unwrap()).into(),
+            _ => (*self.vectors.get(&name.to_string()).unwrap()).into(),
         }
     }
 }
@@ -160,25 +162,25 @@ impl FromStr for CaptureVector {
 // }
 #[given(expr = r"{word} ← {tuple}")]
 fn a_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
-    let world_tuple = world.get_tuple(name);
+    let world_tuple = world.get_tuple(&*name);
     *world_tuple = *tuple;
 }
 
 #[given(expr = r"{word} ← {point}")]
 fn a_point(world: &mut TuplesWorld, name: String, point: CapturePoint) {
-    let world_point = world.get_point(name);
+    let world_point = world.get_point(&*name);
     *world_point = *point;
 }
 
 #[given(expr = r"{word} ← {vector}")]
 fn a_vector(world: &mut TuplesWorld, name: String, vector: CaptureVector) {
-    let world_vector = world.get_vector(name);
+    let world_vector = world.get_vector(&*name);
     *world_vector = *vector;
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
-    let world_tuple = world.get_any_as_tuple(name);
+    let world_tuple = world.get_any_as_tuple(&*name);
     match dim.as_str() {
         "x" => assert_eq!(value, world_tuple.x()),
         "y" => assert_eq!(value, world_tuple.y()),
@@ -190,37 +192,37 @@ fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
 
 #[then(expr = r"{var} = {tuple}")]
 fn equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: CaptureTuple) {
-    let world_tuple = world.get_any_as_tuple(var.to_string());
+    let world_tuple = world.get_any_as_tuple(var.as_str());
     assert_eq!(world_tuple, *tuple);
 }
 
 #[then(expr = r"-{var} = {tuple}")]
 fn negative_equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: CaptureTuple) {
-    let world_tuple = -world.get_any_as_tuple(var.to_string());
+    let world_tuple = -world.get_any_as_tuple(var.as_str());
     assert_eq!(world_tuple, *tuple);
 }
 
 #[then(expr = r"{word} is a point")]
 fn is_a_point(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(name);
+    let world_tuple = world.get_any_as_tuple(&*name);
     assert!(world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is not a point")]
 fn is_not_a_point(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(name);
+    let world_tuple = world.get_any_as_tuple(&*name);
     assert!(!world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is a vector")]
 fn is_a_vector(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(name);
+    let world_tuple = world.get_any_as_tuple(&*name);
     assert!(world_tuple.is_vector());
 }
 
 #[then(expr = r"{word} is not a vector")]
 fn is_not_a_vector(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(name);
+    let world_tuple = world.get_any_as_tuple(&*name);
     assert!(!world_tuple.is_vector());
 }
 
@@ -238,32 +240,44 @@ fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
 
 #[then(expr = r"p - v = {point}")]
 fn p_sub_v_eq_vector(world: &mut TuplesWorld, point: CapturePoint) {
-    let result = world.p - *world.get_vector("v".to_string());
+    let result = world.p - *world.get_vector("v");
     assert_eq!(result, *point);
 }
 
 #[then(expr = r"v1 - v2 = {vector}")]
 fn v1_sub_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
-    let result = *world.get_vector("v1".to_string()) - *world.get_vector("v2".to_string());
+    let result = *world.get_vector("v1") - *world.get_vector("v2");
     assert_eq!(result, *vector);
 }
 
 #[then(expr = r"zero - v = {vector}")]
 fn zero_sub_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
-    let result = *world.get_vector("zero".to_string()) - *world.get_vector("v".to_string());
+    let result = *world.get_vector("zero") - *world.get_vector("v");
     assert_eq!(result, *vector);
 }
 
 #[then(expr = r"a * {float} = {tuple}")]
 fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
-    let result = *world.get_tuple("a".to_string()) * scaler;
+    let result = *world.get_tuple("a") * scaler;
     assert_eq!(result, *tuple);
 }
 
 #[then(expr = r"a \/ {float} = {tuple}")]
 fn a_div_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
-    let result = *world.get_tuple("a".to_string()) / scaler;
+    let result = *world.get_tuple("a") / scaler;
     assert_eq!(result, *tuple);
+}
+
+#[then(expr = r"magnitude\(v\) = {float}")]
+fn magnitude_v_equal_scaler(world: &mut TuplesWorld, scaler: f32) {
+    let result = world.get_vector("v").magnitude();
+    assert_eq!(result, scaler);
+}
+
+#[then(expr = r"magnitude\(v\) = √{float}")]
+fn magnitude_v_equal_sqrt_scaler(world: &mut TuplesWorld, scaler: f32) {
+    let result = world.get_vector("v").magnitude();
+    assert_eq!(result, scaler.sqrt());
 }
 
 // This runs before everything else, so you can setup things here.

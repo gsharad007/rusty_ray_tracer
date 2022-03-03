@@ -477,3 +477,57 @@ mod tests_sub {
         assert_eq!(ca_b, (c - a) - b);
     }
 }
+
+pub trait Magnitude {
+    /// The resulting type
+    type Output;
+
+    /// Calculate the magnitude of the Vector
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// ```
+    #[must_use]
+    fn magnitude(self) -> Self::Output;
+}
+
+impl Magnitude for Vector {
+    /// The resulting type after applying the `+` operator.
+    type Output = f32;
+
+    /// Calculate the magnitude of the Vector
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Magnitude;
+    /// assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).magnitude());
+    /// assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).magnitude());
+    /// assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
+    /// ```
+    #[must_use]
+    fn magnitude(self) -> Self::Output {
+        let magnitude_squared = Self::into_iter(self).fold(0.0, |acc, v| acc + (v * v));
+        f32::sqrt(magnitude_squared)
+    }
+}
+
+#[cfg(test)]
+mod tests_magnitude {
+    use super::*;
+
+    #[test]
+    fn test() {
+        assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).magnitude());
+        assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).magnitude());
+        assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
+        assert_eq!(1.0, Vector::new(0.57735029, 0.57735029, 0.57735028).magnitude());
+
+        assert_eq!(3.7416573867739413855837487323165, Vector::new(1.0, 2.0, 3.0).magnitude());
+        assert_eq!(3.7416573867739413855837487323165, Vector::new(-1.0, -2.0, -3.0).magnitude());
+        assert_eq!(9.195575, Vector::new(1.23, 4.56, 7.89).magnitude());
+        assert_eq!(4.1532397, Vector::new(1.11, 2.22, 3.33).magnitude());
+    }
+}
