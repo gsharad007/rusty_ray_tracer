@@ -1,4 +1,4 @@
-use std::ops::Sub;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use crate::core3d::tuple::Tuple;
@@ -402,6 +402,65 @@ mod tests_approx_eq {
     }
 }
 
+impl Add for Vector {
+    /// The resulting type after applying the `+` operator.
+    type Output = Self;
+
+    /// Performs the `+` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let a = Vector::new(1.23, 4.56, 7.89);
+    /// let b = Vector::new(1.11, 2.22, 3.33);
+    /// let expected = Vector::new(2.34, 6.78, 11.22);
+    /// assert_eq!(expected, a + b);
+    /// ```
+    #[must_use]
+    fn add(self, rhs: Self) -> Self {
+        Self::zip_for_each_collect(self, rhs, |a, b| a + b)
+    }
+}
+
+#[cfg(test)]
+mod tests_add {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let expected = Vector::new(2.34, 6.78, 11.22);
+        assert_eq!(expected, a + b);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        assert_eq!(a + b, a);
+        assert_eq!(b + a, a);
+    }
+
+    #[test]
+    fn commutative() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        assert_eq!(a + b, b + a);
+    }
+
+    #[test]
+    fn associative() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let c = Vector::new(5.55, 6.66, 7.77);
+        assert_eq!(a + (b + c), (a + b) + c);
+        assert_eq!(c + (a + b), (c + a) + b);
+    }
+}
+
 impl Sub for Vector {
     /// The resulting type after applying the `+` operator.
     type Output = Vector;
@@ -478,16 +537,141 @@ mod tests_sub {
     }
 }
 
+impl Neg for Vector {
+    type Output = Self;
+
+    /// Performs the unary `-` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let result = -Vector::new(1.11, -2.22, 3.33);
+    /// let expected = Vector::new(-1.11, 2.22, -3.33);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn neg(self) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x = -(*x));
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_neg {
+    use super::*;
+
+    #[test]
+    fn neg() {
+        assert_eq!(
+            Vector::new(-1.23, -4.56, -7.89),
+            -Vector::new(1.23, 4.56, 7.89)
+        );
+        assert_eq!(
+            Vector::new(1.23, -4.56, 7.89),
+            -Vector::new(-1.23, 4.56, -7.89)
+        );
+    }
+
+    #[test]
+    fn double_neg() {
+        assert_eq!(
+            Vector::new(1.23, 4.56, 7.89),
+            -(-Vector::new(1.23, 4.56, 7.89))
+        );
+        assert_eq!(
+            Vector::new(-1.23, 4.56, -7.89),
+            -(-Vector::new(-1.23, 4.56, -7.89))
+        );
+    }
+}
+
+impl Mul<f32> for Vector {
+    type Output = Self;
+
+    /// Performs the `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let result = Vector::new(1.11, -2.22, 3.33) * 100.1;
+    /// let expected = Vector::new(111.111, -222.222, 333.333);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn mul(self, rhs: f32) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x *= rhs);
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_mul {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Vector::new(1.11, -2.22, 3.33) * 100.1;
+        let expected = Vector::new(111.111, -222.222, 333.333);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = 1.0;
+        assert_eq!(a * b, a);
+    }
+}
+
+impl Div<f32> for Vector {
+    type Output = Self;
+
+    /// Performs the `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// let result = Vector::new(1.11, -2.22, 3.33) / 11.1;
+    /// let expected = Vector::new(0.1, -0.2, 0.3);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn div(self, rhs: f32) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x /= rhs);
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_div {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Vector::new(1.11, -2.22, 3.33) / 10.0;
+        let expected = Vector::new(0.111, -0.222, 0.333);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = 1.0;
+        assert_eq!(a / b, a);
+    }
+}
+
 pub trait Magnitude {
     /// The resulting type
     type Output;
 
     /// Calculate the magnitude of the Vector
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// ```
     #[must_use]
     fn magnitude(self) -> Self::Output;
 }
@@ -523,11 +707,76 @@ mod tests_magnitude {
         assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).magnitude());
         assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).magnitude());
         assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
-        assert_eq!(1.0, Vector::new(0.57735029, 0.57735029, 0.57735028).magnitude());
+        assert_eq!(
+            1.0,
+            Vector::new(0.57735029, 0.57735029, 0.57735028).magnitude()
+        );
 
-        assert_eq!(3.7416573867739413855837487323165, Vector::new(1.0, 2.0, 3.0).magnitude());
-        assert_eq!(3.7416573867739413855837487323165, Vector::new(-1.0, -2.0, -3.0).magnitude());
+        assert_eq!(
+            3.7416573867739413855837487323165,
+            Vector::new(1.0, 2.0, 3.0).magnitude()
+        );
+        assert_eq!(
+            3.7416573867739413855837487323165,
+            Vector::new(-1.0, -2.0, -3.0).magnitude()
+        );
         assert_eq!(9.195575, Vector::new(1.23, 4.56, 7.89).magnitude());
         assert_eq!(4.1532397, Vector::new(1.11, 2.22, 3.33).magnitude());
+    }
+}
+
+pub trait Normalize: Magnitude<Output = f32> + Div<f32, Output = Self> + Copy + Sized {
+    /// Normalize the Vector to unit length.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use crate::rusty_ray_tracer::core3d::vector::*;
+    /// assert_eq!(Vector::new(1.0, 0.0, 0.0), Vector::new(1.0, 0.0, 0.0).normalize());
+    /// assert_eq!(Vector::new(0.0, 1.0, 0.0), Vector::new(0.0, 1.0, 0.0).normalize());
+    /// assert_eq!(Vector::new(0.0, 0.0, 1.0), Vector::new(0.0, 0.0, 1.0).normalize());
+    /// assert_eq!(Vector::new(0.57735029, 0.57735029, 0.57735028), Vector::new(0.57735029, 0.57735029, 0.57735028).normalize());
+    /// ```
+    #[must_use]
+    fn normalize(self) -> Self
+    {
+        self / self.magnitude()
+    }
+}
+
+impl Normalize for Vector {}
+
+#[cfg(test)]
+mod tests_normalize {
+    use super::*;
+
+    #[test]
+    fn test() {
+        assert_eq!(
+            Vector::new(1.0, 0.0, 0.0),
+            Vector::new(1.0, 0.0, 0.0).normalize()
+        );
+        assert_eq!(
+            Vector::new(0.0, 1.0, 0.0),
+            Vector::new(0.0, 1.0, 0.0).normalize()
+        );
+        assert_eq!(
+            Vector::new(0.0, 0.0, 1.0),
+            Vector::new(0.0, 0.0, 1.0).normalize()
+        );
+        assert_eq!(
+            Vector::new(0.57735029, 0.57735029, 0.57735028),
+            Vector::new(0.57735029, 0.57735029, 0.57735028).normalize()
+        );
+
+        assert_eq!(
+            Vector::new(0.26726124, 0.5345225, 0.8017837),
+            Vector::new(1.0, 2.0, 3.0).normalize()
+        );
+        assert_eq!(
+            Vector::new(-0.26726124, -0.5345225, -0.8017837),
+            Vector::new(-1.0, -2.0, -3.0).normalize()
+        );
     }
 }

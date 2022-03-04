@@ -1,5 +1,6 @@
 use derive_more::Deref;
 use derive_more::FromStr;
+use float_cmp::assert_approx_eq;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
@@ -11,7 +12,7 @@ use std::num::ParseFloatError;
 use std::str::FromStr;
 
 use async_trait::async_trait;
-use cucumber::{given, then, Parameter, World, WorldInit};
+use cucumber::{given, then, when, Parameter, World, WorldInit};
 
 // `World` is your shared, likely mutable state.
 #[derive(Debug, WorldInit, Default)]
@@ -268,16 +269,27 @@ fn a_div_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureT
     assert_eq!(result, *tuple);
 }
 
-#[then(expr = r"magnitude\(v\) = {float}")]
-fn magnitude_v_equal_scaler(world: &mut TuplesWorld, scaler: f32) {
-    let result = world.get_vector("v").magnitude();
-    assert_eq!(result, scaler);
+#[then(expr = r"magnitude\({word}\) = {float}")]
+fn magnitude_v_equal_scaler(world: &mut TuplesWorld, name: String, scaler: f32) {
+    let result = world.get_vector(&*name).magnitude();
+    assert_approx_eq!(f32, result, scaler);
 }
 
 #[then(expr = r"magnitude\(v\) = √{float}")]
 fn magnitude_v_equal_sqrt_scaler(world: &mut TuplesWorld, scaler: f32) {
     let result = world.get_vector("v").magnitude();
     assert_eq!(result, scaler.sqrt());
+}
+
+#[then(expr = r"normalize\(v\) = {vector}")]
+fn normalize_v_equal_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = world.get_vector("v").normalize();
+    assert_eq!(result, *vector);
+}
+
+#[when(expr = r"norm ← normalize\(v\)")]
+fn norm_vector_equal_normalize(world: &mut TuplesWorld) {
+    *world.get_vector("norm") = world.get_vector("v").normalize();
 }
 
 // This runs before everything else, so you can setup things here.
