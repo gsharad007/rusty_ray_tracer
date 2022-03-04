@@ -739,8 +739,7 @@ pub trait Normalize: Magnitude<Output = f32> + Div<f32, Output = Self> + Copy + 
     /// assert_eq!(Vector::new(0.57735029, 0.57735029, 0.57735028), Vector::new(0.57735029, 0.57735029, 0.57735028).normalize());
     /// ```
     #[must_use]
-    fn normalize(self) -> Self
-    {
+    fn normalize(self) -> Self {
         self / self.magnitude()
     }
 }
