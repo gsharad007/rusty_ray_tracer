@@ -637,9 +637,17 @@ impl Div<f32> for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// let result = Vector::new(1.11, -2.22, 3.33) / 11.1;
     /// let expected = Vector::new(0.1, -0.2, 0.3);
     /// assert_eq!(expected, result);
+    ///
+    /// assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).coords[0..3]
+    ///     .iter()
+    ///     .all(|&f| f.is_infinite()));
+    /// assert!((Vector::new(0.0, 0.0, 0.0) / 0.0)
+    ///     .into_iter()
+    ///     .all(|f| f.is_nan()));
     /// ```
     fn div(self, rhs: f32) -> Self::Output {
         let mut result = self;
@@ -664,6 +672,16 @@ mod tests_div {
         let a = Vector::new(1.23, 4.56, 7.89);
         let b = 1.0;
         assert_eq!(a / b, a);
+    }
+
+    #[test]
+    fn div_by_zero() {
+        assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).coords[0..3]
+            .iter()
+            .all(|&f| f.is_infinite()));
+        assert!((Vector::new(0.0, 0.0, 0.0) / 0.0)
+            .into_iter()
+            .all(|f| f.is_nan()));
     }
 }
 
@@ -704,6 +722,7 @@ mod tests_magnitude {
 
     #[test]
     fn test() {
+        assert_eq!(0.0, Vector::new(0.0, 0.0, 0.0).magnitude());
         assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).magnitude());
         assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).magnitude());
         assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
@@ -777,5 +796,12 @@ mod tests_normalize {
             Vector::new(-0.26726124, -0.5345225, -0.8017837),
             Vector::new(-1.0, -2.0, -3.0).normalize()
         );
+    }
+
+    #[test]
+    fn tests_normalize_zero_vector() {
+        assert!(Vector::new(0.0, 0.0, 0.0).normalize()
+            .into_iter()
+            .all(|f| f.is_nan()));
     }
 }
