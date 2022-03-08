@@ -695,7 +695,7 @@ pub trait Magnitude {
 }
 
 impl Magnitude for Vector {
-    /// The resulting type after applying the `+` operator.
+    /// The resulting magnitude type
     type Output = f32;
 
     /// Calculate the magnitude of the Vector
@@ -800,8 +800,73 @@ mod tests_normalize {
 
     #[test]
     fn tests_normalize_zero_vector() {
-        assert!(Vector::new(0.0, 0.0, 0.0).normalize()
+        assert!(Vector::new(0.0, 0.0, 0.0)
+            .normalize()
             .into_iter()
             .all(|f| f.is_nan()));
+    }
+}
+
+pub trait DotProduct: ArrayBase<Item = f32> {
+    /// Calculate Dot Product on two Vectors
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// ```
+    #[must_use]
+    fn dot(self, other: Self) -> f32 {
+        Self::into_iter(self)
+            .zip(other.into_iter())
+            .fold(0.0, |acc, v| acc + (v.0 * v.1))
+    }
+}
+impl DotProduct for Vector {}
+
+#[cfg(test)]
+mod tests_dot_product {
+    use super::*;
+
+    #[test]
+    fn test() {
+        assert_eq!(
+            0.0,
+            Vector::new(0.0, 0.0, 0.0).dot(Vector::new(0.0, 0.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Vector::new(1.0, 0.0, 0.0).dot(Vector::new(1.0, 0.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Vector::new(0.0, 1.0, 0.0).dot(Vector::new(0.0, 1.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Vector::new(0.0, 0.0, 1.0).dot(Vector::new(0.0, 0.0, 1.0))
+        );
+        assert_eq!(
+            1.0,
+            Vector::new(0.57735029, 0.57735028, 0.57735028)
+                .dot(Vector::new(0.57735029, 0.57735028, 0.57735028))
+        );
+
+        assert_eq!(
+            14.0,
+            Vector::dot(Vector::new(1.0, 2.0, 3.0), Vector::new(1.0, 2.0, 3.0))
+        );
+        assert_eq!(
+            14.0,
+            Vector::dot(Vector::new(-1.0, -2.0, -3.0), Vector::new(-1.0, -2.0, -3.0))
+        );
+        assert_eq!(
+            -14.0,
+            Vector::dot(Vector::new(1.0, 2.0, 3.0), Vector::new(-1.0, -2.0, -3.0))
+        );
+
+        assert_eq!(
+            32.0,
+            Vector::dot(Vector::new(1.0, 2.0, 3.0), Vector::new(4.0, 5.0, 6.0))
+        );
     }
 }

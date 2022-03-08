@@ -292,6 +292,13 @@ fn norm_vector_equal_normalize(world: &mut TuplesWorld) {
     *world.get_vector("norm") = world.get_vector("v").normalize();
 }
 
+#[then(expr = r"dot\(a, b\) = {float}")]
+fn dot_vector_vector_equal_scaler(world: &mut TuplesWorld, scaler: f32) {
+    let a = *world.get_vector("a");
+    let b = *world.get_vector("b");
+    assert_eq!(Vector::dot(a, b), scaler);
+}
+
 // This runs before everything else, so you can setup things here.
 fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).
