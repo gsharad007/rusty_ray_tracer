@@ -1,4 +1,7 @@
-use std::ops::{Add, Sub};
+use std::{
+    fmt::Display,
+    ops::{Add, Sub},
+};
 
 use super::{array_base::ArrayBase, coordinates4::Coordinates4, vector::Vector};
 use crate::core3d::tuple::Tuple;
@@ -244,6 +247,19 @@ mod tests_coordinates4 {
         assert!(point.is_point());
         assert!(!point.is_vector());
         assert!(point.is_valid());
+    }
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[{}, {}, {}, {}]",
+            self.x(),
+            self.y(),
+            self.z(),
+            self.w()
+        )
     }
 }
 
