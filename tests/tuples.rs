@@ -299,6 +299,13 @@ fn dot_vector_vector_equal_scaler(world: &mut TuplesWorld, scaler: f32) {
     assert_eq!(Vector::dot(a, b), scaler);
 }
 
+#[then(expr = r"cross\({word}, {word}\) = {vector}")]
+fn cross_vector_vector_equal_vector(world: &mut TuplesWorld, name1: String, name2: String, vector: CaptureVector) {
+    let a = *world.get_vector(&*name1);
+    let b = *world.get_vector(&*name2);
+    assert_eq!(Vector::cross(a, b), *vector);
+}
+
 // This runs before everything else, so you can setup things here.
 fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).

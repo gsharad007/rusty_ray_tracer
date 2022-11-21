@@ -693,7 +693,6 @@ pub trait Magnitude {
     #[must_use]
     fn magnitude(self) -> Self::Output;
 }
-
 impl Magnitude for Vector {
     /// The resulting magnitude type
     type Output = f32;
@@ -705,9 +704,13 @@ impl Magnitude for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// # use crate::rusty_ray_tracer::core3d::vector::Magnitude;
+    /// assert_eq!(0.0, Vector::new(0.0, 0.0, 0.0).magnitude());
     /// assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).magnitude());
     /// assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).magnitude());
     /// assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
+    /// assert_eq!(1.0, Vector::new(-1.0, 0.0, 0.0).magnitude());
+    /// assert_eq!(1.0, Vector::new(0.0, -1.0, 0.0).magnitude());
+    /// assert_eq!(1.0, Vector::new(0.0, 0.0, -1.0).magnitude());
     /// ```
     #[must_use]
     fn magnitude(self) -> Self::Output {
@@ -813,6 +816,13 @@ pub trait DotProduct: ArrayBase<Item = f32> {
     /// # Example
     ///
     /// ```
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use crate::rusty_ray_tracer::core3d::vector::*;
+    /// assert_eq!(0.0, Vector::new(0.0, 0.0, 0.0).dot(Vector::new(0.0, 0.0, 0.0)));
+    /// assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).dot(Vector::new(1.0, 0.0, 0.0)));
+    /// assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).dot(Vector::new(0.0, 1.0, 0.0)));
+    /// assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).dot(Vector::new(0.0, 0.0, 1.0)));
+    /// assert_eq!(1.0, Vector::new(0.57735029, 0.57735028, 0.57735028).dot(Vector::new(0.57735029, 0.57735028, 0.57735028)));
     /// ```
     #[must_use]
     fn dot(self, other: Self) -> f32 {
@@ -829,27 +839,11 @@ mod tests_dot_product {
 
     #[test]
     fn test() {
-        assert_eq!(
-            0.0,
-            Vector::new(0.0, 0.0, 0.0).dot(Vector::new(0.0, 0.0, 0.0))
-        );
-        assert_eq!(
-            1.0,
-            Vector::new(1.0, 0.0, 0.0).dot(Vector::new(1.0, 0.0, 0.0))
-        );
-        assert_eq!(
-            1.0,
-            Vector::new(0.0, 1.0, 0.0).dot(Vector::new(0.0, 1.0, 0.0))
-        );
-        assert_eq!(
-            1.0,
-            Vector::new(0.0, 0.0, 1.0).dot(Vector::new(0.0, 0.0, 1.0))
-        );
-        assert_eq!(
-            1.0,
-            Vector::new(0.57735029, 0.57735028, 0.57735028)
-                .dot(Vector::new(0.57735029, 0.57735028, 0.57735028))
-        );
+        assert_eq!(0.0, Vector::new(0.0, 0.0, 0.0).dot(Vector::new(0.0, 0.0, 0.0)));
+        assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).dot(Vector::new(1.0, 0.0, 0.0)));
+        assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).dot(Vector::new(0.0, 1.0, 0.0)));
+        assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).dot(Vector::new(0.0, 0.0, 1.0)));
+        assert_eq!(1.0, Vector::new(0.57735029, 0.57735028, 0.57735028).dot(Vector::new(0.57735029, 0.57735028, 0.57735028)));
 
         assert_eq!(
             14.0,
@@ -867,6 +861,97 @@ mod tests_dot_product {
         assert_eq!(
             32.0,
             Vector::dot(Vector::new(1.0, 2.0, 3.0), Vector::new(4.0, 5.0, 6.0))
+        );
+    }
+}
+
+pub trait CrossProduct {
+    /// Calculate Dot Product on two Vectors
+    #[must_use]
+    fn cross(self, other: Self) -> Self;
+}
+impl CrossProduct for Vector {
+    /// Calculate Dot Product on two Vectors
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
+    /// # use crate::rusty_ray_tracer::core3d::vector::*;
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 0.0).cross(Vector::new(0.0, 0.0, 0.0)));
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 1.0, 1.0).cross(Vector::new(0.0, 0.0, 0.0)));
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 1.0, 1.0).cross(Vector::new(-1.0, -1.0, -1.0)));
+    /// 
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 0.0, 0.0).cross(Vector::new(1.0, 0.0, 0.0)));
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).cross(Vector::new(0.0, 1.0, 0.0)));
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0).cross(Vector::new(0.0, 0.0, 1.0)));
+    /// assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.57735029, 0.57735028, 0.57735028).cross(Vector::new(0.57735029, 0.57735028, 0.57735028)));
+    /// 
+    /// assert_eq!(Vector::new(0.0, 0.0, 1.0), Vector::new(1.0, 0.0, 0.0).cross(Vector::new(0.0, 1.0, 0.0)));
+    /// assert_eq!(Vector::new(1.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).cross(Vector::new(0.0, 0.0, 1.0)));
+    /// assert_eq!(Vector::new(0.0, 1.0, 0.0), Vector::new(0.0, 0.0, 1.0).cross(Vector::new(1.0, 0.0, 0.0)));
+    /// 
+    /// assert_eq!(Vector::new(-1.0, 0.0, 1.0), Vector::new(1.0, 0.0, 1.0).cross(Vector::new(0.0, 1.0, 0.0)));
+    /// assert_eq!(Vector::new(1.0, -1.0, 0.0), Vector::new(1.0, 1.0, 0.0).cross(Vector::new(0.0, 0.0, 1.0)));
+    /// assert_eq!(Vector::new(0.0, 1.0, -1.0), Vector::new(0.0, 1.0, 1.0).cross(Vector::new(1.0, 0.0, 0.0)));
+    /// ```
+    #[must_use]
+    fn cross(self, other: Self) -> Self {
+        Vector::new(
+            (self.get_array()[1] * other.get_array()[2]) - (self.get_array()[2] * other.get_array()[1]),
+            (self.get_array()[2] * other.get_array()[0]) - (self.get_array()[0] * other.get_array()[2]),
+            (self.get_array()[0] * other.get_array()[1]) - (self.get_array()[1] * other.get_array()[0]),
+        )
+        // Self::into_iter(self)
+        //     .zip(other.into_iter())
+        //     .fold(0.0, |acc, v| acc + (v.0 * v.1))
+    }
+}
+
+#[cfg(test)]
+mod tests_cross_product {
+    use super::*;
+
+    #[test]
+    fn test() {
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 0.0).cross(Vector::new(0.0, 0.0, 0.0)));
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 1.0, 1.0).cross(Vector::new(0.0, 0.0, 0.0)));
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 1.0, 1.0).cross(Vector::new(-1.0, -1.0, -1.0)));
+        
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(1.0, 0.0, 0.0).cross(Vector::new(1.0, 0.0, 0.0)));
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).cross(Vector::new(0.0, 1.0, 0.0)));
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0).cross(Vector::new(0.0, 0.0, 1.0)));
+        assert_eq!(Vector::new(0.0, 0.0, 0.0), Vector::new(0.57735029, 0.57735028, 0.57735028).cross(Vector::new(0.57735029, 0.57735028, 0.57735028)));
+        
+        assert_eq!(Vector::new(0.0, 0.0, 1.0), Vector::new(1.0, 0.0, 0.0).cross(Vector::new(0.0, 1.0, 0.0)));
+        assert_eq!(Vector::new(1.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).cross(Vector::new(0.0, 0.0, 1.0)));
+        assert_eq!(Vector::new(0.0, 1.0, 0.0), Vector::new(0.0, 0.0, 1.0).cross(Vector::new(1.0, 0.0, 0.0)));
+        
+        assert_eq!(Vector::new(-1.0, 0.0, 1.0), Vector::new(1.0, 0.0, 1.0).cross(Vector::new(0.0, 1.0, 0.0)));
+        assert_eq!(Vector::new(1.0, -1.0, 0.0), Vector::new(1.0, 1.0, 0.0).cross(Vector::new(0.0, 0.0, 1.0)));
+        assert_eq!(Vector::new(0.0, 1.0, -1.0), Vector::new(0.0, 1.0, 1.0).cross(Vector::new(1.0, 0.0, 0.0)));
+        
+        assert_eq!(
+            Vector::new(0.0, 0.0, 0.0),
+            Vector::cross(Vector::new(1.0, 2.0, 3.0), Vector::new(1.0, 2.0, 3.0))
+        );
+        assert_eq!(
+            Vector::new(0.0, 0.0, 0.0),
+            Vector::cross(Vector::new(-1.0, -2.0, -3.0), Vector::new(-1.0, -2.0, -3.0))
+        );
+        assert_eq!(
+            Vector::new(0.0, 0.0, 0.0),
+            Vector::cross(Vector::new(1.0, 2.0, 3.0), Vector::new(-1.0, -2.0, -3.0))
+        );
+
+        assert_eq!(
+            Vector::new(-3.0, 6.0, -3.0),
+            Vector::cross(Vector::new(1.0, 2.0, 3.0), Vector::new(4.0, 5.0, 6.0))
+        );
+
+        assert_eq!(
+            Vector::new(3.0, -6.0, 3.0),
+            Vector::cross(Vector::new(4.0, 5.0, 6.0), Vector::new(1.0, 2.0, 3.0))
         );
     }
 }
