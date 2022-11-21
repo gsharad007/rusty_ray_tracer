@@ -233,6 +233,24 @@ fn a1_add_a2_eq_tuple(world: &mut TuplesWorld, tuple: CaptureTuple) {
     assert_eq!(result, *tuple);
 }
 
+#[then(expr = r"p + v = {point}")]
+fn p_add_v_eq_vector(world: &mut TuplesWorld, point: CapturePoint) {
+    let result = world.p + *world.get_vector("v");
+    assert_eq!(result, *point);
+}
+
+#[then(expr = r"v1 + v2 = {vector}")]
+fn v1_add_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = *world.get_vector("v1") + *world.get_vector("v2");
+    assert_eq!(result, *vector);
+}
+
+#[then(expr = r"zero + v = {vector}")]
+fn zero_add_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
+    let result = *world.get_vector("zero") + *world.get_vector("v");
+    assert_eq!(result, *vector);
+}
+
 #[then(expr = r"p1 - p2 = {vector}")]
 fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     let result = world.p1 - world.p2;
@@ -300,7 +318,12 @@ fn dot_vector_vector_equal_scaler(world: &mut TuplesWorld, scaler: f32) {
 }
 
 #[then(expr = r"cross\({word}, {word}\) = {vector}")]
-fn cross_vector_vector_equal_vector(world: &mut TuplesWorld, name1: String, name2: String, vector: CaptureVector) {
+fn cross_vector_vector_equal_vector(
+    world: &mut TuplesWorld,
+    name1: String,
+    name2: String,
+    vector: CaptureVector,
+) {
     let a = *world.get_vector(&*name1);
     let b = *world.get_vector(&*name2);
     assert_eq!(Vector::cross(a, b), *vector);
