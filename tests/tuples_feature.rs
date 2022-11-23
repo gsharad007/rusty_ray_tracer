@@ -1,6 +1,7 @@
 use derive_more::Deref;
 use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
+use rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
@@ -227,6 +228,18 @@ fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
         "y" => assert_eq!(value, world_tuple.y()),
         "z" => assert_eq!(value, world_tuple.z()),
         "w" => assert_eq!(value, world_tuple.w()),
+        _ => unreachable!(),
+    };
+}
+
+#[then(regex = r"^([^\s])\.(red|green|blue|alpha) = ([\d\.-]+)$")]
+fn dim_color_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
+    let world_color = world.get_color(&name);
+    match dim.as_str() {
+        "red" => assert_eq!(value, world_color.r()),
+        "green" => assert_eq!(value, world_color.g()),
+        "blue" => assert_eq!(value, world_color.b()),
+        "alpha" => assert_eq!(value, world_color.a()),
         _ => unreachable!(),
     };
 }

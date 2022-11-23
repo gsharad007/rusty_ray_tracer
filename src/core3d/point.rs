@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::{array_base::ArrayBase, coordinates4::Coordinates4, vector::Vector};
-use crate::core3d::tuple::Tuple;
+use super::tuple::Tuple;
 use float_cmp::{approx_eq, ApproxEq};
 
 /// A Point in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 1.0 to allow translations from matrices
@@ -23,10 +23,10 @@ impl Point {
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
     /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!(1.0, point.x());
-    /// assert_eq!(2.0, point.y());
-    /// assert_eq!(3.0, point.z());
-    /// assert_eq!(1.0, point.w());
+    /// assert_eq!(1.0, point.coords[0]);
+    /// assert_eq!(2.0, point.coords[1]);
+    /// assert_eq!(3.0, point.coords[2]);
+    /// assert_eq!(1.0, point.coords[3]);
     /// assert!(point.is_point() == true);
     /// assert!(point.is_vector() == false);
     /// assert!(point.is_valid());
@@ -57,6 +57,23 @@ mod tests_point {
 }
 
 impl Default for Point {
+    /// Creates a new Point with default values.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::point::Point;
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    ///
+    /// let point = Point::default();
+    /// assert_eq!(0.0, point.coords[0]);
+    /// assert_eq!(0.0, point.coords[1]);
+    /// assert_eq!(0.0, point.coords[2]);
+    /// assert_eq!(1.0, point.coords[3]);
+    /// assert!(point.is_point() == true);
+    /// assert!(point.is_vector() == false);
+    /// assert!(point.is_valid());
+    /// ```
     fn default() -> Self {
         Self::new(Default::default(), Default::default(), Default::default())
     }
@@ -104,7 +121,7 @@ impl From<Tuple> for Point {
 }
 
 impl From<Point> for Tuple {
-    /// Creates a new Tuple from a Puple
+    /// Creates a new Tuple from a Point
     ///
     /// # Examples
     ///
