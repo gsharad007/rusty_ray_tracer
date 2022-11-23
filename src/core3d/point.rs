@@ -52,7 +52,7 @@ mod tests_point {
     #[test]
     fn copy() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.clone().coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
     }
 }
 
