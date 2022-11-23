@@ -1,7 +1,7 @@
 # rusty_ray_tracer
 Ray Tracer Written from scratch in Rust trying TDD
 
-**Verified Commits Only!**
+**Verified Commits and Pull Requests Only!**
 
 ## CI Status
 
