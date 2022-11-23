@@ -48,6 +48,12 @@ mod tests_point {
         let point = Point::new(1.0, 2.0, 3.0);
         assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
     }
+
+    #[test]
+    fn copy() {
+        let point = Point::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.clone().coords);
+    }
 }
 
 impl Default for Point {
@@ -251,15 +257,34 @@ mod tests_coordinates4 {
 }
 
 impl Display for Point {
+    /// Returns a string representation of the Point object as [{x}, {y}, {z}, {w}]
+    ///
+    /// ```
+    /// use rusty_ray_tracer::core3d::point::Point;
+    ///
+    /// let point = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!("[1, 2, 3, 1]", format!("{}", point));
+    /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
             "[{}, {}, {}, {}]",
-            self.x(),
-            self.y(),
-            self.z(),
-            self.w()
+            self.get_at(0),
+            self.get_at(1),
+            self.get_at(2),
+            self.get_at(3)
         )
+    }
+}
+
+#[cfg(test)]
+mod tests_display {
+    use super::*;
+
+    #[test]
+    fn eq() {
+        let point = Point::new(1.0, 2.0, 3.0);
+        assert_eq!("[1, 2, 3, 1]", format!("{}", point));
     }
 }
 
