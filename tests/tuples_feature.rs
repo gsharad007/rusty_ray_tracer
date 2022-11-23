@@ -27,6 +27,8 @@ pub struct TuplesWorld {
     p2: Point,
     vectors: HashMap<String, Vector>,
     c: Color,
+    c1: Color,
+    c2: Color,
 }
 impl TuplesWorld {
     fn get_tuple(&mut self, name: &str) -> &mut Tuple {
@@ -48,8 +50,12 @@ impl TuplesWorld {
             .entry(name.to_string())
             .or_insert_with(Vector::default)
     }
-    fn get_color(&mut self, _name: &str) -> &mut Color {
-        &mut self.c
+    fn get_color(&mut self, name: &str) -> &mut Color {
+        match name {
+            "c1" => &mut self.c1,
+            "c2" => &mut self.c2,
+            _ => &mut self.c,
+        }
     }
     fn get_any_as_tuple(&self, name: &str) -> Tuple {
         match name {
@@ -300,6 +306,12 @@ fn v1_add_v2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
 fn zero_add_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     let result = *world.get_vector("zero") + *world.get_vector("v");
     assert_eq!(result, *vector);
+}
+
+#[then(expr = r"c1 + c2 = {color}")]
+fn v1_add_v2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
+    let result = *world.get_color("c1") + *world.get_color("c2");
+    assert_eq!(result, *color);
 }
 
 #[then(expr = r"p1 - p2 = {vector}")]
