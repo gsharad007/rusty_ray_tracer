@@ -3,7 +3,7 @@ use std::ops::{Add, Sub};
 use float_cmp::{approx_eq, ApproxEq};
 
 use super::{
-    array_base::ArrayBase, color_rgba::ColorRGBA, coordinates4::Coordinates4, tuple::Tuple,
+    array_base::ArrayBase, color_rgba::ColorRGBA,
 };
 
 #[derive(Copy, Clone, Default, Debug)]
@@ -32,26 +32,26 @@ impl Color {
         }
     }
 
-    /// Creates a new Color
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
-    ///
-    /// let color = Color::new(1.0, 2.0, 3.0);
-    /// assert_eq!(1.0, color.tuple[0]);
-    /// assert_eq!(2.0, color.tuple[1]);
-    /// assert_eq!(3.0, color.tuple[2]);
-    /// assert_eq!(1.0, color.tuple[3]);
-    /// ```
-    #[must_use]
-    pub fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
-        Color {
-            tuple: [r, g, b, a],
-        }
-    }
+    // /// Creates a new Color
+    // ///
+    // /// # Examples
+    // ///
+    // /// ```
+    // /// # use crate::rusty_ray_tracer::core3d::color::Color;
+    // /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+    // ///
+    // /// let color = Color::nnew_with_alphaw(1.0, 2.0, 3.0, 4.0);
+    // /// assert_eq!(1.0, color.tuple[0]);
+    // /// assert_eq!(2.0, color.tuple[1]);
+    // /// assert_eq!(3.0, color.tuple[2]);
+    // /// assert_eq!(4.0, color.tuple[3]);
+    // /// ```
+    // #[must_use]
+    // pub fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
+    //     Color {
+    //         tuple: [r, g, b, a],
+    //     }
+    // }
 }
 
 #[cfg(test)]
@@ -87,90 +87,90 @@ impl From<[f32; 3]> for Color {
     }
 }
 
-impl From<[f32; 4]> for Color {
-    /// Creates a new Color from an array of scaler values
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// let color = Color::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], color.tuple);
-    /// ```
-    fn from(arr: [f32; 4]) -> Self {
-        Color::new_with_alpha(arr[0], arr[1], arr[2], arr[3])
-    }
-}
+// impl From<[f32; 4]> for Color {
+//     /// Creates a new Color from an array of scaler values
+//     ///
+//     /// # Examples
+//     ///
+//     /// ```
+//     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+//     /// # use crate::rusty_ray_tracer::core3d::color::Color;
+//     /// let color = Color::from([1.0, 2.0, 3.0, 4.0]);
+//     /// assert_eq!([1.0, 2.0, 3.0, 4.0], color.tuple);
+//     /// ```
+//     fn from(arr: [f32; 4]) -> Self {
+//         Color::new_with_alpha(arr[0], arr[1], arr[2], arr[3])
+//     }
+// }
 
-impl From<Tuple> for Color {
-    /// Creates a new Color from a Tuple
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// let color = Color::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
-    /// ```
-    ///
-    /// ```
-    /// # use std::panic;
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], Color::from(tuple).tuple);
-    /// ```
-    fn from(tuple: Tuple) -> Self {
-        Color::new_with_alpha(tuple.x(), tuple.y(), tuple.z(), tuple.w())
-    }
-}
+// impl From<Tuple> for Color {
+//     /// Creates a new Color from a Tuple
+//     ///
+//     /// # Examples
+//     ///
+//     /// ```
+//     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+//     /// # use crate::rusty_ray_tracer::core3d::color::Color;
+//     /// let color = Color::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
+//     /// assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
+//     /// ```
+//     ///
+//     /// ```
+//     /// # use std::panic;
+//     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+//     /// # use crate::rusty_ray_tracer::core3d::color::Color;
+//     /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+//     /// assert_eq!([1.0, 2.0, 3.0, 4.0], Color::from(tuple).tuple);
+//     /// ```
+//     fn from(tuple: Tuple) -> Self {
+//         Color::new_with_alpha(tuple.x(), tuple.y(), tuple.z(), tuple.w())
+//     }
+// }
 
-impl From<Color> for Tuple {
-    /// Creates a new Tuple from a Color
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// let result = Tuple::from(Color::from([1.0, 2.0, 3.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.tuple);
-    /// ```
-    fn from(color: Color) -> Self {
-        Tuple::from(color.tuple)
-    }
-}
+// impl From<Color> for Tuple {
+//     /// Creates a new Tuple from a Color
+//     ///
+//     /// # Examples
+//     ///
+//     /// ```
+//     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
+//     /// # use crate::rusty_ray_tracer::core3d::color::Color;
+//     /// let result = Tuple::from(Color::from([1.0, 2.0, 3.0]));
+//     /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.tuple);
+//     /// ```
+//     fn from(color: Color) -> Self {
+//         Tuple::from(color.tuple)
+//     }
+// }
 
-#[cfg(test)]
-mod tests_from {
-    use super::*;
+// #[cfg(test)]
+// mod tests_from {
+//     use super::*;
 
-    #[test]
-    fn from_array() {
-        let color = Color::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
-    }
+//     #[test]
+//     fn from_array() {
+//         let color = Color::from([1.0, 2.0, 3.0]);
+//         assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
+//     }
 
-    #[test]
-    fn from_tuple() {
-        let color = Color::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
+//     #[test]
+//     fn from_tuple() {
+//         let color = Color::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
+//         assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
 
-        let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert_eq!([1.0, 2.0, 3.0, 4.0], Color::from(tuple).tuple);
-    }
+//         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+//         assert_eq!([1.0, 2.0, 3.0, 4.0], Color::from(tuple).tuple);
+//     }
 
-    #[test]
-    fn into_tuple() {
-        let tuple = Tuple::from(Color::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
+//     #[test]
+//     fn into_tuple() {
+//         let tuple = Tuple::from(Color::new(1.0, 2.0, 3.0));
+//         assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
 
-        let tuple: Tuple = Color::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
-    }
-}
+//         let tuple: Tuple = Color::new(1.0, 2.0, 3.0).into();
+//         assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
+//     }
+// }
 
 impl ArrayBase for Color {
     type Item = f32;
@@ -445,8 +445,9 @@ impl Add for Color {
     #[must_use]
     fn add(self, rhs: Self) -> Self {
         let result = Self::zip_for_each_collect(self, rhs, |a, b| a + b);
-        let a = result.a().clamp(0.0, 1.0);
-        Color::new_with_alpha(result.r(), result.g(), result.b(), a)
+        // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
+        // let a = result.a().clamp(0.0, 1.0);
+        Color::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -500,12 +501,15 @@ impl Sub for Color {
     /// # use crate::rusty_ray_tracer::core3d::color::Color;
     /// let a = Color::new(1.23, 4.56, 7.89);
     /// let b = Color::new(1.11, 2.22, 3.33);
-    /// let expected = Color::new_with_alpha(0.12, 2.34, 4.56, 0.0);
+    /// let expected = Color::new(0.12, 2.34, 4.56);
     /// assert_eq!(expected, a - b);
     /// ```
     #[must_use]
     fn sub(self, rhs: Self) -> Self::Output {
-        Self::zip_for_each_collect(self, rhs, |a, b| a - b)
+        let result = Self::zip_for_each_collect(self, rhs, |a, b| a - b);
+        // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
+        // let a = result.a().clamp(0.0, 1.0);
+        Color::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -517,7 +521,7 @@ mod tests_sub {
     fn not_closure() {
         let a = Color::new(1.23, 4.56, 7.89);
         let b = Color::new(1.11, 2.22, 3.33);
-        let expected = Color::new_with_alpha(0.12, 2.34, 4.56, 0.0);
+        let expected = Color::new(0.12, 2.34, 4.56);
         assert_eq!(expected, a - b);
     }
 
@@ -528,7 +532,7 @@ mod tests_sub {
         let ab = Color::new(1.23, 4.56, 7.89);
         assert_eq!(ab, a - b);
         assert_ne!(ab, b - a);
-        let ba = Color::new_with_alpha(-1.23, -4.56, -7.89, -1.0);
+        let ba = Color::new(-1.23, -4.56, -7.89);
         assert_eq!(ba, b - a);
     }
 
@@ -538,8 +542,8 @@ mod tests_sub {
         let b = Color::new(1.11, 2.22, 3.33);
         assert_ne!(a - b, b - a);
 
-        let ab = Color::new_with_alpha(0.12, 2.34, 4.56, 0.0);
-        let ba = Color::new_with_alpha(-0.12, -2.34, -4.56, 0.0);
+        let ab = Color::new(0.12, 2.34, 4.56);
+        let ba = Color::new(-0.12, -2.34, -4.56);
         assert_eq!(ab, a - b);
         assert_eq!(ba, b - a);
     }
@@ -553,9 +557,9 @@ mod tests_sub {
         assert_ne!(c - (a - b), (c - a) - b);
 
         let a_bc = Color::new(5.67, 9.0, 12.33);
-        let ab_c = Color::new_with_alpha(-5.43, -4.32, -3.21, -1.0);
+        let ab_c = Color::new(-5.43, -4.32, -3.21);
         let c_ab = Color::new(5.43, 4.32, 3.21);
-        let ca_b = Color::new_with_alpha(3.21, -0.120000124, -3.45, -1.0);
+        let ca_b = Color::new(3.21, -0.120000124, -3.45);
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(ab_c, (a - b) - c);
         assert_eq!(c_ab, c - (a - b));

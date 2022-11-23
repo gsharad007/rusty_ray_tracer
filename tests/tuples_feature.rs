@@ -338,6 +338,12 @@ fn zero_sub_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     assert_eq!(result, *vector);
 }
 
+#[then(expr = r"c1 - c2 = {color}")]
+fn v1_su_v2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
+    let result = *world.get_color("c1") - *world.get_color("c2");
+    assert_eq!(result, *color);
+}
+
 #[then(expr = r"a * {float} = {tuple}")]
 fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
     let result = *world.get_tuple("a") * scaler;

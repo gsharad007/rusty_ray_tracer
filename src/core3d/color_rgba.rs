@@ -18,11 +18,11 @@ where
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
     /// # use rusty_ray_tracer::core3d::color::Color;
-    /// let color = Color::new_with_alpha(0.0, 1.0, 2.0, 3.0);
+    /// let color = Color::new(0.0, 1.0, 2.0);
     /// assert_eq!(0.0, color.get_at(0));
     /// assert_eq!(1.0, color.get_at(1));
     /// assert_eq!(2.0, color.get_at(2));
-    /// assert_eq!(3.0, color.get_at(3));
+    /// assert_eq!(1.0, color.get_at(3));
     /// ```
     #[must_use]
     fn get_at(&self, dim: usize) -> Self::Item {
@@ -36,11 +36,11 @@ where
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
     /// # use rusty_ray_tracer::core3d::color::Color;
-    /// let color = Color::new_with_alpha(1.23, 4.56, 7.89, 10.11);
+    /// let color = Color::new(1.23, 4.56, 7.89);
     /// assert_eq!(1.23, color.r());
     /// assert_eq!(4.56, color.g());
     /// assert_eq!(7.89, color.b());
-    /// assert_eq!(10.11, color.a());
+    /// assert_eq!(1.0, color.a());
     /// ```
     #[must_use]
     fn r(&self) -> Self::Item {
