@@ -5,6 +5,7 @@ use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
 use rusty_ray_tracer::core3d::vector::*;
+use rusty_ray_tracer::core3d::color::*;
 
 use std::collections::HashMap;
 use std::convert::Infallible;
@@ -24,6 +25,7 @@ pub struct TuplesWorld {
     p1: Point,
     p2: Point,
     vectors: HashMap<String, Vector>,
+    c: Color,
 }
 impl TuplesWorld {
     fn get_tuple(&mut self, name: &str) -> &mut Tuple {
@@ -44,6 +46,11 @@ impl TuplesWorld {
         self.vectors
             .entry(name.to_string())
             .or_insert_with(Vector::default)
+    }
+    fn get_color(&mut self, name: &str) -> &mut Color {
+        match name {
+            _ => &mut self.c,
+        }
     }
     fn get_any_as_tuple(&self, name: &str) -> Tuple {
         match name {
@@ -157,6 +164,33 @@ impl FromStr for CaptureVector {
     }
 }
 
+#[derive(Parameter, Deref)]
+#[param(
+    name = "color",
+    regex = r"color\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
+)]
+struct CaptureColor(Color);
+impl FromStr for CaptureColor {
+    type Err = ParseFloatError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let coords: Vec<_> = s
+            .to_lowercase()
+            .strip_prefix("color")
+            .expect("Color should start with cector")
+            .trim_matches(|p| p == '(' || p == ')')
+            .split(',')
+            .map(|ss| {
+                ss.trim()
+                    .parse::<f32>()
+                    .expect("Parsing component f32 failed")
+            })
+            .collect();
+
+        Ok(CaptureColor(Color::new(coords[0], coords[1], coords[2])))
+    }
+}
+
 // #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
 // fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
 //     world.tuple = [x, y, z, w];
@@ -177,6 +211,12 @@ fn a_point(world: &mut TuplesWorld, name: String, point: CapturePoint) {
 fn a_vector(world: &mut TuplesWorld, name: String, vector: CaptureVector) {
     let world_vector = world.get_vector(&name);
     *world_vector = *vector;
+}
+
+#[given(expr = r"{word} ← {color}")]
+fn a_color(world: &mut TuplesWorld, name: String, color: CaptureColor) {
+    let world_color = world.get_color(&name);
+    *world_color = *color;
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
