@@ -10,7 +10,7 @@ use float_cmp::{approx_eq, ApproxEq};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Point {
-    pub coords: [f32; 4],
+    pub tuple: [f32; 4],
 }
 impl Point {
     /// Creates a new Point
@@ -22,10 +22,10 @@ impl Point {
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
     /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!(1.0, point.coords[0]);
-    /// assert_eq!(2.0, point.coords[1]);
-    /// assert_eq!(3.0, point.coords[2]);
-    /// assert_eq!(1.0, point.coords[3]);
+    /// assert_eq!(1.0, point.tuple[0]);
+    /// assert_eq!(2.0, point.tuple[1]);
+    /// assert_eq!(3.0, point.tuple[2]);
+    /// assert_eq!(1.0, point.tuple[3]);
     /// assert!(point.is_point() == true);
     /// assert!(point.is_vector() == false);
     /// assert!(point.is_valid());
@@ -33,7 +33,7 @@ impl Point {
     #[must_use]
     pub fn new(x: f32, y: f32, z: f32) -> Point {
         Point {
-            coords: [x, y, z, 1.0],
+            tuple: [x, y, z, 1.0],
         }
     }
 }
@@ -45,13 +45,13 @@ mod tests_point {
     #[test]
     fn new() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     }
 
     #[test]
     fn copy() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     }
 }
 
@@ -65,10 +65,10 @@ impl Default for Point {
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
     /// let point = Point::default();
-    /// assert_eq!(0.0, point.coords[0]);
-    /// assert_eq!(0.0, point.coords[1]);
-    /// assert_eq!(0.0, point.coords[2]);
-    /// assert_eq!(1.0, point.coords[3]);
+    /// assert_eq!(0.0, point.tuple[0]);
+    /// assert_eq!(0.0, point.tuple[1]);
+    /// assert_eq!(0.0, point.tuple[2]);
+    /// assert_eq!(1.0, point.tuple[3]);
     /// assert!(point.is_point() == true);
     /// assert!(point.is_vector() == false);
     /// assert!(point.is_valid());
@@ -87,7 +87,7 @@ impl From<[f32; 3]> for Point {
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// let point = Point::from([1.0, 2.0, 3.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
         Point::new(arr[0], arr[1], arr[2])
@@ -103,7 +103,7 @@ impl From<Tuple> for Point {
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// let point = Point::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     /// ```
     ///
     /// ```
@@ -131,7 +131,7 @@ impl From<Point> for Tuple {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.coords);
     /// ```
     fn from(point: Point) -> Self {
-        Tuple::from(point.coords)
+        Tuple::from(point.tuple)
     }
 }
 
@@ -143,13 +143,13 @@ mod tests_from {
     #[test]
     fn from_array() {
         let point = Point::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     }
 
     #[test]
     fn from_tuple() {
         let point = Point::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
         assert!(panic::catch_unwind(|| Point::from(tuple)).is_err());
@@ -179,7 +179,7 @@ impl ArrayBase for Point {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
-        self.coords
+        self.tuple
     }
 
     /// Returns base array reference
@@ -192,7 +192,7 @@ impl ArrayBase for Point {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
-        &self.coords
+        &self.tuple
     }
 
     /// Returns a mutable base array reference
@@ -210,7 +210,7 @@ impl ArrayBase for Point {
     /// assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_mut());
     /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
-        &mut self.coords
+        &mut self.tuple
     }
 }
 
