@@ -1,6 +1,8 @@
 # rusty_ray_tracer
 Ray Tracer Written from scratch in Rust trying TDD
 
+Verified Commits Only
+
 ## CI Status
 
 [![Tests](https://github.com/gsharad007/rusty_ray_tracer/actions/workflows/testing.yml/badge.svg)](https://github.com/gsharad007/rusty_ray_tracer/actions/workflows/testing.yml)
