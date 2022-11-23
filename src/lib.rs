@@ -66,6 +66,6 @@ mod projectile_tests {
     fn tick(tick: f32, projectile: Projectile, environment: &Environment) -> Projectile {
         let velocity = projectile.velocity + (environment.gravity + environment.wind) * tick;
         let position = projectile.position + (velocity * tick);
-        return Projectile { position, velocity };
+        Projectile { position, velocity }
     }
 }

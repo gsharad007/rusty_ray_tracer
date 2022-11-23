@@ -129,7 +129,6 @@ pub trait ArrayBase: Sized {
     /// assert_eq!(Some(&4.0), it.next());
     /// assert_eq!(None, it.next());
     /// ```
-    #[must_use]
     fn iter(&self) -> Iter<'_, Self::Item> {
         self.get_array_ref().iter()
     }
@@ -160,7 +159,6 @@ pub trait ArrayBase: Sized {
     /// assert_eq!(Some(&14.0), it.next());
     /// assert_eq!(None, it.next());
     /// ```
-    #[must_use]
     fn iter_mut(&mut self) -> IterMut<'_, Self::Item> {
         self.get_array_mut().iter_mut()
     }

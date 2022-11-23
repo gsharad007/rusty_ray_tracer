@@ -163,25 +163,25 @@ impl FromStr for CaptureVector {
 // }
 #[given(expr = r"{word} ← {tuple}")]
 fn a_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
-    let world_tuple = world.get_tuple(&*name);
+    let world_tuple = world.get_tuple(&name);
     *world_tuple = *tuple;
 }
 
 #[given(expr = r"{word} ← {point}")]
 fn a_point(world: &mut TuplesWorld, name: String, point: CapturePoint) {
-    let world_point = world.get_point(&*name);
+    let world_point = world.get_point(&name);
     *world_point = *point;
 }
 
 #[given(expr = r"{word} ← {vector}")]
 fn a_vector(world: &mut TuplesWorld, name: String, vector: CaptureVector) {
-    let world_vector = world.get_vector(&*name);
+    let world_vector = world.get_vector(&name);
     *world_vector = *vector;
 }
 
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
-    let world_tuple = world.get_any_as_tuple(&*name);
+    let world_tuple = world.get_any_as_tuple(&name);
     match dim.as_str() {
         "x" => assert_eq!(value, world_tuple.x()),
         "y" => assert_eq!(value, world_tuple.y()),
@@ -205,25 +205,25 @@ fn negative_equal_to_tuple(world: &mut TuplesWorld, var: CaptureVar, tuple: Capt
 
 #[then(expr = r"{word} is a point")]
 fn is_a_point(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(&*name);
+    let world_tuple = world.get_any_as_tuple(&name);
     assert!(world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is not a point")]
 fn is_not_a_point(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(&*name);
+    let world_tuple = world.get_any_as_tuple(&name);
     assert!(!world_tuple.is_point());
 }
 
 #[then(expr = r"{word} is a vector")]
 fn is_a_vector(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(&*name);
+    let world_tuple = world.get_any_as_tuple(&name);
     assert!(world_tuple.is_vector());
 }
 
 #[then(expr = r"{word} is not a vector")]
 fn is_not_a_vector(world: &mut TuplesWorld, name: String) {
-    let world_tuple = world.get_any_as_tuple(&*name);
+    let world_tuple = world.get_any_as_tuple(&name);
     assert!(!world_tuple.is_vector());
 }
 
@@ -289,7 +289,7 @@ fn a_div_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureT
 
 #[then(expr = r"magnitude\({word}\) = {float}")]
 fn magnitude_v_equal_scaler(world: &mut TuplesWorld, name: String, scaler: f32) {
-    let result = world.get_vector(&*name).magnitude();
+    let result = world.get_vector(&name).magnitude();
     assert_approx_eq!(f32, result, scaler);
 }
 
@@ -324,8 +324,8 @@ fn cross_vector_vector_equal_vector(
     name2: String,
     vector: CaptureVector,
 ) {
-    let a = *world.get_vector(&*name1);
-    let b = *world.get_vector(&*name2);
+    let a = *world.get_vector(&name1);
+    let b = *world.get_vector(&name2);
     assert_eq!(Vector::cross(a, b), *vector);
 }
 

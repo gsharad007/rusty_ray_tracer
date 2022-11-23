@@ -731,17 +731,11 @@ mod tests_magnitude {
         assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
         assert_eq!(
             1.0,
-            Vector::new(0.57735029, 0.57735029, 0.57735028).magnitude()
+            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028).magnitude()
         );
 
-        assert_eq!(
-            3.7416573867739413855837487323165,
-            Vector::new(1.0, 2.0, 3.0).magnitude()
-        );
-        assert_eq!(
-            3.7416573867739413855837487323165,
-            Vector::new(-1.0, -2.0, -3.0).magnitude()
-        );
+        assert_eq!(3.741_657_5, Vector::new(1.0, 2.0, 3.0).magnitude());
+        assert_eq!(3.741_657_5, Vector::new(-1.0, -2.0, -3.0).magnitude());
         assert_eq!(9.195575, Vector::new(1.23, 4.56, 7.89).magnitude());
         assert_eq!(4.1532397, Vector::new(1.11, 2.22, 3.33).magnitude());
     }
@@ -787,8 +781,8 @@ mod tests_normalize {
             Vector::new(0.0, 0.0, 1.0).normalize()
         );
         assert_eq!(
-            Vector::new(0.57735029, 0.57735029, 0.57735028),
-            Vector::new(0.57735029, 0.57735029, 0.57735028).normalize()
+            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028),
+            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028).normalize()
         );
 
         assert_eq!(
@@ -857,8 +851,11 @@ mod tests_dot_product {
         );
         assert_eq!(
             1.0,
-            Vector::new(0.57735029, 0.57735028, 0.57735028)
-                .dot(Vector::new(0.57735029, 0.57735028, 0.57735028))
+            Vector::new(0.577_350_3, 0.57735028, 0.57735028).dot(Vector::new(
+                0.577_350_3,
+                0.57735028,
+                0.57735028
+            ))
         );
 
         assert_eq!(
@@ -960,8 +957,11 @@ mod tests_cross_product {
         );
         assert_eq!(
             Vector::new(0.0, 0.0, 0.0),
-            Vector::new(0.57735029, 0.57735028, 0.57735028)
-                .cross(Vector::new(0.57735029, 0.57735028, 0.57735028))
+            Vector::new(0.577_350_3, 0.57735028, 0.57735028).cross(Vector::new(
+                0.577_350_3,
+                0.57735028,
+                0.57735028
+            ))
         );
 
         assert_eq!(
