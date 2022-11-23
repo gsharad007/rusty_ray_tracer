@@ -8,7 +8,7 @@ use float_cmp::{approx_eq, ApproxEq};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Vector {
-    pub coords: [f32; 4],
+    pub tuple: [f32; 4],
 }
 impl Vector {
     /// Creates a new Vector
@@ -31,7 +31,7 @@ impl Vector {
     #[must_use]
     pub fn new(x: f32, y: f32, z: f32) -> Vector {
         Vector {
-            coords: [x, y, z, 0.0],
+            tuple: [x, y, z, 0.0],
         }
     }
 }
@@ -43,7 +43,7 @@ mod tests_vector {
     #[test]
     fn new() {
         let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     }
 }
 
@@ -55,7 +55,7 @@ impl From<[f32; 3]> for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from([1.0, 2.0, 3.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
         Vector::new(arr[0], arr[1], arr[2])
@@ -71,7 +71,7 @@ impl From<Tuple> for Vector {
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     /// ```
     ///
     /// ```
@@ -96,7 +96,7 @@ impl From<Vector> for Tuple {
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     /// ```
     ///
     /// ```
@@ -108,7 +108,7 @@ impl From<Vector> for Tuple {
     /// ```
     fn from(vector: Vector) -> Self {
         debug_assert!(vector.is_vector());
-        Tuple::from(vector.coords)
+        Tuple::from(vector.tuple)
     }
 }
 
@@ -120,13 +120,13 @@ mod tests_from {
     #[test]
     fn from_array() {
         let vector = Vector::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     }
 
     #[test]
     fn from_tuple() {
         let vector = Vector::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.coords);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
         assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
@@ -156,7 +156,7 @@ impl ArrayBase for Vector {
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
-        self.coords
+        self.tuple
     }
 
     /// Returns base array reference
@@ -169,7 +169,7 @@ impl ArrayBase for Vector {
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
-        &self.coords
+        &self.tuple
     }
 
     /// Returns a mutable base array reference
@@ -187,7 +187,7 @@ impl ArrayBase for Vector {
     /// assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_mut());
     /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
-        &mut self.coords
+        &mut self.tuple
     }
 }
 
@@ -642,7 +642,7 @@ impl Div<f32> for Vector {
     /// let expected = Vector::new(0.1, -0.2, 0.3);
     /// assert_eq!(expected, result);
     ///
-    /// assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).coords[0..3]
+    /// assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).tuple[0..3]
     ///     .iter()
     ///     .all(|&f| f.is_infinite()));
     /// assert!((Vector::new(0.0, 0.0, 0.0) / 0.0)
@@ -676,7 +676,7 @@ mod tests_div {
 
     #[test]
     fn div_by_zero() {
-        assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).coords[0..3]
+        assert!((Vector::new(1.23, 4.56, 7.89) / 0.0).tuple[0..3]
             .iter()
             .all(|&f| f.is_infinite()));
         assert!((Vector::new(0.0, 0.0, 0.0) / 0.0)
