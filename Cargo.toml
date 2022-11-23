@@ -14,6 +14,8 @@ async-trait = "0.1"
 cucumber = "0.11"
 futures = "0.3"
 log = "0.4.17"
+# env_logger = "*"
+# test-log = "0.2"
 
 [[test]]
 name = "example" # this should be the same as the filename of your test target

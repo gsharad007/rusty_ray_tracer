@@ -12,7 +12,9 @@ mod tests {
 #[cfg(test)]
 mod projectile_tests {
     use crate::core3d::{coordinates4::Coordinates4, point::Point, vector::Vector};
-    use log::info;
+    // use log::info;
+    // use test_log::test;
+    use std::println as info;
 
     struct Projectile {
         position: Point,
@@ -25,6 +27,7 @@ mod projectile_tests {
     }
 
     #[test]
+    // #[test_log::test] // Automatically wraps test to initialize logging
     fn projectile() {
         let projectile = Projectile {
             position: Point::new(0.0, 1.0, 0.0),
@@ -44,7 +47,10 @@ mod projectile_tests {
         while travelling_projectile.position.y() > 0.0 {
             accumulated_ticks += tick_per_frame;
             travelling_projectile = tick(tick_per_frame, travelling_projectile, &environment);
-            info!(target: "projectile_tests", "travelling_projectile.position {}", travelling_projectile.position);
+            info!(
+                "travelling_projectile.position {}",
+                travelling_projectile.position
+            );
         }
         assert_eq!(2.7666647, accumulated_ticks);
         assert_eq!(

@@ -272,7 +272,7 @@ impl Display for Point {
             self.get_at(0),
             self.get_at(1),
             self.get_at(2),
-            self.get_at(3)
+            self.get_at(3),
         )
     }
 }
