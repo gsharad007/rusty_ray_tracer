@@ -144,6 +144,10 @@ mod tests {
 
         assert!(panic::catch_unwind(|| tuple.get_at(4)).is_err());
         assert!(panic::catch_unwind(|| tuple.get_at(usize::MAX)).is_err());
+
+        let mut tuple_clone = tuple.clone();
+        assert_eq!([0.0, 1.0, 2.0, 3.0], *tuple_clone.get_array_mut());
+        assert_eq!([0.0, 1.0, 2.0, 3.0], tuple.get_array());
     }
 
     #[test]

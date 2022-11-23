@@ -462,10 +462,10 @@ mod tests_add {
 }
 
 impl Sub for Vector {
-    /// The resulting type after applying the `+` operator.
+    /// The resulting type after applying the `-` operator.
     type Output = Vector;
 
-    /// Performs the `+` operation.
+    /// Performs the `-` operation.
     ///
     /// # Example
     ///
