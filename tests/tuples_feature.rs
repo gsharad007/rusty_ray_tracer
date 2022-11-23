@@ -1,12 +1,12 @@
 use derive_more::Deref;
 use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
+use rusty_ray_tracer::core3d::color::*;
 use rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
 use rusty_ray_tracer::core3d::vector::*;
-use rusty_ray_tracer::core3d::color::*;
 
 use std::collections::HashMap;
 use std::convert::Infallible;
@@ -48,10 +48,8 @@ impl TuplesWorld {
             .entry(name.to_string())
             .or_insert_with(Vector::default)
     }
-    fn get_color(&mut self, name: &str) -> &mut Color {
-        match name {
-            _ => &mut self.c,
-        }
+    fn get_color(&mut self, _name: &str) -> &mut Color {
+        &mut self.c
     }
     fn get_any_as_tuple(&self, name: &str) -> Tuple {
         match name {

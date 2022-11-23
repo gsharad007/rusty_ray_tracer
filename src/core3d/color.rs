@@ -1,4 +1,6 @@
-use super::{tuple::Tuple, array_base::ArrayBase, color_rgba::ColorRGBA, coordinates4::Coordinates4};
+use super::{
+    array_base::ArrayBase, color_rgba::ColorRGBA, coordinates4::Coordinates4, tuple::Tuple,
+};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
