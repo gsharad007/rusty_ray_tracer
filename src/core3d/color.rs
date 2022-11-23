@@ -152,7 +152,7 @@ impl From<Color> for Tuple {
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::color::Color;
     /// let result = Tuple::from(Color::from([1.0, 2.0, 3.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.tuple);
     /// ```
     fn from(color: Color) -> Self {
         Tuple::from(color.tuple)
@@ -181,10 +181,10 @@ mod tests_from {
     #[test]
     fn into_tuple() {
         let tuple = Tuple::from(Color::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
 
         let tuple: Tuple = Color::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
     }
 }
 

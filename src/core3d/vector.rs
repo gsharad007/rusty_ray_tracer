@@ -95,16 +95,8 @@ impl From<Vector> for Tuple {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
+    /// let vector = Tuple::from(Vector::from([1.0, 2.0, 3.0]));
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
-    /// ```
-    ///
-    /// ```
-    /// # use std::panic;
-    /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
-    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
     /// ```
     fn from(vector: Vector) -> Self {
         debug_assert!(vector.is_vector());
@@ -135,10 +127,10 @@ mod tests_from {
     #[test]
     fn into_tuple() {
         let tuple = Tuple::from(Vector::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.tuple);
 
         let tuple: Tuple = Vector::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.tuple);
     }
 }
 
