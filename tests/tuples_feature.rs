@@ -403,7 +403,6 @@ fn cross_vector_vector_equal_vector(
     assert_eq!(Vector::cross(a, b), *vector);
 }
 
-
 #[then(expr = r"c1 * c2 = {color}")]
 fn c1_mul_c2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
     let result = *world.get_color("c1") * *world.get_color("c2");

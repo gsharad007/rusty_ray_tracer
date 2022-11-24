@@ -1,10 +1,8 @@
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Mul, Sub};
 
 use float_cmp::{approx_eq, ApproxEq};
 
-use super::{
-    array_base::ArrayBase, color_rgb::ColorRGB,
-};
+use super::{array_base::ArrayBase, color_rgb::ColorRGB};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Color {
