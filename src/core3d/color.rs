@@ -606,3 +606,58 @@ mod tests_mul {
         assert_eq!(a * b, a);
     }
 }
+
+impl Mul for Color {
+    type Output = Self;
+
+    /// Performs the Hadamard product (or Schur product) `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::color::Color;
+    /// let result = Color::new(1.11, -2.22, 3.33) * Color::new(100.1, 100.1, 100.1);
+    /// let expected = Color::new(111.111, -222.222, 333.333);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self::zip_for_each_collect(self, rhs, |a, b| a * b)
+    }
+}
+
+#[cfg(test)]
+mod tests_product {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Color::new(1.11, -2.22, 3.33) * Color::new(100.1, 100.1, 100.1);
+        let expected = Color::new(111.111, -222.222, 333.333);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Color::new(1.23, 4.56, 7.89);
+        let b = Color::new(1.0, 1.0, 1.0);
+        assert_eq!(a * b, a);
+        assert_eq!(b * a, a);
+    }
+
+    #[test]
+    fn commutative() {
+        let a = Color::new(1.23, 4.56, 7.89);
+        let b = Color::new(1.11, 2.22, 3.33);
+        assert_eq!(a * b, b * a);
+    }
+
+    #[test]
+    fn associative() {
+        let a = Color::new(1.23, 4.56, 7.89);
+        let b = Color::new(1.11, 2.22, 3.33);
+        let c = Color::new(5.55, 6.66, 7.77);
+        assert_eq!(a * (b * c), (a * b) * c);
+        assert_eq!(c * (a * b), (c * a) * b);
+    }
+}
