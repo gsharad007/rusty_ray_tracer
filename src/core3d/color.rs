@@ -63,9 +63,12 @@ mod tests_color {
     }
 
     #[test]
-    fn copy() {
+    fn copy_clone() {
         let color = Color::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
+        let color_copy = color;
+        let color_clone = color.clone();
+        assert_eq!([1.0, 2.0, 3.0, 1.0], color_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], color_clone.tuple);
     }
 }
 

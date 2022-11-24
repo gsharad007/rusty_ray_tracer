@@ -49,9 +49,12 @@ mod tests_point {
     }
 
     #[test]
-    fn copy() {
+    fn clone() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+        let point_copy = point;
+        let point_clone = point_copy.clone();
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], point_clone.tuple);
     }
 }
 
@@ -379,7 +382,6 @@ impl ApproxEq for Point {
     /// # Example
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// # use float_cmp::ApproxEq;
     /// let a = Point::new(1.23, 4.56, 0.000000000000);
@@ -388,7 +390,6 @@ impl ApproxEq for Point {
     /// ```
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// # use float_cmp::ApproxEq;
     /// let a = Point::new(1.23, 4.56, 1.0000000);
@@ -397,7 +398,6 @@ impl ApproxEq for Point {
     /// ```
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// # use float_cmp::ApproxEq;
     /// let a = Point::new(1.23, 4.56, 0.0);

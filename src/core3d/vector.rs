@@ -45,6 +45,15 @@ mod tests_vector {
         let vector = Vector::new(1.0, 2.0, 3.0);
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     }
+
+    #[test]
+    fn copy_clone() {
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        let vector_copy = vector;
+        let vector_clone = vector.clone();
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], vector_clone.tuple);
+    }
 }
 
 impl From<[f32; 3]> for Vector {
