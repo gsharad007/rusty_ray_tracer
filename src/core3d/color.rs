@@ -1,9 +1,9 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 
 use float_cmp::{approx_eq, ApproxEq};
 
 use super::{
-    array_base::ArrayBase, color_rgba::ColorRGBA,
+    array_base::ArrayBase, color_rgb::ColorRGB,
 };
 
 #[derive(Copy, Clone, Default, Debug)]
@@ -17,7 +17,7 @@ impl Color {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+    /// # use crate::rusty_ray_tracer::core3d::color_rgb::ColorRGB;
     ///
     /// let color = Color::new(1.0, 2.0, 3.0);
     /// assert_eq!(1.0, color.tuple[0]);
@@ -38,7 +38,7 @@ impl Color {
     // ///
     // /// ```
     // /// # use crate::rusty_ray_tracer::core3d::color::Color;
-    // /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+    // /// # use crate::rusty_ray_tracer::core3d::color_rgb::ColorRGB;
     // ///
     // /// let color = Color::nnew_with_alphaw(1.0, 2.0, 3.0, 4.0);
     // /// assert_eq!(1.0, color.tuple[0]);
@@ -247,12 +247,12 @@ mod tests_array_base {
     }
 }
 
-impl ColorRGBA for Color {}
+impl ColorRGB for Color {}
 
 #[cfg(test)]
 mod tests_colorrgba {
     use super::*;
-    use crate::core3d::color_rgba::ColorRGBA;
+    use crate::core3d::color_rgb::ColorRGB;
 
     #[test]
     fn assign_array() {
@@ -260,7 +260,7 @@ mod tests_colorrgba {
         assert_eq!(3.0, color.r());
         assert_eq!(2.0, color.g());
         assert_eq!(1.0, color.b());
-        assert_eq!(1.0, color.a());
+        // assert_eq!(1.0, color.a());
     }
 
     #[test]
@@ -269,7 +269,7 @@ mod tests_colorrgba {
         assert_eq!(1.0, color.r());
         assert_eq!(2.0, color.g());
         assert_eq!(3.0, color.b());
-        assert_eq!(1.0, color.a());
+        // assert_eq!(1.0, color.a());
     }
 }
 
@@ -564,5 +564,45 @@ mod tests_sub {
         assert_eq!(ab_c, (a - b) - c);
         assert_eq!(c_ab, c - (a - b));
         assert_eq!(ca_b, (c - a) - b);
+    }
+}
+
+impl Mul<f32> for Color {
+    type Output = Self;
+
+    /// Performs the `*` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::color::Color;
+    /// let result = Color::new(1.11, -2.22, 3.33) * 100.1;
+    /// let expected = Color::new(111.111, -222.222, 333.333);
+    /// assert_eq!(expected, result);
+    /// ```
+    fn mul(self, rhs: f32) -> Self::Output {
+        let mut result = self;
+        result.iter_mut().for_each(|x| *x *= rhs);
+        Color::new(result.r(), result.g(), result.b())
+    }
+}
+
+#[cfg(test)]
+mod tests_mul {
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let result = Color::new(1.11, -2.22, 3.33) * 100.1;
+        let expected = Color::new(111.111, -222.222, 333.333);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Color::new(1.23, 4.56, 7.89);
+        let b = 1.0;
+        assert_eq!(a * b, a);
     }
 }

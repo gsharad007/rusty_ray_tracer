@@ -7,7 +7,7 @@ use crate::core3d::array_base::ArrayBase;
 /// ## Right Handed Coordinates
 /// With the y axis pointing up, and the x axis pointing to the right, the z axis can be defined to point toward you.
 /// todo! Matrix maybe a better name for this
-pub trait ColorRGBA: ArrayBase<Item = f32> + Sized
+pub trait ColorRGB: ArrayBase<Item = f32> + Sized
 where
     <Self as ArrayBase>::Item: PartialEq + Sized,
 {
@@ -16,7 +16,7 @@ where
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+    /// # use crate::rusty_ray_tracer::core3d::color_rgb::ColorRGB;
     /// # use rusty_ray_tracer::core3d::color::Color;
     /// let color = Color::new(0.0, 1.0, 2.0);
     /// assert_eq!(0.0, color.get_at(0));
@@ -34,13 +34,12 @@ where
     /// # Examples
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+    /// # use crate::rusty_ray_tracer::core3d::color_rgb::ColorRGB;
     /// # use rusty_ray_tracer::core3d::color::Color;
     /// let color = Color::new(1.23, 4.56, 7.89);
     /// assert_eq!(1.23, color.r());
     /// assert_eq!(4.56, color.g());
     /// assert_eq!(7.89, color.b());
-    /// assert_eq!(1.0, color.a());
     /// ```
     #[must_use]
     fn r(&self) -> Self::Item {
@@ -57,13 +56,6 @@ where
     #[must_use]
     fn b(&self) -> Self::Item {
         self.get_at(2)
-    }
-
-    /// Gets the alpha color component
-    /// multiplication
-    #[must_use]
-    fn a(&self) -> Self::Item {
-        self.get_at(3)
     }
 }
 
@@ -92,7 +84,7 @@ mod tests {
             &mut self.tuple
         }
     }
-    impl ColorRGBA for Color {}
+    impl ColorRGB for Color {}
 
     #[test]
     fn assign_array() {
@@ -131,6 +123,5 @@ mod tests {
         assert_eq!(1.23, color.r());
         assert_eq!(4.56, color.g());
         assert_eq!(7.89, color.b());
-        assert_eq!(10.11, color.a());
     }
 }

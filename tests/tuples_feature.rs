@@ -2,7 +2,7 @@ use derive_more::Deref;
 use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
 use rusty_ray_tracer::core3d::color::*;
-use rusty_ray_tracer::core3d::color_rgba::ColorRGBA;
+use rusty_ray_tracer::core3d::color_rgb::ColorRGB;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
@@ -243,7 +243,6 @@ fn dim_color_equal(world: &mut TuplesWorld, name: String, dim: String, value: f3
         "red" => assert_eq!(value, world_color.r()),
         "green" => assert_eq!(value, world_color.g()),
         "blue" => assert_eq!(value, world_color.b()),
-        "alpha" => assert_eq!(value, world_color.a()),
         _ => unreachable!(),
     };
 }
@@ -348,6 +347,12 @@ fn v1_su_v2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
 fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
     let result = *world.get_tuple("a") * scaler;
     assert_eq!(result, *tuple);
+}
+
+#[then(expr = r"c * {float} = {color}")]
+fn a_mul_float_equal_color(world: &mut TuplesWorld, scaler: f32, color: CaptureColor) {
+    let result = *world.get_color("c") * scaler;
+    assert_eq!(result, *color);
 }
 
 #[then(expr = r"a \/ {float} = {tuple}")]
