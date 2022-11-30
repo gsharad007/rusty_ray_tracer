@@ -1,10 +1,14 @@
+use rusty_ray_tracer::graphics2d::canvas::Canvas;
+
 use std::convert::Infallible;
 
 use async_trait::async_trait;
-use cucumber::{World, WorldInit};
+use cucumber::{given, World, WorldInit};
 
-#[derive(Debug, WorldInit, Default)]
-pub struct CanvasWorld {}
+#[derive(WorldInit, Default, Debug)]
+pub struct CanvasWorld {
+    c: Canvas,
+}
 
 // `World` needs to be implemented, so Cucumber knows how to construct it
 // for each scenario.
@@ -16,6 +20,12 @@ impl World for CanvasWorld {
     async fn new() -> Result<Self, Infallible> {
         Ok(Self::default())
     }
+}
+
+#[given(expr = r"c ← canvas\(10, 20\)")]
+fn a_tuple(world: &mut CanvasWorld) {
+    let world_canvas = &mut world.c;
+    *world_canvas = Canvas::new(10, 20);
 }
 
 // This runs before everything else, so you can setup things here.

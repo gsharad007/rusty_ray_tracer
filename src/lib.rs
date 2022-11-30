@@ -1,4 +1,5 @@
 pub mod core3d;
+pub mod graphics2d;
 
 #[cfg(test)]
 mod tests {

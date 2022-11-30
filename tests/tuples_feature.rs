@@ -17,7 +17,7 @@ use async_trait::async_trait;
 use cucumber::{given, then, when, Parameter, World, WorldInit};
 
 // `World` is your shared, likely mutable state.
-#[derive(Debug, WorldInit, Default)]
+#[derive(WorldInit, Default, Debug)]
 pub struct TuplesWorld {
     a: Tuple,
     a1: Tuple,
