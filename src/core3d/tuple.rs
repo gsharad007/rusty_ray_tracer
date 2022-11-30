@@ -5,7 +5,7 @@ use std::ops::{Div, Mul, Neg};
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct Tuple {
-    pub coords: [f32; 4],
+    pub tuple: [f32; 4],
 }
 impl Tuple {
     /// Creates a new tuple from x, y, z, w scaler values
@@ -16,11 +16,11 @@ impl Tuple {
     /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     ///
     /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     /// ```
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Tuple {
-            coords: [x, y, z, w],
+            tuple: [x, y, z, w],
         }
     }
 }
@@ -32,7 +32,7 @@ mod tests_tuple {
     #[test]
     fn new() {
         let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
-        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     }
 }
 
@@ -45,10 +45,10 @@ impl From<[f32; 4]> for Tuple {
     /// # use rusty_ray_tracer::core3d::tuple::Tuple;
     ///
     /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     /// ```
     fn from(arr: [f32; 4]) -> Self {
-        Tuple { coords: arr }
+        Tuple { tuple: arr }
     }
 }
 
@@ -59,7 +59,7 @@ mod tests_from {
     #[test]
     fn from_array() {
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.coords);
+        assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     }
 }
 
@@ -77,7 +77,7 @@ impl ArrayBase for Tuple {
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
-        self.coords
+        self.tuple
     }
 
     /// Returns base array reference
@@ -90,7 +90,7 @@ impl ArrayBase for Tuple {
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], *tuple.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
-        &self.coords
+        &self.tuple
     }
 
     /// Returns a mutable base array reference
@@ -108,7 +108,7 @@ impl ArrayBase for Tuple {
     /// assert_eq!([11.0, 12.0, 13.0, 14.0], *tuple.get_array_mut());
     /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
-        &mut self.coords
+        &mut self.tuple
     }
 }
 

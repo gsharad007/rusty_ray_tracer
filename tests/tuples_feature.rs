@@ -1,6 +1,8 @@
 use derive_more::Deref;
 use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
+use rusty_ray_tracer::core3d::color::*;
+use rusty_ray_tracer::core3d::color_rgb::ColorRGB;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
 use rusty_ray_tracer::core3d::point::*;
 use rusty_ray_tracer::core3d::tuple::*;
@@ -24,6 +26,9 @@ pub struct TuplesWorld {
     p1: Point,
     p2: Point,
     vectors: HashMap<String, Vector>,
+    c: Color,
+    c1: Color,
+    c2: Color,
 }
 impl TuplesWorld {
     fn get_tuple(&mut self, name: &str) -> &mut Tuple {
@@ -44,6 +49,13 @@ impl TuplesWorld {
         self.vectors
             .entry(name.to_string())
             .or_insert_with(Vector::default)
+    }
+    fn get_color(&mut self, name: &str) -> &mut Color {
+        match name {
+            "c1" => &mut self.c1,
+            "c2" => &mut self.c2,
+            _ => &mut self.c,
+        }
     }
     fn get_any_as_tuple(&self, name: &str) -> Tuple {
         match name {
@@ -157,6 +169,33 @@ impl FromStr for CaptureVector {
     }
 }
 
+#[derive(Parameter, Deref)]
+#[param(
+    name = "color",
+    regex = r"color\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
+)]
+struct CaptureColor(Color);
+impl FromStr for CaptureColor {
+    type Err = ParseFloatError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let coords: Vec<_> = s
+            .to_lowercase()
+            .strip_prefix("color")
+            .expect("Color should start with cector")
+            .trim_matches(|p| p == '(' || p == ')')
+            .split(',')
+            .map(|ss| {
+                ss.trim()
+                    .parse::<f32>()
+                    .expect("Parsing component f32 failed")
+            })
+            .collect();
+
+        Ok(CaptureColor(Color::new(coords[0], coords[1], coords[2])))
+    }
+}
+
 // #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
 // fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
 //     world.tuple = [x, y, z, w];
@@ -179,6 +218,12 @@ fn a_vector(world: &mut TuplesWorld, name: String, vector: CaptureVector) {
     *world_vector = *vector;
 }
 
+#[given(expr = r"{word} ← {color}")]
+fn a_color(world: &mut TuplesWorld, name: String, color: CaptureColor) {
+    let world_color = world.get_color(&name);
+    *world_color = *color;
+}
+
 #[then(regex = r"^([^\s])\.([xyzw]) = ([\d\.-]+)$")]
 fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
     let world_tuple = world.get_any_as_tuple(&name);
@@ -187,6 +232,17 @@ fn dim_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
         "y" => assert_eq!(value, world_tuple.y()),
         "z" => assert_eq!(value, world_tuple.z()),
         "w" => assert_eq!(value, world_tuple.w()),
+        _ => unreachable!(),
+    };
+}
+
+#[then(regex = r"^([^\s])\.(red|green|blue|alpha) = ([\d\.-]+)$")]
+fn dim_color_equal(world: &mut TuplesWorld, name: String, dim: String, value: f32) {
+    let world_color = world.get_color(&name);
+    match dim.as_str() {
+        "red" => assert_eq!(value, world_color.r()),
+        "green" => assert_eq!(value, world_color.g()),
+        "blue" => assert_eq!(value, world_color.b()),
         _ => unreachable!(),
     };
 }
@@ -251,6 +307,12 @@ fn zero_add_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     assert_eq!(result, *vector);
 }
 
+#[then(expr = r"c1 + c2 = {color}")]
+fn v1_add_v2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
+    let result = *world.get_color("c1") + *world.get_color("c2");
+    assert_eq!(result, *color);
+}
+
 #[then(expr = r"p1 - p2 = {vector}")]
 fn p1_sub_p2_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     let result = world.p1 - world.p2;
@@ -275,10 +337,22 @@ fn zero_sub_v_eq_vector(world: &mut TuplesWorld, vector: CaptureVector) {
     assert_eq!(result, *vector);
 }
 
+#[then(expr = r"c1 - c2 = {color}")]
+fn c1_sub_c2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
+    let result = *world.get_color("c1") - *world.get_color("c2");
+    assert_eq!(result, *color);
+}
+
 #[then(expr = r"a * {float} = {tuple}")]
 fn a_mul_float_equal_tuple(world: &mut TuplesWorld, scaler: f32, tuple: CaptureTuple) {
     let result = *world.get_tuple("a") * scaler;
     assert_eq!(result, *tuple);
+}
+
+#[then(expr = r"c * {float} = {color}")]
+fn a_mul_float_equal_color(world: &mut TuplesWorld, scaler: f32, color: CaptureColor) {
+    let result = *world.get_color("c") * scaler;
+    assert_eq!(result, *color);
 }
 
 #[then(expr = r"a \/ {float} = {tuple}")]
@@ -327,6 +401,12 @@ fn cross_vector_vector_equal_vector(
     let a = *world.get_vector(&name1);
     let b = *world.get_vector(&name2);
     assert_eq!(Vector::cross(a, b), *vector);
+}
+
+#[then(expr = r"c1 * c2 = {color}")]
+fn c1_mul_c2_eq_color(world: &mut TuplesWorld, color: CaptureColor) {
+    let result = *world.get_color("c1") * *world.get_color("c2");
+    assert_eq!(result, *color);
 }
 
 // This runs before everything else, so you can setup things here.

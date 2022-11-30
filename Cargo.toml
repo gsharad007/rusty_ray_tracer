@@ -22,5 +22,5 @@ name = "example" # this should be the same as the filename of your test target
 harness = false  # allows Cucumber to print output instead of libtest
 
 [[test]]
-name = "tuples" # this should be the same as the filename of your test target
+name = "tuples_feature" # this should be the same as the filename of your test target
 harness = false  # allows Cucumber to print output instead of libtest
