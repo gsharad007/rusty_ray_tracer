@@ -1,9 +1,9 @@
-use rusty_ray_tracer::graphics2d::canvas::Canvas;
+use rusty_ray_tracer::{core3d::color_rgb::ColorRGB, graphics2d::canvas::Canvas};
 
 use std::convert::Infallible;
 
 use async_trait::async_trait;
-use cucumber::{given, World, WorldInit};
+use cucumber::{given, then, World, WorldInit};
 
 #[derive(WorldInit, Default, Debug)]
 pub struct CanvasWorld {
@@ -23,9 +23,31 @@ impl World for CanvasWorld {
 }
 
 #[given(expr = r"c ← canvas\(10, 20\)")]
-fn a_tuple(world: &mut CanvasWorld) {
+fn a_canvas(world: &mut CanvasWorld) {
     let world_canvas = &mut world.c;
     *world_canvas = Canvas::new(10, 20);
+}
+
+#[then(expr = r"c.width = {int}")]
+fn dim_width_equals(world: &mut CanvasWorld, dimension: u16) {
+    assert_eq!(dimension, world.c.width);
+}
+
+#[then(expr = r"c.height = {int}")]
+fn dim_height_equals(world: &mut CanvasWorld, dimension: u16) {
+    assert_eq!(dimension, world.c.height);
+}
+
+#[then(expr = r"every pixel of c is color\(0, 0, 0\)")]
+fn every_pixel_equals(world: &mut CanvasWorld) {
+    for y in 0..world.c.height {
+        for x in 0..world.c.width {
+            let pixel = world.c.get_pixel(x, y);
+            assert_eq!(0.0, pixel.r());
+            assert_eq!(0.0, pixel.g());
+            assert_eq!(0.0, pixel.b());
+        }
+    }
 }
 
 // This runs before everything else, so you can setup things here.
