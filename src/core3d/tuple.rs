@@ -20,7 +20,7 @@ impl Tuple {
     /// ```
     #[must_use]
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
-        Tuple {
+        Self {
             tuple: [x, y, z, w],
         }
     }
@@ -49,7 +49,7 @@ impl From<[f32; 4]> for Tuple {
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     /// ```
     fn from(arr: [f32; 4]) -> Self {
-        Tuple { tuple: arr }
+        Self { tuple: arr }
     }
 }
 

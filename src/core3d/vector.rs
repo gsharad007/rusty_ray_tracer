@@ -29,8 +29,8 @@ impl Vector {
     /// assert!(vector.is_valid());
     /// ```
     #[must_use]
-    pub fn new(x: f32, y: f32, z: f32) -> Vector {
-        Vector {
+    pub fn new(x: f32, y: f32, z: f32) -> Self {
+        Self {
             tuple: [x, y, z, 0.0],
         }
     }
@@ -68,7 +68,7 @@ impl From<[f32; 3]> for Vector {
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
-        Vector::new(arr[0], arr[1], arr[2])
+        Self::new(arr[0], arr[1], arr[2])
     }
 }
 
@@ -93,7 +93,7 @@ impl From<Tuple> for Vector {
     /// ```
     fn from(tuple: Tuple) -> Self {
         debug_assert!(tuple.is_vector());
-        Vector::new(tuple.x(), tuple.y(), tuple.z())
+        Self::new(tuple.x(), tuple.y(), tuple.z())
     }
 }
 
@@ -110,7 +110,7 @@ impl From<Vector> for Tuple {
     /// ```
     fn from(vector: Vector) -> Self {
         debug_assert!(vector.is_vector());
-        Tuple::from(vector.tuple)
+        Self::from(vector.tuple)
     }
 }
 
@@ -465,7 +465,7 @@ mod tests_add {
 
 impl Sub for Vector {
     /// The resulting type after applying the `-` operator.
-    type Output = Vector;
+    type Output = Self;
 
     /// Performs the `-` operation.
     ///
@@ -912,7 +912,7 @@ impl CrossProduct for Vector {
     /// ```
     #[must_use]
     fn cross(self, other: Self) -> Self {
-        Vector::new(
+        Self::new(
             (self.get_array()[1] * other.get_array()[2])
                 - (self.get_array()[2] * other.get_array()[1]),
             (self.get_array()[2] * other.get_array()[0])

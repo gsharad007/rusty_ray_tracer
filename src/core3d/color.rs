@@ -24,8 +24,8 @@ impl Color {
     /// assert_eq!(1.0, color.tuple[3]);
     /// ```
     #[must_use]
-    pub fn new(r: f32, g: f32, b: f32) -> Color {
-        Color {
+    pub fn new(r: f32, g: f32, b: f32) -> Self {
+        Self {
             tuple: [r, g, b, 1.0],
         }
     }
@@ -85,7 +85,7 @@ impl From<[f32; 3]> for Color {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
-        Color::new(arr[0], arr[1], arr[2])
+        Self::new(arr[0], arr[1], arr[2])
     }
 }
 
@@ -449,7 +449,7 @@ impl Add for Color {
         let result = Self::zip_for_each_collect(self, rhs, |a, b| a + b);
         // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
         // let a = result.a().clamp(0.0, 1.0);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -492,7 +492,7 @@ mod tests_add {
 
 impl Sub for Color {
     /// The resulting type after applying the `-` operator.
-    type Output = Color;
+    type Output = Self;
 
     /// Performs the `-` operation.
     ///
@@ -511,7 +511,7 @@ impl Sub for Color {
         let result = Self::zip_for_each_collect(self, rhs, |a, b| a - b);
         // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
         // let a = result.a().clamp(0.0, 1.0);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -586,7 +586,7 @@ impl Mul<f32> for Color {
     fn mul(self, rhs: f32) -> Self::Output {
         let mut result = self;
         result.iter_mut().for_each(|x| *x *= rhs);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 

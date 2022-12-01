@@ -31,8 +31,8 @@ impl Point {
     /// assert!(point.is_valid());
     /// ```
     #[must_use]
-    pub fn new(x: f32, y: f32, z: f32) -> Point {
-        Point {
+    pub fn new(x: f32, y: f32, z: f32) -> Self {
+        Self {
             tuple: [x, y, z, 1.0],
         }
     }
@@ -94,7 +94,7 @@ impl From<[f32; 3]> for Point {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
-        Point::new(arr[0], arr[1], arr[2])
+        Self::new(arr[0], arr[1], arr[2])
     }
 }
 
@@ -119,7 +119,7 @@ impl From<Tuple> for Point {
     /// ```
     fn from(tuple: Tuple) -> Self {
         debug_assert!(tuple.is_point());
-        Point::new(tuple.x(), tuple.y(), tuple.z())
+        Self::new(tuple.x(), tuple.y(), tuple.z())
     }
 }
 
@@ -136,7 +136,7 @@ impl From<Point> for Tuple {
     /// ```
     fn from(point: Point) -> Self {
         debug_assert!(point.is_point());
-        Tuple::from(point.tuple)
+        Self::from(point.tuple)
     }
 }
 
@@ -524,7 +524,7 @@ mod tests_sub {
 
 impl Add<Vector> for Point {
     /// The resulting type after applying the `+` operator.
-    type Output = Point;
+    type Output = Self;
 
     /// Performs the `+` operation.
     ///
@@ -591,7 +591,7 @@ mod tests_add_vector {
 
 impl Sub<Vector> for Point {
     /// The resulting type after applying the `+` operator.
-    type Output = Point;
+    type Output = Self;
 
     /// Performs the `-` operation.
     ///

@@ -109,7 +109,7 @@ impl FromStr for CaptureTuple {
             })
             .collect();
 
-        Ok(CaptureTuple(Tuple::new(
+        Ok(Self(Tuple::new(
             coords[0], coords[1], coords[2], coords[3],
         )))
     }
@@ -138,7 +138,7 @@ impl FromStr for CapturePoint {
             })
             .collect();
 
-        Ok(CapturePoint(Point::new(coords[0], coords[1], coords[2])))
+        Ok(Self(Point::new(coords[0], coords[1], coords[2])))
     }
 }
 
@@ -165,7 +165,7 @@ impl FromStr for CaptureVector {
             })
             .collect();
 
-        Ok(CaptureVector(Vector::new(coords[0], coords[1], coords[2])))
+        Ok(Self(Vector::new(coords[0], coords[1], coords[2])))
     }
 }
 
@@ -192,7 +192,7 @@ impl FromStr for CaptureColor {
             })
             .collect();
 
-        Ok(CaptureColor(Color::new(coords[0], coords[1], coords[2])))
+        Ok(Self(Color::new(coords[0], coords[1], coords[2])))
     }
 }
 
