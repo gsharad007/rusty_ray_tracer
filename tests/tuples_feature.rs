@@ -109,9 +109,7 @@ impl FromStr for CaptureTuple {
             })
             .collect();
 
-        Ok(Self(Tuple::new(
-            coords[0], coords[1], coords[2], coords[3],
-        )))
+        Ok(Self(Tuple::new(coords[0], coords[1], coords[2], coords[3])))
     }
 }
 

@@ -16,10 +16,10 @@ impl Cat {
         self.fullness += count;
         self.exploded |= self.fullness > 2;
     }
-    fn is_full(&self) -> bool {
+    const fn is_full(&self) -> bool {
         self.fullness > 0
     }
-    fn has_exploded(&self) -> bool {
+    const fn has_exploded(&self) -> bool {
         self.exploded
     }
 }
