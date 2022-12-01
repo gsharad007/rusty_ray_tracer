@@ -53,13 +53,13 @@ mod projectile_tests {
                 travelling_projectile.position
             );
         }
-        assert_eq!(2.7666647, accumulated_ticks);
+        assert_eq!(2.766_664_7, accumulated_ticks);
         assert_eq!(
-            Point::new(2.7281666, -0.0066070966, 0.0),
+            Point::new(2.728_166_6, -0.006_607_096_6, 0.0),
             travelling_projectile.position
         );
         assert_eq!(
-            Vector::new(0.97233534, -1.7113346, 0.0),
+            Vector::new(0.972_335_34, -1.711_334_6, 0.0),
             travelling_projectile.velocity
         );
     }

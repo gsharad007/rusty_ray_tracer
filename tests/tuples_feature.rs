@@ -1,12 +1,12 @@
 use derive_more::Deref;
 use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
-use rusty_ray_tracer::core3d::color::*;
+use rusty_ray_tracer::core3d::color::Color;
 use rusty_ray_tracer::core3d::color_rgb::ColorRGB;
 use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-use rusty_ray_tracer::core3d::point::*;
-use rusty_ray_tracer::core3d::tuple::*;
-use rusty_ray_tracer::core3d::vector::*;
+use rusty_ray_tracer::core3d::point::Point;
+use rusty_ray_tracer::core3d::tuple::Tuple;
+use rusty_ray_tracer::core3d::vector::{CrossProduct, DotProduct, Magnitude, Normalize, Vector};
 
 use std::collections::HashMap;
 use std::convert::Infallible;

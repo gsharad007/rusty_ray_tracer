@@ -49,6 +49,7 @@ mod tests_point {
     }
 
     #[test]
+    #[allow(clippy::clone_on_copy)]
     fn clone() {
         let point = Point::new(1.0, 2.0, 3.0);
         let point_copy = point;
@@ -340,36 +341,36 @@ mod tests_eq {
     #[test]
     fn eq() {
         assert_eq!(
-            Point::new(1.23, 4.56, 0.00000000000000),
-            Point::new(1.23, 4.56, 0.00000000000001)
+            Point::new(1.23, 4.56, 0.000_000_000_000_00),
+            Point::new(1.23, 4.56, 0.000_000_000_000_01)
         );
         assert_eq!(
-            Point::new(1.23, 4.56, 0.0000000),
-            Point::new(1.23, 4.56, 0.0000001)
+            Point::new(1.23, 4.56, 0.000_000_0),
+            Point::new(1.23, 4.56, 0.000_000_1)
         );
         assert_eq!(
-            Point::new(1.23, 4.56, 1.0000000),
-            Point::new(1.23, 4.56, 1.0000001)
+            Point::new(1.23, 4.56, 1.000_000_0),
+            Point::new(1.23, 4.56, 1.000_000_1)
         );
         assert_eq!(
-            Point::new(1.23, 4.56, 1000000.0),
-            Point::new(1.23, 4.56, 1000000.1)
+            Point::new(1.23, 4.56, 1_000_000.0),
+            Point::new(1.23, 4.56, 1_000_000.1)
         );
     }
 
     #[test]
     fn ne() {
         assert_ne!(
-            Point::new(1.23, 4.56, 0.000010),
-            Point::new(1.23, 4.56, 0.000011)
+            Point::new(1.23, 4.56, 0.000_010),
+            Point::new(1.23, 4.56, 0.000_011)
         );
         assert_ne!(
-            Point::new(1.23, 4.56, 1.000000),
-            Point::new(1.23, 4.56, 1.000001)
+            Point::new(1.23, 4.56, 1.000_000),
+            Point::new(1.23, 4.56, 1.000_001)
         );
         assert_ne!(
-            Point::new(1.23, 4.56, 100000.0),
-            Point::new(1.23, 4.56, 100000.1)
+            Point::new(1.23, 4.56, 100_000.0),
+            Point::new(1.23, 4.56, 100_000.1)
         );
     }
 }
@@ -421,13 +422,13 @@ mod tests_approx_eq {
     fn eq() {
         assert_approx_eq!(
             Point,
-            Point::new(1.23, 4.56, 0.000000000000),
-            Point::new(1.23, 4.56, 0.000000000001)
+            Point::new(1.23, 4.56, 0.000_000_000_000),
+            Point::new(1.23, 4.56, 0.000_000_000_001)
         );
         assert_approx_eq!(
             Point,
-            Point::new(1.23, 4.56, 1.0000000),
-            Point::new(1.23, 4.56, 1.0000001),
+            Point::new(1.23, 4.56, 1.000_000_0),
+            Point::new(1.23, 4.56, 1.000_000_1),
             ulps = 2
         );
         assert_approx_eq!(
@@ -441,18 +442,18 @@ mod tests_approx_eq {
     #[test]
     fn ne() {
         {
-            let a = Point::new(1.23, 4.56, 1.000000);
-            let b = Point::new(1.23, 4.56, 1.000001);
+            let a = Point::new(1.23, 4.56, 1.000_000);
+            let b = Point::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Point as ApproxEq>::Margin::default()));
         }
         {
-            let a = Point::new(1.23, 4.56, 1.000000);
-            let b = Point::new(1.23, 4.56, 1.000001);
+            let a = Point::new(1.23, 4.56, 1.000_000);
+            let b = Point::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Point as ApproxEq>::Margin::default().ulps(2)));
         }
         {
-            let a = Point::new(1.23, 4.56, 0.0000000);
-            let b = Point::new(1.23, 4.56, 1.0000001);
+            let a = Point::new(1.23, 4.56, 0.000_000_0);
+            let b = Point::new(1.23, 4.56, 1.000_000_1);
             assert!(a.approx_ne(b, <Point as ApproxEq>::Margin::default().epsilon(1.0)));
         }
     }
@@ -640,7 +641,7 @@ mod tests_sub_vector {
 
         let a_bc = Point::new(5.67, 9.0, 12.33);
         let c_ab = Point::new(5.43, 4.32, 3.21);
-        let b_ca = Point::new(-3.21, 0.120000124, 3.45);
+        let b_ca = Point::new(-3.21, 0.120_000_124, 3.45);
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(c_ab, c - (a - b));
         assert_eq!(b_ca, b - (c - a));

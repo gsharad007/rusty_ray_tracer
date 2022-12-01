@@ -18,6 +18,7 @@ impl Tuple {
     /// let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     /// ```
+    #[must_use]
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Tuple {
             tuple: [x, y, z, w],
@@ -172,36 +173,36 @@ mod tests_eq {
     #[test]
     fn eq() {
         assert_eq!(
-            Tuple::new(1.23, 4.56, 7.89, 0.00000000000000),
-            Tuple::new(1.23, 4.56, 7.89, 0.00000000000001)
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_000_000_00),
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_000_000_01)
         );
         assert_eq!(
-            Tuple::new(1.23, 4.56, 7.89, 0.0000000),
-            Tuple::new(1.23, 4.56, 7.89, 0.0000001)
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_0),
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_1)
         );
         assert_eq!(
-            Tuple::new(1.23, 4.56, 7.89, 1.0000000),
-            Tuple::new(1.23, 4.56, 7.89, 1.0000001)
+            Tuple::new(1.23, 4.56, 7.89, 1.000_000_0),
+            Tuple::new(1.23, 4.56, 7.89, 1.000_000_1)
         );
         assert_eq!(
-            Tuple::new(1.23, 4.56, 7.89, 1000000.0),
-            Tuple::new(1.23, 4.56, 7.89, 1000000.1)
+            Tuple::new(1.23, 4.56, 7.89, 1_000_000.0),
+            Tuple::new(1.23, 4.56, 7.89, 1_000_000.1)
         );
     }
 
     #[test]
     fn ne() {
         assert_ne!(
-            Tuple::new(1.23, 4.56, 7.89, 0.000010),
-            Tuple::new(1.23, 4.56, 7.89, 0.000011)
+            Tuple::new(1.23, 4.56, 7.89, 0.000_010),
+            Tuple::new(1.23, 4.56, 7.89, 0.000_011)
         );
         assert_ne!(
-            Tuple::new(1.23, 4.56, 7.89, 1.000000),
-            Tuple::new(1.23, 4.56, 7.89, 1.000001)
+            Tuple::new(1.23, 4.56, 7.89, 1.000_000),
+            Tuple::new(1.23, 4.56, 7.89, 1.000_001)
         );
         assert_ne!(
-            Tuple::new(1.23, 4.56, 7.89, 100000.0),
-            Tuple::new(1.23, 4.56, 7.89, 100000.1)
+            Tuple::new(1.23, 4.56, 7.89, 100_000.0),
+            Tuple::new(1.23, 4.56, 7.89, 100_000.1)
         );
     }
 }
@@ -256,13 +257,13 @@ mod tests_approx_eq {
     fn eq() {
         assert_approx_eq!(
             Tuple,
-            Tuple::new(1.23, 4.56, 7.89, 0.000000000000),
-            Tuple::new(1.23, 4.56, 7.89, 0.000000000001)
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_000_000),
+            Tuple::new(1.23, 4.56, 7.89, 0.000_000_000_001)
         );
         assert_approx_eq!(
             Tuple,
-            Tuple::new(1.23, 4.56, 7.89, 1.0000000),
-            Tuple::new(1.23, 4.56, 7.89, 1.0000001),
+            Tuple::new(1.23, 4.56, 7.89, 1.000_000_0),
+            Tuple::new(1.23, 4.56, 7.89, 1.000_000_1),
             ulps = 2
         );
         assert_approx_eq!(
@@ -276,18 +277,18 @@ mod tests_approx_eq {
     #[test]
     fn ne() {
         {
-            let a = Tuple::new(1.23, 4.56, 7.89, 1.000000);
-            let b = Tuple::new(1.23, 4.56, 7.89, 1.000001);
+            let a = Tuple::new(1.23, 4.56, 7.89, 1.000_000);
+            let b = Tuple::new(1.23, 4.56, 7.89, 1.000_001);
             assert!(a.approx_ne(b, <Tuple as ApproxEq>::Margin::default()));
         }
         {
-            let a = Tuple::new(1.23, 4.56, 7.89, 1.000000);
-            let b = Tuple::new(1.23, 4.56, 7.89, 1.000001);
+            let a = Tuple::new(1.23, 4.56, 7.89, 1.000_000);
+            let b = Tuple::new(1.23, 4.56, 7.89, 1.000_001);
             assert!(a.approx_ne(b, <Tuple as ApproxEq>::Margin::default().ulps(2)));
         }
         {
-            let a = Tuple::new(1.23, 4.56, 7.89, 0.0000000);
-            let b = Tuple::new(1.23, 4.56, 7.89, 1.0000001);
+            let a = Tuple::new(1.23, 4.56, 7.89, 0.000_000_0);
+            let b = Tuple::new(1.23, 4.56, 7.89, 1.000_000_1);
             assert!(a.approx_ne(b, <Tuple as ApproxEq>::Margin::default().epsilon(1.0)));
         }
     }

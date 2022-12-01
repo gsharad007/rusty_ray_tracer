@@ -17,6 +17,7 @@ impl Canvas {
     /// assert_eq!(10, canvas.width);
     /// assert_eq!(20, canvas.height);
     /// ```
+    #[must_use]
     pub fn new(width: u16, height: u16) -> Self {
         Self { width, height }
     }
@@ -60,6 +61,7 @@ impl Canvas {
     ///     }
     /// }
     /// ```
+    #[must_use]
     pub fn get_pixel(&self, _x: u16, _y: u16) -> Color {
         Color::default()
     }

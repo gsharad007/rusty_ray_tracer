@@ -63,6 +63,7 @@ mod tests_color {
     }
 
     #[test]
+    #[allow(clippy::clone_on_copy)]
     fn copy_clone() {
         let color = Color::new(1.0, 2.0, 3.0);
         let color_copy = color;
@@ -306,36 +307,36 @@ mod tests_eq {
     #[test]
     fn eq() {
         assert_eq!(
-            Color::new(1.23, 4.56, 0.00000000000000),
-            Color::new(1.23, 4.56, 0.00000000000001)
+            Color::new(1.23, 4.56, 0.000_000_000_000_00),
+            Color::new(1.23, 4.56, 0.000_000_000_000_01)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 0.0000000),
-            Color::new(1.23, 4.56, 0.0000001)
+            Color::new(1.23, 4.56, 0.000_000_0),
+            Color::new(1.23, 4.56, 0.000_000_1)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 1.0000000),
-            Color::new(1.23, 4.56, 1.0000001)
+            Color::new(1.23, 4.56, 1.000_000_0),
+            Color::new(1.23, 4.56, 1.000_000_1)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 1000000.0),
-            Color::new(1.23, 4.56, 1000000.1)
+            Color::new(1.23, 4.56, 1_000_000.0),
+            Color::new(1.23, 4.56, 1_000_000.1)
         );
     }
 
     #[test]
     fn ne() {
         assert_ne!(
-            Color::new(1.23, 4.56, 0.000010),
-            Color::new(1.23, 4.56, 0.000011)
+            Color::new(1.23, 4.56, 0.000_010),
+            Color::new(1.23, 4.56, 0.000_011)
         );
         assert_ne!(
-            Color::new(1.23, 4.56, 1.000000),
-            Color::new(1.23, 4.56, 1.000001)
+            Color::new(1.23, 4.56, 1.000_000),
+            Color::new(1.23, 4.56, 1.000_001)
         );
         assert_ne!(
-            Color::new(1.23, 4.56, 100000.0),
-            Color::new(1.23, 4.56, 100000.1)
+            Color::new(1.23, 4.56, 100_000.0),
+            Color::new(1.23, 4.56, 100_000.1)
         );
     }
 }
@@ -390,13 +391,13 @@ mod tests_approx_eq {
     fn eq() {
         assert_approx_eq!(
             Color,
-            Color::new(1.23, 4.56, 0.000000000000),
-            Color::new(1.23, 4.56, 0.000000000001)
+            Color::new(1.23, 4.56, 0.000_000_000_000),
+            Color::new(1.23, 4.56, 0.000_000_000_001)
         );
         assert_approx_eq!(
             Color,
-            Color::new(1.23, 4.56, 1.0000000),
-            Color::new(1.23, 4.56, 1.0000001),
+            Color::new(1.23, 4.56, 1.000_000_0),
+            Color::new(1.23, 4.56, 1.000_000_1),
             ulps = 2
         );
         assert_approx_eq!(
@@ -410,18 +411,18 @@ mod tests_approx_eq {
     #[test]
     fn ne() {
         {
-            let a = Color::new(1.23, 4.56, 1.000000);
-            let b = Color::new(1.23, 4.56, 1.000001);
+            let a = Color::new(1.23, 4.56, 1.000_000);
+            let b = Color::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default()));
         }
         {
-            let a = Color::new(1.23, 4.56, 1.000000);
-            let b = Color::new(1.23, 4.56, 1.000001);
+            let a = Color::new(1.23, 4.56, 1.000_000);
+            let b = Color::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default().ulps(2)));
         }
         {
-            let a = Color::new(1.23, 4.56, 0.0000000);
-            let b = Color::new(1.23, 4.56, 1.0000001);
+            let a = Color::new(1.23, 4.56, 0.000_000_0);
+            let b = Color::new(1.23, 4.56, 1.000_000_1);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default().epsilon(1.0)));
         }
     }
@@ -560,7 +561,7 @@ mod tests_sub {
         let a_bc = Color::new(5.67, 9.0, 12.33);
         let ab_c = Color::new(-5.43, -4.32, -3.21);
         let c_ab = Color::new(5.43, 4.32, 3.21);
-        let ca_b = Color::new(3.21, -0.120000124, -3.45);
+        let ca_b = Color::new(3.21, -0.120_000_124, -3.45);
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(ab_c, (a - b) - c);
         assert_eq!(c_ab, c - (a - b));
