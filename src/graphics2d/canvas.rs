@@ -18,7 +18,7 @@ impl Canvas {
     /// assert_eq!(20, canvas.height);
     /// ```
     #[must_use]
-    pub fn new(width: u16, height: u16) -> Self {
+    pub const fn new(width: u16, height: u16) -> Self {
         Self { width, height }
     }
 }

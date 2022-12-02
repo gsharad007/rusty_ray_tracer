@@ -29,7 +29,7 @@ impl Vector {
     /// assert!(vector.is_valid());
     /// ```
     #[must_use]
-    pub fn new(x: f32, y: f32, z: f32) -> Self {
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Self {
             tuple: [x, y, z, 0.0],
         }

@@ -24,7 +24,7 @@ impl Color {
     /// assert_eq!(1.0, color.tuple[3]);
     /// ```
     #[must_use]
-    pub fn new(r: f32, g: f32, b: f32) -> Self {
+    pub const fn new(r: f32, g: f32, b: f32) -> Self {
         Self {
             tuple: [r, g, b, 1.0],
         }
@@ -45,7 +45,7 @@ impl Color {
     // /// assert_eq!(4.0, color.tuple[3]);
     // /// ```
     // #[must_use]
-    // pub fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
+    // pub const fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
     //     Color {
     //         tuple: [r, g, b, a],
     //     }

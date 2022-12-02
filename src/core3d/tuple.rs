@@ -19,7 +19,7 @@ impl Tuple {
     /// assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     /// ```
     #[must_use]
-    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
+    pub const fn new(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self {
             tuple: [x, y, z, w],
         }
