@@ -1,9 +1,8 @@
-use std::{str::FromStr, num::ParseFloatError};
+use std::{num::ParseFloatError, str::FromStr};
 
 use cucumber::Parameter;
 use derive_more::{Deref, FromStr};
-use rusty_ray_tracer::core3d::{tuple::Tuple, point::Point, vector::Vector, color::Color};
-
+use rusty_ray_tracer::core3d::{color::Color, point::Point, tuple::Tuple, vector::Vector};
 
 #[derive(Parameter, Deref, FromStr)]
 #[param(name = "var", regex = r"[\w][^\s]*")]
