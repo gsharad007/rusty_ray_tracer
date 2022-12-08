@@ -49,13 +49,13 @@ mod tests_canvas {
 }
 
 /// Calculates the raw buffer index from given 2d coordinates
-const fn get_2dbuffer_index(_x: u16, _y: u16, width: u16, height: u16) -> Option<usize> {
-    debug_assert!(_x < width);
-    debug_assert!(_y < height);
-    if _x >= width || _y >= height {
+const fn get_2dbuffer_index(x: u16, y: u16, width: u16, height: u16) -> Option<usize> {
+    debug_assert!(x < width);
+    debug_assert!(y < height);
+    if x >= width || y >= height {
         return None;
     }
-    Some(_y as usize * width as usize + _x as usize)
+    Some(y as usize * width as usize + x as usize)
 }
 
 #[cfg(test)]
@@ -100,9 +100,9 @@ impl Canvas {
     /// }
     /// ```
     #[must_use]
-    pub fn get_pixel_at(&self, _x: u16, _y: u16) -> Color {
+    pub fn get_pixel_at(&self, x: u16, y: u16) -> Color {
         let idx = self
-            .get_2dbuffer_index(_x, _y)
+            .get_2dbuffer_index(x, y)
             .expect("Canvas Coordinates out of range!");
         self.raw_buffer[idx]
     }
@@ -128,10 +128,10 @@ impl Canvas {
     ///     }
     /// }
     /// ```
-    pub fn set_pixel_at(&mut self, _x: u16, _y: u16, _color: Color) {
+    pub fn set_pixel_at(&mut self, x: u16, y: u16, color: Color) {
         let idx = self
-            .get_2dbuffer_index(_x, _y)
+            .get_2dbuffer_index(x, y)
             .expect("Canvas Coordinates out of range!");
-        self.raw_buffer[idx] = _color;
+        self.raw_buffer[idx] = color;
     }
 }
