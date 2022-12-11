@@ -715,6 +715,7 @@ impl Magnitude for Vector {
     /// assert_eq!(1.0, Vector::new(0.0, 0.0, -1.0).magnitude());
     /// ```
     #[must_use]
+    #[allow(clippy::suboptimal_flops)]
     fn magnitude(self) -> Self::Output {
         let magnitude_squared = Self::into_iter(self).fold(0.0, |acc, v| acc + (v * v));
         f32::sqrt(magnitude_squared)
@@ -821,6 +822,7 @@ pub trait DotProduct: ArrayBase<Item = f32> {
     /// assert_eq!(1.0, Vector::new(0.57735029, 0.57735028, 0.57735028).dot(Vector::new(0.57735029, 0.57735028, 0.57735028)));
     /// ```
     #[must_use]
+    #[allow(clippy::suboptimal_flops)]
     fn dot(self, other: Self) -> f32 {
         Self::into_iter(self)
             .zip(other.into_iter())
