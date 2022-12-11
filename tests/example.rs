@@ -1,11 +1,8 @@
-use std::convert::Infallible;
-
-use async_trait::async_trait;
-use cucumber::{given, then, when, World, WorldInit};
+use cucumber::{given, then, when, World};
 
 // These `Cat` definitions would normally be inside your project's code,
 // not test code, but we create them here for the show case.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Cat {
     pub fullness: u32,
     pub exploded: bool,
@@ -25,26 +22,9 @@ impl Cat {
 }
 
 // `World` is your shared, likely mutable state.
-#[derive(Debug, WorldInit)]
+#[derive(Debug, Default, World)]
 pub struct AnimalWorld {
     cat: Cat,
-}
-
-// `World` needs to be implemented, so Cucumber knows how to construct it
-// for each scenario.
-#[async_trait(?Send)]
-impl World for AnimalWorld {
-    // We do require some error type.
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self {
-            cat: Cat {
-                fullness: 0,
-                exploded: false,
-            },
-        })
-    }
 }
 
 // Steps are defined with `given`, `when` and `then` attributes.

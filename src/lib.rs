@@ -1,5 +1,6 @@
 pub mod core3d;
 pub mod graphics2d;
+pub mod asset_types;
 
 #[cfg(test)]
 mod tests {

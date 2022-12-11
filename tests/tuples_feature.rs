@@ -5,16 +5,14 @@ use rusty_ray_tracer::core3d::{
 };
 
 use std::collections::HashMap;
-use std::convert::Infallible;
 
-use async_trait::async_trait;
-use cucumber::{given, then, when, World, WorldInit};
+use cucumber::{given, then, when, World};
 
 mod captures;
 use crate::captures::{CaptureColor, CapturePoint, CaptureTuple, CaptureVar, CaptureVector};
 
 // `World` is your shared, likely mutable state.
-#[derive(WorldInit, Default, Debug)]
+#[derive(World, Default, Debug)]
 pub struct TuplesWorld {
     a: Tuple,
     a1: Tuple,
@@ -67,22 +65,6 @@ impl TuplesWorld {
     }
 }
 
-// `World` needs to be implemented, so Cucumber knows how to construct it
-// for each scenario.
-#[async_trait(?Send)]
-impl World for TuplesWorld {
-    // We do require some error type.
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self::default())
-    }
-}
-
-// #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
-// fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
-//     world.tuple = [x, y, z, w];
-// }
 #[given(expr = r"{word} ← {tuple}")]
 fn a_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
     let world_tuple = world.get_tuple(&name);

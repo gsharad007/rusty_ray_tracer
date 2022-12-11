@@ -11,7 +11,7 @@ derive_more = "0.99"
 
 [dev-dependencies]
 async-trait = "0.1"
-cucumber = "0.11"
+cucumber = "0.18"
 futures = "0.3"
 log = "0.4.17"
 # env_logger = "*"

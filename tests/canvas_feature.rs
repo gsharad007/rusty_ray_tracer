@@ -1,38 +1,24 @@
 use rusty_ray_tracer::{
     core3d::{color::Color, color_rgb::ColorRGB},
-    graphics2d::canvas::Canvas,
+    graphics2d::canvas::Canvas, asset_types::ppm::PPM,
 };
 
-use std::convert::Infallible;
-
-use async_trait::async_trait;
-use cucumber::{given, then, when, World, WorldInit};
+use cucumber::{given, then, when, World, gherkin::Step};
 
 mod captures;
 use crate::captures::CaptureColor;
 
-#[derive(WorldInit, Default, Debug)]
+#[derive(World, Default, Debug)]
 pub struct CanvasWorld {
     c: Canvas,
     red: Color,
+    ppm: PPM,
 }
 
-// `World` needs to be implemented, so Cucumber knows how to construct it
-// for each scenario.
-#[async_trait(?Send)]
-impl World for CanvasWorld {
-    // We do require some error type.
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self::default())
-    }
-}
-
-#[given(expr = r"c ← canvas\(10, 20\)")]
-fn a_canvas(world: &mut CanvasWorld) {
+#[given(expr = r"c ← canvas\({int}, {int}\)")]
+fn a_canvas(world: &mut CanvasWorld, width: u16, height : u16) {
     let world_canvas = &mut world.c;
-    *world_canvas = Canvas::new(10, 20);
+    *world_canvas = Canvas::new(width, height);
 }
 
 #[given(expr = r"red ← {color}")]
@@ -71,6 +57,22 @@ fn write_pixel(world: &mut CanvasWorld) {
 #[then(expr = r"pixel_at\(c, 2, 3\) = red")]
 fn pixel_at_equals(world: &mut CanvasWorld) {
     assert_eq!(world.c.get_pixel_at(2, 3), world.red);
+}
+
+#[when(expr = r"ppm ← canvas_to_ppm\(c\)")]
+fn canvas_to_ppm(world: &mut CanvasWorld) {
+    world.ppm = PPM::from(&world.c);
+}
+
+#[then(expr = r"lines 1-3 of ppm are")]
+fn ppm_lines_are(world: &mut CanvasWorld, step: &Step) {
+    let ppm_text = world.ppm.to_string();
+    let mut result = ppm_text.split_whitespace();
+    let mut expected = step.docstring.as_ref().unwrap().trim().split_whitespace();
+    assert_eq!(expected.next(), result.next());
+    assert_eq!(expected.next(), result.next());
+    assert_eq!(expected.next(), result.next());
+    assert_eq!(expected.next(), result.next());
 }
 
 // This runs before everything else, so you can setup things here.

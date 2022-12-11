@@ -7,7 +7,7 @@ pub struct Canvas {
     pub width: u16,
     pub height: u16,
 
-    raw_buffer: Vec<Color>,
+    pub raw_buffer: Vec<Color>,
 }
 
 impl Canvas {
