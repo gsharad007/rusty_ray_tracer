@@ -1,9 +1,10 @@
 use rusty_ray_tracer::{
+    asset_types::ppm::PPM,
     core3d::{color::Color, color_rgb::ColorRGB},
-    graphics2d::canvas::Canvas, asset_types::ppm::PPM,
+    graphics2d::canvas::Canvas,
 };
 
-use cucumber::{given, then, when, World, gherkin::Step};
+use cucumber::{gherkin::Step, given, then, when, World};
 
 mod captures;
 use crate::captures::CaptureColor;
@@ -16,7 +17,7 @@ pub struct CanvasWorld {
 }
 
 #[given(expr = r"c ← canvas\({int}, {int}\)")]
-fn a_canvas(world: &mut CanvasWorld, width: u16, height : u16) {
+fn a_canvas(world: &mut CanvasWorld, width: u16, height: u16) {
     let world_canvas = &mut world.c;
     *world_canvas = Canvas::new(width, height);
 }
