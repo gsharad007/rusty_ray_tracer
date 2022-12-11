@@ -55,9 +55,9 @@ impl From<&Canvas> for PPM {
     // /// assert_eq!([1.0, 2.0, 3.0, 4.0], ppm.ppm);
     /// ```
     fn from(canvas: &Canvas) -> Self {
-        PPM::new(
-            canvas.width as u32,
-            canvas.height as u32,
+        Self::new(
+            u32::from(canvas.width),
+            u32::from(canvas.height),
             255,
             canvas
                 .raw_buffer

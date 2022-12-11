@@ -69,7 +69,7 @@ fn canvas_to_ppm(world: &mut CanvasWorld) {
 fn ppm_lines_are(world: &mut CanvasWorld, step: &Step) {
     let ppm_text = world.ppm.to_string();
     let mut result = ppm_text.split_whitespace();
-    let mut expected = step.docstring.as_ref().unwrap().trim().split_whitespace();
+    let mut expected = step.docstring.as_ref().unwrap().split_whitespace();
     assert_eq!(expected.next(), result.next());
     assert_eq!(expected.next(), result.next());
     assert_eq!(expected.next(), result.next());
