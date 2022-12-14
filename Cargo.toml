@@ -8,12 +8,13 @@ edition = "2021"
 [dependencies]
 float-cmp = "0.9"
 derive_more = "0.99"
+num = "0.4"
 
 [dev-dependencies]
 async-trait = "0.1"
 cucumber = "0.18"
 futures = "0.3"
-log = "0.4.17"
+log = "0.4"
 # env_logger = "*"
 # test-log = "0.2"
 

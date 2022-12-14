@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use rusty_ray_tracer::{
     asset_types::ppm::PPM,
     core3d::{color::Color, color_rgb::ColorRGB},
@@ -12,8 +14,15 @@ use crate::captures::CaptureColor;
 #[derive(World, Default, Debug)]
 pub struct CanvasWorld {
     c: Canvas,
-    red: Color,
+    colors: HashMap<String, Color>,
     ppm: PPM,
+}
+impl CanvasWorld {
+    fn get_color(&mut self, name: &str) -> &mut Color {
+        self.colors
+            .entry(name.to_string())
+            .or_insert_with(Color::default)
+    }
 }
 
 #[given(expr = r"c ← canvas\({int}, {int}\)")]
@@ -22,9 +31,9 @@ fn a_canvas(world: &mut CanvasWorld, width: u16, height: u16) {
     *world_canvas = Canvas::new(width, height);
 }
 
-#[given(expr = r"red ← {color}")]
-fn a_color(world: &mut CanvasWorld, color: CaptureColor) {
-    let world_color = &mut world.red;
+#[given(expr = r"{word} ← {color}")]
+fn a_color(world: &mut CanvasWorld, name: String, color: CaptureColor) {
+    let world_color = world.get_color(&name);
     *world_color = *color;
 }
 
@@ -50,14 +59,16 @@ fn every_pixel_equals(world: &mut CanvasWorld) {
     }
 }
 
-#[when(expr = r"write_pixel\(c, 2, 3, red\)")]
-fn write_pixel(world: &mut CanvasWorld) {
-    world.c.set_pixel_at(2, 3, world.red);
+#[when(expr = r"write_pixel\(c, {int}, {int}, {word}\)")]
+fn write_pixel(world: &mut CanvasWorld, x: u16, y: u16, color_name: String) {
+    let color = *world.get_color(&color_name);
+    world.c.set_pixel_at(x, y, color);
 }
 
 #[then(expr = r"pixel_at\(c, 2, 3\) = red")]
 fn pixel_at_equals(world: &mut CanvasWorld) {
-    assert_eq!(world.c.get_pixel_at(2, 3), world.red);
+    let red = *world.get_color("red");
+    assert_eq!(world.c.get_pixel_at(2, 3), red);
 }
 
 #[when(expr = r"ppm ← canvas_to_ppm\(c\)")]
@@ -74,6 +85,19 @@ fn ppm_lines_are(world: &mut CanvasWorld, step: &Step) {
     assert_eq!(expected.next(), result.next());
     assert_eq!(expected.next(), result.next());
     assert_eq!(expected.next(), result.next());
+}
+
+#[then(expr = r"lines 4-6 of ppm are")]
+fn ppm_select_lines_are(world: &mut CanvasWorld, step: &Step) {
+    let ppm_text = world.ppm.to_string();
+    let skip = 4 -1;
+    let take = 6 - skip;
+    let result = ppm_text.lines().skip(skip).take(take);
+    let expected = step.docstring.as_ref().unwrap().trim().lines();
+    expected.zip(result).for_each(|t| {
+        println!("({}, {})", t.0, t.1);
+        assert_eq!(t.0, t.1)
+    });
 }
 
 // This runs before everything else, so you can setup things here.
