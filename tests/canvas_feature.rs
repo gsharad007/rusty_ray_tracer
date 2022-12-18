@@ -65,6 +65,15 @@ fn write_pixel(world: &mut CanvasWorld, x: u16, y: u16, color_name: String) {
     world.c.set_pixel_at(x, y, color);
 }
 
+#[when(expr = r"every pixel of c is set to {color}")]
+fn write_all_pixels(world: &mut CanvasWorld, color: CaptureColor) {
+    for y in 0..world.c.height {
+        for x in 0..world.c.width {
+            world.c.set_pixel_at(x, y, *color);
+        }
+    }
+}
+
 #[then(expr = r"pixel_at\(c, 2, 3\) = red")]
 fn pixel_at_equals(world: &mut CanvasWorld) {
     let red = *world.get_color("red");
@@ -76,26 +85,14 @@ fn canvas_to_ppm(world: &mut CanvasWorld) {
     world.ppm = PPM::from(&world.c);
 }
 
-#[then(expr = r"lines 1-3 of ppm are")]
-fn ppm_lines_are(world: &mut CanvasWorld, step: &Step) {
+#[then(expr = r"lines {int}-{int} of ppm are")]
+fn ppm_select_lines_are(world: &mut CanvasWorld, start: usize, end: usize, step: &Step) {
     let ppm_text = world.ppm.to_string();
-    let mut result = ppm_text.split_whitespace();
-    let mut expected = step.docstring.as_ref().unwrap().split_whitespace();
-    assert_eq!(expected.next(), result.next());
-    assert_eq!(expected.next(), result.next());
-    assert_eq!(expected.next(), result.next());
-    assert_eq!(expected.next(), result.next());
-}
-
-#[then(expr = r"lines 4-6 of ppm are")]
-fn ppm_select_lines_are(world: &mut CanvasWorld, step: &Step) {
-    let ppm_text = world.ppm.to_string();
-    let skip = 4 -1;
-    let take = 6 - skip;
+    let skip = start - 1;
+    let take = end - skip;
     let result = ppm_text.lines().skip(skip).take(take);
     let expected = step.docstring.as_ref().unwrap().trim().lines();
     expected.zip(result).for_each(|t| {
-        println!("({}, {})", t.0, t.1);
         assert_eq!(t.0, t.1)
     });
 }
