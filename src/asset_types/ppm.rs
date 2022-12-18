@@ -280,12 +280,7 @@ P3
     }
 
     #[must_use]
-    fn should_start_new_line(
-        ppm: &PPM,
-        i: usize,
-        lines: &String,
-        append_size: usize,
-    ) -> bool {
+    fn should_start_new_line(ppm: &PPM, i: usize, lines: &String, append_size: usize) -> bool {
         ppm.is_color_index_new_line(i) || is_join_forming_long_line(lines, append_size)
     }
 
@@ -300,11 +295,11 @@ P3
             let mut i = 0;
             for _y in 0..3 {
                 assert_eq!(true, should_start_new_line(&ppm, i, &acc, 4));
-                acc = acc + &"\n255".to_string();
+                acc += "\n255";
                 i += 1;
                 for _o in 1..4 * 3 {
                     assert_eq!(false, should_start_new_line(&ppm, i, &acc, 4));
-                    acc = acc + &" 255".to_string();
+                    acc += " 255";
                     i += 1;
                 }
             }
@@ -318,15 +313,15 @@ P3
             let mut i = 0;
             for _y in 0..3 {
                 assert_eq!(true, should_start_new_line(&ppm, i, &acc, 4));
-                acc = acc + &"\n255".to_string();
+                acc += "\n255";
                 i += 1;
                 for o in 1..8 * 3 {
                     let new_line = o == 17;
                     assert_eq!(new_line, should_start_new_line(&ppm, i, &acc, 4));
                     if new_line {
-                        acc = acc + &"\n255".to_string();
+                        acc += "\n255";
                     } else {
-                        acc = acc + &" 255".to_string();
+                        acc += " 255";
                     }
                     i += 1;
                 }
@@ -363,14 +358,14 @@ P3
                     "\n",
                     get_colors_string_prefix(&ppm, i, &acc, &"255".to_string())
                 );
-                acc = acc + &"\n255".to_string();
+                acc += "\n255";
                 i += 1;
                 for _o in 1..4 * 3 {
                     assert_eq!(
                         " ",
                         get_colors_string_prefix(&ppm, i, &acc, &"255".to_string())
                     );
-                    acc = acc + &" 255".to_string();
+                    acc += " 255";
                     i += 1;
                 }
             }
@@ -387,7 +382,7 @@ P3
                     "\n",
                     get_colors_string_prefix(&ppm, i, &acc, &"255".to_string())
                 );
-                acc = acc + &"\n255".to_string();
+                acc += "\n255";
                 i += 1;
                 for o in 1..8 * 3 {
                     let new_line = if o == 17 { "\n" } else { " " };
@@ -395,7 +390,7 @@ P3
                         new_line,
                         get_colors_string_prefix(&ppm, i, &acc, &"255".to_string())
                     );
-                    acc = acc + new_line + &"255".to_string();
+                    acc += &(new_line.to_owned() + "255");
                     i += 1;
                 }
             }
@@ -491,7 +486,7 @@ P3
             canvas.set_pixel_at(
                 d,
                 d,
-                Color::new(0.06666 * d as f32, 0.06666 * (15 - d) as f32, 0.0),
+                Color::new(0.06666 * f32::from(d), 0.06666 * f32::from(15 - d), 0.0),
             );
         }
         let ppm = PPM::from(&canvas);

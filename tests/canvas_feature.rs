@@ -92,9 +92,7 @@ fn ppm_select_lines_are(world: &mut CanvasWorld, start: usize, end: usize, step:
     let take = end - skip;
     let result = ppm_text.lines().skip(skip).take(take);
     let expected = step.docstring.as_ref().unwrap().trim().lines();
-    expected.zip(result).for_each(|t| {
-        assert_eq!(t.0, t.1)
-    });
+    expected.zip(result).for_each(|t| assert_eq!(t.0, t.1));
 }
 
 // This runs before everything else, so you can setup things here.
