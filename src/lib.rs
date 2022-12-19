@@ -34,7 +34,7 @@ mod projectile_tests {
 
     const SCALE: u16 = 8; // 512
     const CANVAS_WIDTH: u16 = 2 * SCALE;
-    const CANVAS_HEIGHT: u16 = 1 * SCALE;
+    const CANVAS_HEIGHT: u16 = SCALE;
     const POSITION_TO_CANVAS_SCALE: f32 = 0.66 * (SCALE as f32);
     fn map_projectile_position_to_canvas(point: Point) -> (u16, u16) {
         (
@@ -74,13 +74,13 @@ mod projectile_tests {
                 travelling_projectile.position
             );
         }
-        assert_eq!(2.7750087, accumulated_ticks);
+        assert_eq!(2.775_008_7, accumulated_ticks);
         assert_eq!(
-            Point::new(2.7363837, -0.009639465, 0.0),
+            Point::new(2.736_383_7, -0.009_639_465, 0.0),
             travelling_projectile.position
         );
         assert_eq!(
-            Vector::new(0.972252, -1.7195013, 0.0),
+            Vector::new(0.972_252, -1.719_501_3, 0.0),
             travelling_projectile.velocity
         );
         let ppm = PPM::from(&canvas);
