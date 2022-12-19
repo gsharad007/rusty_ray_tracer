@@ -95,6 +95,12 @@ fn ppm_select_lines_are(world: &mut CanvasWorld, start: usize, end: usize, step:
     expected.zip(result).for_each(|t| assert_eq!(t.0, t.1));
 }
 
+#[then(expr = r"ppm ends with a newline character")]
+fn ppm_ends_with_newline(world: &mut CanvasWorld) {
+    let ppm_text = world.ppm.to_string();
+    assert_eq!(true, ppm_text.ends_with("\n"));
+}
+
 // This runs before everything else, so you can setup things here.
 fn main() {
     // You may choose any executor you like (`tokio`, `async-std`, etc.).
