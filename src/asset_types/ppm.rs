@@ -115,6 +115,7 @@ mod tests_from {
     }
 
     #[test]
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     fn new_with_data() {
         let mut canvas = Canvas::new(4, 3);
         canvas.set_pixel_at(0, 0, color::Color::new(1.0, 0.0, 0.0));
@@ -141,6 +142,7 @@ mod tests_from {
     }
 
     #[test]
+    #[allow(clippy::identity_op, clippy::erasing_op)]
     fn new_with_oor_data() {
         let mut canvas = Canvas::new(4, 3);
         canvas.set_pixel_at(0, 0, color::Color::new(3.0, 0.5, -0.2));
@@ -175,6 +177,7 @@ mod display_helpers {
     }
 
     #[cfg(test)]
+    #[allow(clippy::manual_string_new)]
     mod tests_get_last_line_length {
         use super::*;
 
@@ -204,6 +207,7 @@ mod display_helpers {
         use super::*;
 
         #[test]
+        #[allow(clippy::manual_string_new)]
         fn test() {
             assert_eq!(
                 false,
