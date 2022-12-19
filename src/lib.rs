@@ -13,7 +13,11 @@ mod tests {
 
 #[cfg(test)]
 mod projectile_tests {
-    use crate::core3d::{coordinates4::Coordinates4, point::Point, vector::Vector};
+    use crate::{
+        asset_types::ppm::PPM,
+        core3d::{color::Color, coordinates4::Coordinates4, point::Point, vector::Vector},
+        graphics2d::canvas::Canvas,
+    };
     // use log::info;
     // use test_log::test;
     use std::println as info;
@@ -26,6 +30,17 @@ mod projectile_tests {
     struct Environment {
         gravity: Vector,
         wind: Vector,
+    }
+
+    const SCALE: u16 = 8; // 512
+    const CANVAS_WIDTH: u16 = 2 * SCALE;
+    const CANVAS_HEIGHT: u16 = 1 * SCALE;
+    const POSITION_TO_CANVAS_SCALE: f32 = 0.66 * (SCALE as f32);
+    fn map_projectile_position_to_canvas(point: Point) -> (u16, u16) {
+        (
+            (point.x() * POSITION_TO_CANVAS_SCALE) as u16,
+            (CANVAS_HEIGHT - 1) - (point.y() * POSITION_TO_CANVAS_SCALE) as u16,
+        )
     }
 
     #[test]
@@ -43,26 +58,60 @@ mod projectile_tests {
             Vector::new(0.99, 0.02, 0.0),
             projectile.velocity + environment.gravity + environment.wind
         );
+        const TICK_PER_FRAME: f32 = 1.0 / 120.0;
+        const PROJECTILE_COLOR: Color = Color::new(1.0, 0.2, 0.2);
+        let mut canvas = Canvas::new(CANVAS_WIDTH, CANVAS_HEIGHT);
         let mut travelling_projectile = projectile;
         let mut accumulated_ticks = 0.0;
-        let tick_per_frame = 1.0 / 60.0;
         while travelling_projectile.position.y() > 0.0 {
-            accumulated_ticks += tick_per_frame;
-            travelling_projectile = tick(tick_per_frame, travelling_projectile, &environment);
+            let coord = map_projectile_position_to_canvas(travelling_projectile.position);
+            canvas.set_pixel_at(coord.0, coord.1, PROJECTILE_COLOR);
+
+            accumulated_ticks += TICK_PER_FRAME;
+            travelling_projectile = tick(TICK_PER_FRAME, travelling_projectile, &environment);
             info!(
                 "travelling_projectile.position {}",
                 travelling_projectile.position
             );
         }
-        assert_eq!(2.766_664_7, accumulated_ticks);
+        assert_eq!(2.7750087, accumulated_ticks);
         assert_eq!(
-            Point::new(2.728_166_6, -0.006_607_096_6, 0.0),
+            Point::new(2.7363837, -0.009639465, 0.0),
             travelling_projectile.position
         );
         assert_eq!(
-            Vector::new(0.972_335_34, -1.711_334_6, 0.0),
+            Vector::new(0.972252, -1.7195013, 0.0),
             travelling_projectile.velocity
         );
+        let ppm = PPM::from(&canvas);
+        assert_eq!(
+            "\
+P3
+16 8
+255
+0 0 0 0 0 0 255 51 51 255 51 51 255 51 51 255 51 51 255 51 51 255 51
+51 255 51 51 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+255 51 51 255 51 51 255 51 51 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 51 51
+255 51 51 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+255 51 51 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 51 51
+255 51 51 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 51 51
+255 51 51 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
+51 51 255 51 51 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 255 51 51 255 51 51 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 255 51 51 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 255 51 51 255 51 51 0 0 0
+",
+            ppm.to_string()
+        );
+        // let mut file =
+        //     std::fs::File::create("travelling_projectile.ppm").expect("Failed to create file!");
+        // std::io::Write::write_all(&mut file, ppm.to_string().as_bytes())
+        //     .expect("Failed to write to file!");
     }
 
     fn tick(tick: f32, projectile: Projectile, environment: &Environment) -> Projectile {
