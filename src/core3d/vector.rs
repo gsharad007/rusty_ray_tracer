@@ -29,8 +29,8 @@ impl Vector {
     /// assert!(vector.is_valid());
     /// ```
     #[must_use]
-    pub fn new(x: f32, y: f32, z: f32) -> Vector {
-        Vector {
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
+        Self {
             tuple: [x, y, z, 0.0],
         }
     }
@@ -47,12 +47,22 @@ mod tests_vector {
     }
 
     #[test]
+    #[allow(clippy::clone_on_copy)]
     fn copy_clone() {
         let vector = Vector::new(1.0, 2.0, 3.0);
         let vector_copy = vector;
         let vector_clone = vector.clone();
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector_copy.tuple);
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector_clone.tuple);
+    }
+
+    #[test]
+    fn debug_fmt() {
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!(
+            "Vector { tuple: [1.0, 2.0, 3.0, 0.0] }",
+            format!("{vector:?}")
+        );
     }
 }
 
@@ -67,7 +77,7 @@ impl From<[f32; 3]> for Vector {
     /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
-        Vector::new(arr[0], arr[1], arr[2])
+        Self::new(arr[0], arr[1], arr[2])
     }
 }
 
@@ -92,7 +102,7 @@ impl From<Tuple> for Vector {
     /// ```
     fn from(tuple: Tuple) -> Self {
         debug_assert!(tuple.is_vector());
-        Vector::new(tuple.x(), tuple.y(), tuple.z())
+        Self::new(tuple.x(), tuple.y(), tuple.z())
     }
 }
 
@@ -109,7 +119,7 @@ impl From<Vector> for Tuple {
     /// ```
     fn from(vector: Vector) -> Self {
         debug_assert!(vector.is_vector());
-        Tuple::from(vector.tuple)
+        Self::from(vector.tuple)
     }
 }
 
@@ -282,36 +292,36 @@ mod tests_eq {
     #[test]
     fn eq() {
         assert_eq!(
-            Vector::new(1.23, 4.56, 0.00000000000000),
-            Vector::new(1.23, 4.56, 0.00000000000001)
+            Vector::new(1.23, 4.56, 0.000_000_000_000_00),
+            Vector::new(1.23, 4.56, 0.000_000_000_000_01)
         );
         assert_eq!(
-            Vector::new(1.23, 4.56, 0.0000000),
-            Vector::new(1.23, 4.56, 0.0000001)
+            Vector::new(1.23, 4.56, 0.000_000_0),
+            Vector::new(1.23, 4.56, 0.000_000_1)
         );
         assert_eq!(
-            Vector::new(1.23, 4.56, 1.0000000),
-            Vector::new(1.23, 4.56, 1.0000001)
+            Vector::new(1.23, 4.56, 1.000_000_0),
+            Vector::new(1.23, 4.56, 1.000_000_1)
         );
         assert_eq!(
-            Vector::new(1.23, 4.56, 1000000.0),
-            Vector::new(1.23, 4.56, 1000000.1)
+            Vector::new(1.23, 4.56, 1_000_000.0),
+            Vector::new(1.23, 4.56, 1_000_000.1)
         );
     }
 
     #[test]
     fn ne() {
         assert_ne!(
-            Vector::new(1.23, 4.56, 0.000010),
-            Vector::new(1.23, 4.56, 0.000011)
+            Vector::new(1.23, 4.56, 0.000_010),
+            Vector::new(1.23, 4.56, 0.000_011)
         );
         assert_ne!(
-            Vector::new(1.23, 4.56, 1.000000),
-            Vector::new(1.23, 4.56, 1.000001)
+            Vector::new(1.23, 4.56, 1.000_000),
+            Vector::new(1.23, 4.56, 1.000_001)
         );
         assert_ne!(
-            Vector::new(1.23, 4.56, 100000.0),
-            Vector::new(1.23, 4.56, 100000.1)
+            Vector::new(1.23, 4.56, 100_000.0),
+            Vector::new(1.23, 4.56, 100_000.1)
         );
     }
 }
@@ -366,13 +376,13 @@ mod tests_approx_eq {
     fn eq() {
         assert_approx_eq!(
             Vector,
-            Vector::new(1.23, 4.56, 0.000000000000),
-            Vector::new(1.23, 4.56, 0.000000000001)
+            Vector::new(1.23, 4.56, 0.000_000_000_000),
+            Vector::new(1.23, 4.56, 0.000_000_000_001)
         );
         assert_approx_eq!(
             Vector,
-            Vector::new(1.23, 4.56, 1.0000000),
-            Vector::new(1.23, 4.56, 1.0000001),
+            Vector::new(1.23, 4.56, 1.000_000_0),
+            Vector::new(1.23, 4.56, 1.000_000_1),
             ulps = 2
         );
         assert_approx_eq!(
@@ -386,18 +396,18 @@ mod tests_approx_eq {
     #[test]
     fn ne() {
         {
-            let a = Vector::new(1.23, 4.56, 1.000000);
-            let b = Vector::new(1.23, 4.56, 1.000001);
+            let a = Vector::new(1.23, 4.56, 1.000_000);
+            let b = Vector::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default()));
         }
         {
-            let a = Vector::new(1.23, 4.56, 1.000000);
-            let b = Vector::new(1.23, 4.56, 1.000001);
+            let a = Vector::new(1.23, 4.56, 1.000_000);
+            let b = Vector::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default().ulps(2)));
         }
         {
-            let a = Vector::new(1.23, 4.56, 0.0000000);
-            let b = Vector::new(1.23, 4.56, 1.0000001);
+            let a = Vector::new(1.23, 4.56, 0.000_000_0);
+            let b = Vector::new(1.23, 4.56, 1.000_000_1);
             assert!(a.approx_ne(b, <Vector as ApproxEq>::Margin::default().epsilon(1.0)));
         }
     }
@@ -464,7 +474,7 @@ mod tests_add {
 
 impl Sub for Vector {
     /// The resulting type after applying the `-` operator.
-    type Output = Vector;
+    type Output = Self;
 
     /// Performs the `-` operation.
     ///
@@ -530,7 +540,7 @@ mod tests_sub {
         let a_bc = Vector::new(5.67, 9.0, 12.33);
         let ab_c = Vector::new(-5.43, -4.32, -3.21);
         let c_ab = Vector::new(5.43, 4.32, 3.21);
-        let ca_b = Vector::new(3.21, -0.120000124, -3.45);
+        let ca_b = Vector::new(3.21, -0.120_000_124, -3.45);
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(ab_c, (a - b) - c);
         assert_eq!(c_ab, c - (a - b));
@@ -682,7 +692,7 @@ mod tests_div {
             .all(|&f| f.is_infinite()));
         assert!((Vector::new(0.0, 0.0, 0.0) / 0.0)
             .into_iter()
-            .all(|f| f.is_nan()));
+            .all(f32::is_nan));
     }
 }
 
@@ -714,6 +724,7 @@ impl Magnitude for Vector {
     /// assert_eq!(1.0, Vector::new(0.0, 0.0, -1.0).magnitude());
     /// ```
     #[must_use]
+    #[allow(clippy::suboptimal_flops)]
     fn magnitude(self) -> Self::Output {
         let magnitude_squared = Self::into_iter(self).fold(0.0, |acc, v| acc + (v * v));
         f32::sqrt(magnitude_squared)
@@ -732,13 +743,13 @@ mod tests_magnitude {
         assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).magnitude());
         assert_eq!(
             1.0,
-            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028).magnitude()
+            Vector::new(0.577_350_3, 0.577_350_3, 0.577_350_28).magnitude()
         );
 
         assert_eq!(3.741_657_5, Vector::new(1.0, 2.0, 3.0).magnitude());
         assert_eq!(3.741_657_5, Vector::new(-1.0, -2.0, -3.0).magnitude());
-        assert_eq!(9.195575, Vector::new(1.23, 4.56, 7.89).magnitude());
-        assert_eq!(4.1532397, Vector::new(1.11, 2.22, 3.33).magnitude());
+        assert_eq!(9.195_575, Vector::new(1.23, 4.56, 7.89).magnitude());
+        assert_eq!(4.153_239_7, Vector::new(1.11, 2.22, 3.33).magnitude());
     }
 }
 
@@ -782,16 +793,16 @@ mod tests_normalize {
             Vector::new(0.0, 0.0, 1.0).normalize()
         );
         assert_eq!(
-            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028),
-            Vector::new(0.577_350_3, 0.577_350_3, 0.57735028).normalize()
+            Vector::new(0.577_350_3, 0.577_350_3, 0.577_350_28),
+            Vector::new(0.577_350_3, 0.577_350_3, 0.577_350_28).normalize()
         );
 
         assert_eq!(
-            Vector::new(0.26726124, 0.5345225, 0.8017837),
+            Vector::new(0.267_261_24, 0.534_522_5, 0.801_783_7),
             Vector::new(1.0, 2.0, 3.0).normalize()
         );
         assert_eq!(
-            Vector::new(-0.26726124, -0.5345225, -0.8017837),
+            Vector::new(-0.267_261_24, -0.534_522_5, -0.801_783_7),
             Vector::new(-1.0, -2.0, -3.0).normalize()
         );
     }
@@ -801,7 +812,7 @@ mod tests_normalize {
         assert!(Vector::new(0.0, 0.0, 0.0)
             .normalize()
             .into_iter()
-            .all(|f| f.is_nan()));
+            .all(f32::is_nan));
     }
 }
 
@@ -820,6 +831,7 @@ pub trait DotProduct: ArrayBase<Item = f32> {
     /// assert_eq!(1.0, Vector::new(0.57735029, 0.57735028, 0.57735028).dot(Vector::new(0.57735029, 0.57735028, 0.57735028)));
     /// ```
     #[must_use]
+    #[allow(clippy::suboptimal_flops)]
     fn dot(self, other: Self) -> f32 {
         Self::into_iter(self)
             .zip(other.into_iter())
@@ -852,10 +864,10 @@ mod tests_dot_product {
         );
         assert_eq!(
             1.0,
-            Vector::new(0.577_350_3, 0.57735028, 0.57735028).dot(Vector::new(
+            Vector::new(0.577_350_3, 0.577_350_28, 0.577_350_28).dot(Vector::new(
                 0.577_350_3,
-                0.57735028,
-                0.57735028
+                0.577_350_28,
+                0.577_350_28
             ))
         );
 
@@ -911,13 +923,19 @@ impl CrossProduct for Vector {
     /// ```
     #[must_use]
     fn cross(self, other: Self) -> Self {
-        Vector::new(
-            (self.get_array()[1] * other.get_array()[2])
-                - (self.get_array()[2] * other.get_array()[1]),
-            (self.get_array()[2] * other.get_array()[0])
-                - (self.get_array()[0] * other.get_array()[2]),
-            (self.get_array()[0] * other.get_array()[1])
-                - (self.get_array()[1] * other.get_array()[0]),
+        Self::new(
+            self.get_array()[1].mul_add(
+                other.get_array()[2],
+                -self.get_array()[2] * other.get_array()[1],
+            ),
+            self.get_array()[2].mul_add(
+                other.get_array()[0],
+                -self.get_array()[0] * other.get_array()[2],
+            ),
+            self.get_array()[0].mul_add(
+                other.get_array()[1],
+                -self.get_array()[1] * other.get_array()[0],
+            ),
         )
         // Self::into_iter(self)
         //     .zip(other.into_iter())
@@ -958,10 +976,10 @@ mod tests_cross_product {
         );
         assert_eq!(
             Vector::new(0.0, 0.0, 0.0),
-            Vector::new(0.577_350_3, 0.57735028, 0.57735028).cross(Vector::new(
+            Vector::new(0.577_350_3, 0.577_350_28, 0.577_350_28).cross(Vector::new(
                 0.577_350_3,
-                0.57735028,
-                0.57735028
+                0.577_350_28,
+                0.577_350_28
             ))
         );
 

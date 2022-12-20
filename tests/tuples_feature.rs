@@ -1,23 +1,18 @@
-use derive_more::Deref;
-use derive_more::FromStr;
 use float_cmp::assert_approx_eq;
-use rusty_ray_tracer::core3d::color::*;
-use rusty_ray_tracer::core3d::color_rgb::ColorRGB;
-use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-use rusty_ray_tracer::core3d::point::*;
-use rusty_ray_tracer::core3d::tuple::*;
-use rusty_ray_tracer::core3d::vector::*;
+use rusty_ray_tracer::core3d::vector::{CrossProduct, DotProduct, Magnitude, Normalize, Vector};
+use rusty_ray_tracer::core3d::{
+    color::Color, color_rgb::ColorRGB, coordinates4::Coordinates4, point::Point, tuple::Tuple,
+};
 
 use std::collections::HashMap;
-use std::convert::Infallible;
-use std::num::ParseFloatError;
-use std::str::FromStr;
 
-use async_trait::async_trait;
-use cucumber::{given, then, when, Parameter, World, WorldInit};
+use cucumber::{given, then, when, World};
+
+mod captures;
+use crate::captures::{CaptureColor, CapturePoint, CaptureTuple, CaptureVar, CaptureVector};
 
 // `World` is your shared, likely mutable state.
-#[derive(Debug, WorldInit, Default)]
+#[derive(World, Default, Debug)]
 pub struct TuplesWorld {
     a: Tuple,
     a1: Tuple,
@@ -70,136 +65,6 @@ impl TuplesWorld {
     }
 }
 
-// `World` needs to be implemented, so Cucumber knows how to construct it
-// for each scenario.
-#[async_trait(?Send)]
-impl World for TuplesWorld {
-    // We do require some error type.
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self::default())
-    }
-}
-
-#[derive(Parameter, Deref, FromStr)]
-#[param(name = "var", regex = r"[\w][^\s]*")]
-struct CaptureVar(String);
-
-#[derive(Parameter, Deref)]
-#[param(
-    name = "tuple",
-    regex = r"tuple\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
-)]
-struct CaptureTuple(Tuple);
-impl FromStr for CaptureTuple {
-    type Err = ParseFloatError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let coords: Vec<_> = s
-            .to_lowercase()
-            .strip_prefix("tuple")
-            .expect("Tuple should start with tuple")
-            .trim_matches(|p| p == '(' || p == ')')
-            .split(',')
-            .map(|ss| {
-                ss.trim()
-                    .parse::<f32>()
-                    .expect("Parsing component f32 failed")
-            })
-            .collect();
-
-        Ok(CaptureTuple(Tuple::new(
-            coords[0], coords[1], coords[2], coords[3],
-        )))
-    }
-}
-
-#[derive(Parameter, Deref)]
-#[param(
-    name = "point",
-    regex = r"point\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
-)]
-struct CapturePoint(Point);
-impl FromStr for CapturePoint {
-    type Err = ParseFloatError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let coords: Vec<_> = s
-            .to_lowercase()
-            .strip_prefix("point")
-            .expect("Point should start with point")
-            .trim_matches(|p| p == '(' || p == ')')
-            .split(',')
-            .map(|ss| {
-                ss.trim()
-                    .parse::<f32>()
-                    .expect("Parsing component f32 failed")
-            })
-            .collect();
-
-        Ok(CapturePoint(Point::new(coords[0], coords[1], coords[2])))
-    }
-}
-
-#[derive(Parameter, Deref)]
-#[param(
-    name = "vector",
-    regex = r"vector\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
-)]
-struct CaptureVector(Vector);
-impl FromStr for CaptureVector {
-    type Err = ParseFloatError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let coords: Vec<_> = s
-            .to_lowercase()
-            .strip_prefix("vector")
-            .expect("Vector should start with vector")
-            .trim_matches(|p| p == '(' || p == ')')
-            .split(',')
-            .map(|ss| {
-                ss.trim()
-                    .parse::<f32>()
-                    .expect("Parsing component f32 failed")
-            })
-            .collect();
-
-        Ok(CaptureVector(Vector::new(coords[0], coords[1], coords[2])))
-    }
-}
-
-#[derive(Parameter, Deref)]
-#[param(
-    name = "color",
-    regex = r"color\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
-)]
-struct CaptureColor(Color);
-impl FromStr for CaptureColor {
-    type Err = ParseFloatError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let coords: Vec<_> = s
-            .to_lowercase()
-            .strip_prefix("color")
-            .expect("Color should start with cector")
-            .trim_matches(|p| p == '(' || p == ')')
-            .split(',')
-            .map(|ss| {
-                ss.trim()
-                    .parse::<f32>()
-                    .expect("Parsing component f32 failed")
-            })
-            .collect();
-
-        Ok(CaptureColor(Color::new(coords[0], coords[1], coords[2])))
-    }
-}
-
-// #[given(regex = r"^([^\s]) ← tuple\(([\d\.-]+), ([\d\.-]+), ([\d\.-]+), ([\d\.-]+)\)$")]
-// fn a_tuple(world: &mut TuplesWorld, x: f32, y: f32, z: f32, w: f32) {
-//     world.tuple = [x, y, z, w];
-// }
 #[given(expr = r"{word} ← {tuple}")]
 fn a_tuple(world: &mut TuplesWorld, name: String, tuple: CaptureTuple) {
     let world_tuple = world.get_tuple(&name);

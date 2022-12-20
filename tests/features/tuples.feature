@@ -1,4 +1,5 @@
-Feature: Tuples
+Feature: Tuples, Vectors, Points, and Colors
+
     Scenario: A tuple with w=1.0 is a point
         Given a ← tuple(4.3, -4.2, 3.1, 1.0)
         Then a.x = 4.3

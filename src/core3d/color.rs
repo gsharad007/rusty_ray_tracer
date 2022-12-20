@@ -24,8 +24,8 @@ impl Color {
     /// assert_eq!(1.0, color.tuple[3]);
     /// ```
     #[must_use]
-    pub fn new(r: f32, g: f32, b: f32) -> Color {
-        Color {
+    pub const fn new(r: f32, g: f32, b: f32) -> Self {
+        Self {
             tuple: [r, g, b, 1.0],
         }
     }
@@ -45,7 +45,7 @@ impl Color {
     // /// assert_eq!(4.0, color.tuple[3]);
     // /// ```
     // #[must_use]
-    // pub fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
+    // pub const fn new_with_alpha(r: f32, g: f32, b: f32, a: f32) -> Color {
     //     Color {
     //         tuple: [r, g, b, a],
     //     }
@@ -63,12 +63,22 @@ mod tests_color {
     }
 
     #[test]
+    #[allow(clippy::clone_on_copy)]
     fn copy_clone() {
         let color = Color::new(1.0, 2.0, 3.0);
         let color_copy = color;
         let color_clone = color.clone();
         assert_eq!([1.0, 2.0, 3.0, 1.0], color_copy.tuple);
         assert_eq!([1.0, 2.0, 3.0, 1.0], color_clone.tuple);
+    }
+
+    #[test]
+    fn debug_fmt() {
+        let color = Color::new(1.0, 2.0, 3.0);
+        assert_eq!(
+            "Color { tuple: [1.0, 2.0, 3.0, 1.0] }",
+            format!("{color:?}")
+        );
     }
 }
 
@@ -84,7 +94,7 @@ impl From<[f32; 3]> for Color {
     /// assert_eq!([1.0, 2.0, 3.0, 1.0], color.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
-        Color::new(arr[0], arr[1], arr[2])
+        Self::new(arr[0], arr[1], arr[2])
     }
 }
 
@@ -306,36 +316,36 @@ mod tests_eq {
     #[test]
     fn eq() {
         assert_eq!(
-            Color::new(1.23, 4.56, 0.00000000000000),
-            Color::new(1.23, 4.56, 0.00000000000001)
+            Color::new(1.23, 4.56, 0.000_000_000_000_00),
+            Color::new(1.23, 4.56, 0.000_000_000_000_01)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 0.0000000),
-            Color::new(1.23, 4.56, 0.0000001)
+            Color::new(1.23, 4.56, 0.000_000_0),
+            Color::new(1.23, 4.56, 0.000_000_1)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 1.0000000),
-            Color::new(1.23, 4.56, 1.0000001)
+            Color::new(1.23, 4.56, 1.000_000_0),
+            Color::new(1.23, 4.56, 1.000_000_1)
         );
         assert_eq!(
-            Color::new(1.23, 4.56, 1000000.0),
-            Color::new(1.23, 4.56, 1000000.1)
+            Color::new(1.23, 4.56, 1_000_000.0),
+            Color::new(1.23, 4.56, 1_000_000.1)
         );
     }
 
     #[test]
     fn ne() {
         assert_ne!(
-            Color::new(1.23, 4.56, 0.000010),
-            Color::new(1.23, 4.56, 0.000011)
+            Color::new(1.23, 4.56, 0.000_010),
+            Color::new(1.23, 4.56, 0.000_011)
         );
         assert_ne!(
-            Color::new(1.23, 4.56, 1.000000),
-            Color::new(1.23, 4.56, 1.000001)
+            Color::new(1.23, 4.56, 1.000_000),
+            Color::new(1.23, 4.56, 1.000_001)
         );
         assert_ne!(
-            Color::new(1.23, 4.56, 100000.0),
-            Color::new(1.23, 4.56, 100000.1)
+            Color::new(1.23, 4.56, 100_000.0),
+            Color::new(1.23, 4.56, 100_000.1)
         );
     }
 }
@@ -390,13 +400,13 @@ mod tests_approx_eq {
     fn eq() {
         assert_approx_eq!(
             Color,
-            Color::new(1.23, 4.56, 0.000000000000),
-            Color::new(1.23, 4.56, 0.000000000001)
+            Color::new(1.23, 4.56, 0.000_000_000_000),
+            Color::new(1.23, 4.56, 0.000_000_000_001)
         );
         assert_approx_eq!(
             Color,
-            Color::new(1.23, 4.56, 1.0000000),
-            Color::new(1.23, 4.56, 1.0000001),
+            Color::new(1.23, 4.56, 1.000_000_0),
+            Color::new(1.23, 4.56, 1.000_000_1),
             ulps = 2
         );
         assert_approx_eq!(
@@ -410,18 +420,18 @@ mod tests_approx_eq {
     #[test]
     fn ne() {
         {
-            let a = Color::new(1.23, 4.56, 1.000000);
-            let b = Color::new(1.23, 4.56, 1.000001);
+            let a = Color::new(1.23, 4.56, 1.000_000);
+            let b = Color::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default()));
         }
         {
-            let a = Color::new(1.23, 4.56, 1.000000);
-            let b = Color::new(1.23, 4.56, 1.000001);
+            let a = Color::new(1.23, 4.56, 1.000_000);
+            let b = Color::new(1.23, 4.56, 1.000_001);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default().ulps(2)));
         }
         {
-            let a = Color::new(1.23, 4.56, 0.0000000);
-            let b = Color::new(1.23, 4.56, 1.0000001);
+            let a = Color::new(1.23, 4.56, 0.000_000_0);
+            let b = Color::new(1.23, 4.56, 1.000_000_1);
             assert!(a.approx_ne(b, <Color as ApproxEq>::Margin::default().epsilon(1.0)));
         }
     }
@@ -448,7 +458,7 @@ impl Add for Color {
         let result = Self::zip_for_each_collect(self, rhs, |a, b| a + b);
         // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
         // let a = result.a().clamp(0.0, 1.0);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -491,7 +501,7 @@ mod tests_add {
 
 impl Sub for Color {
     /// The resulting type after applying the `-` operator.
-    type Output = Color;
+    type Output = Self;
 
     /// Performs the `-` operation.
     ///
@@ -510,7 +520,7 @@ impl Sub for Color {
         let result = Self::zip_for_each_collect(self, rhs, |a, b| a - b);
         // HACK: Alpha is not supported, Alpha requires blending and does not directly translate to Addition or Subtraction
         // let a = result.a().clamp(0.0, 1.0);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 
@@ -560,7 +570,7 @@ mod tests_sub {
         let a_bc = Color::new(5.67, 9.0, 12.33);
         let ab_c = Color::new(-5.43, -4.32, -3.21);
         let c_ab = Color::new(5.43, 4.32, 3.21);
-        let ca_b = Color::new(3.21, -0.120000124, -3.45);
+        let ca_b = Color::new(3.21, -0.120_000_124, -3.45);
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(ab_c, (a - b) - c);
         assert_eq!(c_ab, c - (a - b));
@@ -585,7 +595,7 @@ impl Mul<f32> for Color {
     fn mul(self, rhs: f32) -> Self::Output {
         let mut result = self;
         result.iter_mut().for_each(|x| *x *= rhs);
-        Color::new(result.r(), result.g(), result.b())
+        Self::new(result.r(), result.g(), result.b())
     }
 }
 

@@ -1,11 +1,8 @@
-use std::convert::Infallible;
-
-use async_trait::async_trait;
-use cucumber::{given, then, when, World, WorldInit};
+use cucumber::{given, then, when, World};
 
 // These `Cat` definitions would normally be inside your project's code,
 // not test code, but we create them here for the show case.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Cat {
     pub fullness: u32,
     pub exploded: bool,
@@ -16,35 +13,18 @@ impl Cat {
         self.fullness += count;
         self.exploded |= self.fullness > 2;
     }
-    fn is_full(&self) -> bool {
+    const fn is_full(&self) -> bool {
         self.fullness > 0
     }
-    fn has_exploded(&self) -> bool {
+    const fn has_exploded(&self) -> bool {
         self.exploded
     }
 }
 
 // `World` is your shared, likely mutable state.
-#[derive(Debug, WorldInit)]
+#[derive(Debug, Default, World)]
 pub struct AnimalWorld {
     cat: Cat,
-}
-
-// `World` needs to be implemented, so Cucumber knows how to construct it
-// for each scenario.
-#[async_trait(?Send)]
-impl World for AnimalWorld {
-    // We do require some error type.
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self {
-            cat: Cat {
-                fullness: 0,
-                exploded: false,
-            },
-        })
-    }
 }
 
 // Steps are defined with `given`, `when` and `then` attributes.
@@ -57,14 +37,6 @@ async fn hungry_cat(world: &mut AnimalWorld, state: String) {
         _ => unreachable!(),
     }
 }
-// #[given(expr = "a {word} cat")]
-// fn hungry_cat(world: &mut AnimalWorld, state: String) {
-//     match state.as_str() {
-//         "hungry" =>  world.cat.hungry = true,
-//         "satiated" =>  world.cat.hungry = false,
-//         s => panic!("expected 'hungry' or 'satiated', found: {}", s),
-//     }
-// }
 
 #[when(regex = r"^I feed the cat (\d+) times$")]
 async fn feed_cat(world: &mut AnimalWorld, count: u32) {
