@@ -37,14 +37,6 @@ async fn hungry_cat(world: &mut AnimalWorld, state: String) {
         _ => unreachable!(),
     }
 }
-// #[given(expr = "a {word} cat")]
-// fn hungry_cat(world: &mut AnimalWorld, state: String) {
-//     match state.as_str() {
-//         "hungry" =>  world.cat.hungry = true,
-//         "satiated" =>  world.cat.hungry = false,
-//         s => panic!("expected 'hungry' or 'satiated', found: {}", s),
-//     }
-// }
 
 #[when(regex = r"^I feed the cat (\d+) times$")]
 async fn feed_cat(world: &mut AnimalWorld, count: u32) {

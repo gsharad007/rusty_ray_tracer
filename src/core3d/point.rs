@@ -226,7 +226,6 @@ mod tests_array_base {
     #[test]
     fn get_array() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
         assert_eq!([1.0, 2.0, 3.0, 1.0], point.get_array());
         assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
     }
