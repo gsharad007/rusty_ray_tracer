@@ -61,7 +61,10 @@ mod tests_point {
     #[test]
     fn debug_fmt() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!("Point { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", point));
+        assert_eq!(
+            "Point { tuple: [1.0, 2.0, 3.0, 1.0] }",
+            format!("{point:?}")
+        );
     }
 }
 
@@ -310,7 +313,7 @@ mod tests_display {
     #[test]
     fn eq() {
         let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!("[1, 2, 3, 1]", format!("{}", point));
+        assert_eq!("[1, 2, 3, 1]", format!("{point}"));
     }
 }
 

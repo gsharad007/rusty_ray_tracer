@@ -75,7 +75,10 @@ mod tests_color {
     #[test]
     fn debug_fmt() {
         let color = Color::new(1.0, 2.0, 3.0);
-        assert_eq!("Color { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", color));
+        assert_eq!(
+            "Color { tuple: [1.0, 2.0, 3.0, 1.0] }",
+            format!("{color:?}")
+        );
     }
 }
 

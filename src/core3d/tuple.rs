@@ -49,7 +49,10 @@ mod tests_tuple {
     #[test]
     fn debug_fmt() {
         let tuple = Tuple::new(1.0, 2.0, 3.0, 1.0);
-        assert_eq!("Tuple { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", tuple));
+        assert_eq!(
+            "Tuple { tuple: [1.0, 2.0, 3.0, 1.0] }",
+            format!("{tuple:?}")
+        );
     }
 }
 

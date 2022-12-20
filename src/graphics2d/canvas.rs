@@ -50,7 +50,7 @@ mod tests_canvas {
     #[test]
     fn debug_fmt() {
         let canvas = Canvas::new(2, 2);
-        assert_eq!("Canvas { width: 2, height: 2, raw_buffer: [Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }] }", format!("{:?}", canvas));
+        assert_eq!("Canvas { width: 2, height: 2, raw_buffer: [Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }] }", format!("{canvas:?}"));
     }
 }
 

@@ -59,7 +59,10 @@ mod tests_vector {
     #[test]
     fn debug_fmt() {
         let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!("Vector { tuple: [1.0, 2.0, 3.0, 0.0] }", format!("{:?}", vector));
+        assert_eq!(
+            "Vector { tuple: [1.0, 2.0, 3.0, 0.0] }",
+            format!("{vector:?}")
+        );
     }
 }
 
@@ -921,12 +924,18 @@ impl CrossProduct for Vector {
     #[must_use]
     fn cross(self, other: Self) -> Self {
         Self::new(
-            (self.get_array()[1] * other.get_array()[2])
-                - (self.get_array()[2] * other.get_array()[1]),
-            (self.get_array()[2] * other.get_array()[0])
-                - (self.get_array()[0] * other.get_array()[2]),
-            (self.get_array()[0] * other.get_array()[1])
-                - (self.get_array()[1] * other.get_array()[0]),
+            self.get_array()[1].mul_add(
+                other.get_array()[2],
+                -self.get_array()[2] * other.get_array()[1],
+            ),
+            self.get_array()[2].mul_add(
+                other.get_array()[0],
+                -self.get_array()[0] * other.get_array()[2],
+            ),
+            self.get_array()[0].mul_add(
+                other.get_array()[1],
+                -self.get_array()[1] * other.get_array()[0],
+            ),
         )
         // Self::into_iter(self)
         //     .zip(other.into_iter())
