@@ -55,6 +55,12 @@ mod tests_vector {
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector_copy.tuple);
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector_clone.tuple);
     }
+
+    #[test]
+    fn debug_fmt() {
+        let vector = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!("Vector { tuple: [1.0, 2.0, 3.0, 0.0] }", format!("{:?}", vector));
+    }
 }
 
 impl From<[f32; 3]> for Vector {

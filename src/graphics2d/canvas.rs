@@ -46,6 +46,12 @@ mod tests_canvas {
         assert_eq!(960, canvas.width);
         assert_eq!(540, canvas.height);
     }
+
+    #[test]
+    fn debug_fmt() {
+        let canvas = Canvas::new(2, 2);
+        assert_eq!("Canvas { width: 2, height: 2, raw_buffer: [Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }, Color { tuple: [0.0, 0.0, 0.0, 0.0] }] }", format!("{:?}", canvas));
+    }
 }
 
 /// Calculates the raw buffer index from given 2d coordinates

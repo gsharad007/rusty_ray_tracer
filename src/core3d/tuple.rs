@@ -35,6 +35,22 @@ mod tests_tuple {
         let tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
         assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
     }
+
+    #[test]
+    #[allow(clippy::clone_on_copy)]
+    fn clone() {
+        let tuple = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        let tuple_copy = tuple;
+        let tuple_clone = tuple_copy.clone();
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple_clone.tuple);
+    }
+
+    #[test]
+    fn debug_fmt() {
+        let tuple = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        assert_eq!("Tuple { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", tuple));
+    }
 }
 
 impl From<[f32; 4]> for Tuple {

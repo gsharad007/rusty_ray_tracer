@@ -57,6 +57,12 @@ mod tests_point {
         assert_eq!([1.0, 2.0, 3.0, 1.0], point_copy.tuple);
         assert_eq!([1.0, 2.0, 3.0, 1.0], point_clone.tuple);
     }
+
+    #[test]
+    fn debug_fmt() {
+        let point = Point::new(1.0, 2.0, 3.0);
+        assert_eq!("Point { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", point));
+    }
 }
 
 impl Default for Point {

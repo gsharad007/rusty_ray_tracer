@@ -71,6 +71,12 @@ mod tests_color {
         assert_eq!([1.0, 2.0, 3.0, 1.0], color_copy.tuple);
         assert_eq!([1.0, 2.0, 3.0, 1.0], color_clone.tuple);
     }
+
+    #[test]
+    fn debug_fmt() {
+        let color = Color::new(1.0, 2.0, 3.0);
+        assert_eq!("Color { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{:?}", color));
+    }
 }
 
 impl From<[f32; 3]> for Color {

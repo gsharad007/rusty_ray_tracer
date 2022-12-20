@@ -55,6 +55,24 @@ mod tests_ppm {
     }
 
     #[test]
+    fn debug_fmt() {
+        let canvas = PPM::new(2, 2, 255, vec![0u32; 12]);
+        assert_eq!("PPM { version: \"P3\", width: 2, height: 2, max_color: 255, colors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }", format!("{:?}", canvas));
+    }
+
+    #[test]
+    fn get_stride() {
+        assert_eq!(3 * 2, PPM::new(2, 2, 255, vec![0u32; 0]).get_stride());
+        assert_eq!(3 * 8, PPM::new(8, 8, 255, vec![0u32; 0]).get_stride());
+        assert_eq!(3 * 16, PPM::new(16, 16, 255, vec![0u32; 0]).get_stride());
+        assert_eq!(3 * 32, PPM::new(32, 32, 255, vec![0u32; 0]).get_stride());
+
+        assert_eq!(3 * 1024, PPM::new(1024, 32, 255, vec![0u32; 0]).get_stride());
+        assert_eq!(3 * 2048, PPM::new(2048, 32, 255, vec![0u32; 0]).get_stride());
+        assert_eq!(3 * 4096, PPM::new(4096, 32, 255, vec![0u32; 0]).get_stride());
+    }
+
+    #[test]
     fn is_color_index_new_line() {
         let ppm = PPM::new(4, 3, 255, vec![0u32; 144]);
         let mut i = 0;
