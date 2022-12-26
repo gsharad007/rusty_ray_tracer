@@ -49,15 +49,18 @@ jobs:
             target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Install helpers
-        run: cargo install cargo2junit grcov cargo-binutils cargo-llvm-codecov-converter
+        run: cargo install cargo2junit cargo-llvm-cov # grcov cargo-binutils cargo-llvm-codecov-converter
       - name: Generate test result and coverage report
         run: |
-          cargo test --no-fail-fast $CARGO_OPTIONS -- -Z unstable-options --report-time --format json | cargo2junit > results.xml;
-          cargo test --no-fail-fast $CARGO_OPTIONS;
+          cargo test     --no-fail-fast $CARGO_OPTIONS -- -Z unstable-options --report-time --format json | cargo2junit > results.xml;
 
-          executables=$(cargo test --tests --no-run --message-format=json | jq -r "select(.profile.test == true) | .executable");
-          cargo profdata -- merge -sparse target/debug/coverage/*.profraw -o target/debug/coverage/merged.profdata;
-          cargo cov -- export $executables --instr-profile=target/debug/coverage/merged.profdata --ignore-filename-regex="$IGNORE_PATTERN" --skip-functions --format=lcov >lcov.info;
+          cargo llvm-cov --no-fail-fast $CARGO_OPTIONS --lcov --output-path lcov.info;
+
+          # cargo test     --no-fail-fast $CARGO_OPTIONS;
+
+          # executables=$(cargo test --tests --no-run --message-format=json | jq -r "select(.profile.test == true) | .executable");
+          # cargo profdata -- merge -sparse target/debug/coverage/*.profraw -o target/debug/coverage/merged.profdata;
+          # cargo cov -- export $executables --instr-profile=target/debug/coverage/merged.profdata --ignore-filename-regex="$IGNORE_PATTERN" --skip-functions --format=lcov >lcov.info;
 
           # grcov . --binary-path ./target/debug/ -s . -t lcov --ignore-not-existing --ignore "/*" -o lcov.info;
       - name: Archive test
