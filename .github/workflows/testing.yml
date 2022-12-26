@@ -15,13 +15,13 @@ jobs:
     env:
       PROJECT_NAME_UNDERSCORE: rusty_ray_tracer
       CARGO_INCREMENTAL: 0
-      # RUSTFLAGS: -Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
-      # RUSTDOCFLAGS: -Cpanic=abort
-      #     zip -0 ccov.zip `find . \( -name "PROJECT_NAME_UNDERSCORE*.gc*" \) -print`;
-      #     grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
-      RUSTFLAGS: -C instrument-coverage
-      LLVM_PROFILE_FILE: target/debug/coverage/$PROJECT_NAME_UNDERSCORE-%p-%m.profraw
-      IGNORE_PATTERN: '(.*\.cargo[/\\]+registry[/\\]+.*)|(.*\.rustup[/\\]+.*)|(.*test.*)'
+      # # RUSTFLAGS: -Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
+      # # RUSTDOCFLAGS: -Cpanic=abort
+      # #     zip -0 ccov.zip `find . \( -name "PROJECT_NAME_UNDERSCORE*.gc*" \) -print`;
+      # #     grcov ccov.zip -s . -t lcov --llvm --branch --ignore-not-existing --ignore "/*" -o lcov.info;
+      # RUSTFLAGS: -C instrument-coverage
+      # LLVM_PROFILE_FILE: target/debug/coverage/$PROJECT_NAME_UNDERSCORE-%p-%m.profraw
+      # IGNORE_PATTERN: '(.*\.cargo[/\\]+registry[/\\]+.*)|(.*\.rustup[/\\]+.*)|(.*test.*)'
       RUST_BACKTRACE: full
     runs-on: ${{ matrix.os }}-latest
     strategy:
@@ -52,11 +52,11 @@ jobs:
         run: cargo install cargo2junit cargo-llvm-cov # grcov cargo-binutils cargo-llvm-codecov-converter
       - name: Generate test result and coverage report
         run: |
-          cargo test     --no-fail-fast $CARGO_OPTIONS -- -Z unstable-options --report-time --format json | cargo2junit > results.xml;
+          cargo test --no-fail-fast $CARGO_OPTIONS -- -Z unstable-options --report-time --format json | cargo2junit > results.xml;
 
-          cargo llvm-cov --no-fail-fast $CARGO_OPTIONS --lcov --output-path lcov.info;
+          cargo llvm-cov --no-fail-fast $CARGO_OPTIONS --all-features --workspace --lcov --output-path lcov.info;
 
-          # cargo test     --no-fail-fast $CARGO_OPTIONS;
+          # cargo test --no-fail-fast $CARGO_OPTIONS;
 
           # executables=$(cargo test --tests --no-run --message-format=json | jq -r "select(.profile.test == true) | .executable");
           # cargo profdata -- merge -sparse target/debug/coverage/*.profraw -o target/debug/coverage/merged.profdata;

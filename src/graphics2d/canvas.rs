@@ -56,9 +56,9 @@ mod tests_canvas {
 
 /// Calculates the raw buffer index from given 2d coordinates
 const fn get_2dbuffer_index(x: u16, y: u16, width: u16, height: u16) -> Option<usize> {
-    debug_assert!(x < width);
-    debug_assert!(y < height);
     if x >= width || y >= height {
+        debug_assert!(x < width);
+        debug_assert!(y < height);
         return None;
     }
     Some(y as usize * width as usize + x as usize)
@@ -66,6 +66,8 @@ const fn get_2dbuffer_index(x: u16, y: u16, width: u16, height: u16) -> Option<u
 
 #[cfg(test)]
 mod tests_buffer {
+    use std::panic;
+
     use super::*;
 
     #[test]
@@ -75,6 +77,9 @@ mod tests_buffer {
         assert_eq!(Some(8), get_2dbuffer_index(0, 1, 8, 8));
         assert_eq!(Some(9), get_2dbuffer_index(1, 1, 8, 8));
         assert_eq!(Some(63), get_2dbuffer_index(7, 7, 8, 8));
+
+        assert!(panic::catch_unwind(|| get_2dbuffer_index(8, 0, 8, 8)).is_err());
+        assert!(panic::catch_unwind(|| get_2dbuffer_index(0, 8, 8, 8)).is_err());
     }
 }
 
@@ -139,5 +144,43 @@ impl Canvas {
             .get_2dbuffer_index(x, y)
             .expect("Canvas Coordinates out of range!");
         self.raw_buffer[idx] = color;
+    }
+}
+
+#[cfg(test)]
+mod tests_pixels {
+    use super::*;
+
+    #[test]
+    fn get_pixels() {
+        let canvas = Canvas::new(8, 8);
+        assert_eq!(Color::default(), canvas.get_pixel_at(0, 0));
+        assert_eq!(Color::default(), canvas.get_pixel_at(7, 0));
+        assert_eq!(Color::default(), canvas.get_pixel_at(0, 7));
+        assert_eq!(Color::default(), canvas.get_pixel_at(7, 7));
+    }
+
+    #[test]
+    fn set_pixels() {
+        let mut canvas = Canvas::new(8, 8);
+        assert_eq!(Color::default(), canvas.get_pixel_at(0, 0));
+        assert_eq!(Color::default(), canvas.get_pixel_at(7, 0));
+        assert_eq!(Color::default(), canvas.get_pixel_at(0, 7));
+        assert_eq!(Color::default(), canvas.get_pixel_at(7, 7));
+
+        let red = Color::new(1.0, 0.0, 0.0);
+        let green = Color::new(0.0, 1.0, 0.0);
+        let blue = Color::new(0.0, 0.0, 1.0);
+        let white = Color::new(1.0, 1.0, 1.0);
+
+        canvas.set_pixel_at(0, 0, red);
+        canvas.set_pixel_at(7, 0, green);
+        canvas.set_pixel_at(0, 7, blue);
+        canvas.set_pixel_at(7, 7, white);
+
+        assert_eq!(red, canvas.get_pixel_at(0, 0));
+        assert_eq!(green, canvas.get_pixel_at(7, 0));
+        assert_eq!(blue, canvas.get_pixel_at(0, 7));
+        assert_eq!(white, canvas.get_pixel_at(7, 7));
     }
 }
