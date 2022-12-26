@@ -56,7 +56,7 @@ jobs:
           cargo test --no-fail-fast $CARGO_OPTIONS;
 
           executables=$(cargo test --tests --no-run --message-format=json | jq -r "select(.profile.test == true) | .executable");
-          cargo profdata -- merge -sparse target/debug/coverage/$PROJECT_NAME_UNDERSCORE-*.profraw -o target/debug/coverage/merged.profdata;
+          cargo profdata -- merge -sparse target/debug/coverage/*.profraw -o target/debug/coverage/merged.profdata;
           cargo cov -- export $executables --instr-profile=target/debug/coverage/merged.profdata --ignore-filename-regex="$IGNORE_PATTERN" --skip-functions --format=lcov >lcov.info;
 
           # grcov . --binary-path ./target/debug/ -s . -t lcov --ignore-not-existing --ignore "/*" -o lcov.info;
