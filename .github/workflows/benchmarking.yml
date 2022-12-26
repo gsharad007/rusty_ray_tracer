@@ -34,7 +34,7 @@ jobs:
           name: bench-results-${{ runner.os }}-${{ runner.arch }}
           path: output.txt
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@master
+        uses: benchmark-action/github-action-benchmark@v1
         with:
           name: ${{ runner.os }}-${{ runner.arch }}
           tool: 'cargo'
