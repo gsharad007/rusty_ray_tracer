@@ -1,3 +1,5 @@
+#![feature(test)]
+
 pub mod asset_types;
 pub mod core3d;
 pub mod graphics2d;

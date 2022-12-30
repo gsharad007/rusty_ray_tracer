@@ -372,6 +372,36 @@ mod tests_add {
     }
 }
 
+#[cfg(test)]
+mod benchs_add {
+    extern crate test;
+
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
+        bench.iter(|| (0..1000).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn identity(bench: &mut Bencher) {
+        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
+        let b = Tuple::default();
+        bench.iter(|| (0..1000).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn associative(bench: &mut Bencher) {
+        let a = Tuple::new(1.23, 4.56, 7.89, 1.01);
+        let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
+        let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
+        bench.iter(|| (0..1000).fold(a, |a, _| a + (b + c)));
+    }
+}
+
 impl Neg for Tuple {
     type Output = Self;
 
@@ -422,6 +452,26 @@ mod tests_neg {
     }
 }
 
+#[cfg(test)]
+mod benchs_neg {
+    extern crate test;
+
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn neg(bench: &mut Bencher) {
+        let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
+        bench.iter(|| (0..1000).fold(a, |a, _| -a));
+    }
+
+    #[bench]
+    fn double_neg(bench: &mut Bencher) {
+        let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
+        bench.iter(|| (0..1000).fold(a, |a, _| -(-a)));
+    }
+}
+
 impl Mul<f32> for Tuple {
     type Output = Self;
 
@@ -462,6 +512,20 @@ mod tests_mul {
     }
 }
 
+#[cfg(test)]
+mod benchs_mul {
+    extern crate test;
+
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
+        bench.iter(|| (0..1000).fold(a, |a, b| a * b as f32));
+    }
+}
+
 impl Div<f32> for Tuple {
     type Output = Self;
 
@@ -499,5 +563,19 @@ mod tests_div {
         let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = 1.0;
         assert_eq!(a / b, a);
+    }
+}
+
+#[cfg(test)]
+mod benchs_div {
+    extern crate test;
+
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
+        bench.iter(|| (0..1000).fold(a, |a, b| a / b as f32));
     }
 }
