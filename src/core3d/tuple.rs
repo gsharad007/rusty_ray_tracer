@@ -1,3 +1,10 @@
+#[cfg(test)]
+extern crate test;
+#[cfg(test)]
+use test::Bencher;
+#[cfg(test)]
+const N: i32 = 1000;
+
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
@@ -56,6 +63,44 @@ mod tests_tuple {
     }
 }
 
+#[cfg(test)]
+mod benchs_tuple {
+    use super::*;
+
+    #[bench]
+    fn new(bench: &mut Bencher) {
+        bench.iter(|| {
+            (0..N).map(|b| {
+                Tuple::new(
+                    1.0 + b as f32,
+                    2.0 + b as f32,
+                    3.0 + b as f32,
+                    4.0 + b as f32,
+                )
+            })
+        });
+    }
+
+    #[bench]
+    fn copy(bench: &mut Bencher) {
+        let a = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        bench.iter(|| (0..N).map(|_| a));
+    }
+
+    #[bench]
+    #[allow(clippy::clone_on_copy)]
+    fn clone(bench: &mut Bencher) {
+        let a = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        bench.iter(|| (0..N).map(|_| a.clone()));
+    }
+
+    #[bench]
+    fn debug_fmt(bench: &mut Bencher) {
+        let a = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        bench.iter(|| (0..N).map(|_| format!("{a:?}")));
+    }
+}
+
 impl From<[f32; 4]> for Tuple {
     /// Creates a new tuple from an array of scaler values
     ///
@@ -80,6 +125,25 @@ mod tests_from {
     fn from_array() {
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
         assert_eq!([1.0, 2.0, 3.0, 4.0], tuple.tuple);
+    }
+}
+
+#[cfg(test)]
+mod benchs_from {
+    use super::*;
+
+    #[bench]
+    fn from_array(bench: &mut Bencher) {
+        bench.iter(|| {
+            (0..N).map(|b| {
+                Tuple::from([
+                    (1 + b) as f32,
+                    (2 + b) as f32,
+                    (3 + b) as f32,
+                    (4 + b) as f32,
+                ])
+            })
+        });
     }
 }
 
@@ -374,23 +438,20 @@ mod tests_add {
 
 #[cfg(test)]
 mod benchs_add {
-    extern crate test;
-
     use super::*;
-    use test::Bencher;
 
     #[bench]
     fn closure(bench: &mut Bencher) {
         let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
-        bench.iter(|| (0..1000).fold(a, |a, _| a + b));
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
     }
 
     #[bench]
     fn identity(bench: &mut Bencher) {
         let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = Tuple::default();
-        bench.iter(|| (0..1000).fold(a, |a, _| a + b));
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
     }
 
     #[bench]
@@ -398,7 +459,7 @@ mod benchs_add {
         let a = Tuple::new(1.23, 4.56, 7.89, 1.01);
         let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
         let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
-        bench.iter(|| (0..1000).fold(a, |a, _| a + (b + c)));
+        bench.iter(|| (0..N).fold(a, |a, _| a + (b + c)));
     }
 }
 
@@ -454,21 +515,18 @@ mod tests_neg {
 
 #[cfg(test)]
 mod benchs_neg {
-    extern crate test;
-
     use super::*;
-    use test::Bencher;
 
     #[bench]
     fn neg(bench: &mut Bencher) {
         let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
-        bench.iter(|| (0..1000).fold(a, |a, _| -a));
+        bench.iter(|| (0..N).fold(a, |a, _| -a));
     }
 
     #[bench]
     fn double_neg(bench: &mut Bencher) {
         let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
-        bench.iter(|| (0..1000).fold(a, |a, _| -(-a)));
+        bench.iter(|| (0..N).fold(a, |a, _| -(-a)));
     }
 }
 
@@ -514,15 +572,12 @@ mod tests_mul {
 
 #[cfg(test)]
 mod benchs_mul {
-    extern crate test;
-
     use super::*;
-    use test::Bencher;
 
     #[bench]
     fn closure(bench: &mut Bencher) {
         let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
-        bench.iter(|| (0..1000).fold(a, |a, b| a * b as f32));
+        bench.iter(|| (0..N).fold(a, |a, b| a * b as f32));
     }
 }
 
@@ -568,14 +623,11 @@ mod tests_div {
 
 #[cfg(test)]
 mod benchs_div {
-    extern crate test;
-
     use super::*;
-    use test::Bencher;
 
     #[bench]
     fn closure(bench: &mut Bencher) {
         let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
-        bench.iter(|| (0..1000).fold(a, |a, b| a / b as f32));
+        bench.iter(|| (0..N).fold(a, |a, b| a / b as f32));
     }
 }
