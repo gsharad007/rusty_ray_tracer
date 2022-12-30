@@ -1,3 +1,10 @@
+#[cfg(test)]
+extern crate test;
+#[cfg(test)]
+use test::Bencher;
+#[cfg(test)]
+const N: i32 = 1000;
+
 use std::{
     fmt::Display,
     ops::{Add, Sub},
@@ -65,6 +72,35 @@ mod tests_point {
             "Point { tuple: [1.0, 2.0, 3.0, 1.0] }",
             format!("{point:?}")
         );
+    }
+}
+
+#[cfg(test)]
+mod benchs_point {
+    use super::*;
+
+    #[bench]
+    fn new(bench: &mut Bencher) {
+        bench.iter(|| (0..N).map(|b| Point::new(1.0 + b as f32, 2.0 + b as f32, 3.0 + b as f32)));
+    }
+
+    #[bench]
+    fn copy(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).map(|_| a));
+    }
+
+    #[bench]
+    #[allow(clippy::clone_on_copy)]
+    fn clone(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).map(|_| a.clone()));
+    }
+
+    #[bench]
+    fn debug_fmt(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).map(|_| format!("{a:?}")));
     }
 }
 
@@ -317,6 +353,17 @@ mod tests_display {
     }
 }
 
+#[cfg(test)]
+mod benchs_display {
+    use super::*;
+
+    #[bench]
+    fn eq(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).map(|_| format!("{a}")));
+    }
+}
+
 impl PartialEq for Point {
     /// Performs the `=` operation.
     ///
@@ -530,6 +577,25 @@ mod tests_sub {
     }
 }
 
+#[cfg(test)]
+mod benchs_sub {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).map(|_| a - b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::default();
+        bench.iter(|| (0..N).map(|_| a - b));
+    }
+}
+
 impl Add<Vector> for Point {
     /// The resulting type after applying the `+` operator.
     type Output = Self;
@@ -597,6 +663,33 @@ mod tests_add_vector {
     }
 }
 
+#[cfg(test)]
+mod benchs_add_vector {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_associative(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        let c = Point::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a + (b - c)));
+    }
+}
+
 impl Sub<Vector> for Point {
     /// The resulting type after applying the `+` operator.
     type Output = Self;
@@ -653,5 +746,32 @@ mod tests_sub_vector {
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(c_ab, c - (a - b));
         assert_eq!(b_ca, b - (c - a));
+    }
+}
+
+#[cfg(test)]
+mod benchs_sub_vector {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_associative(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        let c = Point::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a - (b - c)));
     }
 }
