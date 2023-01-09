@@ -1,4 +1,14 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+#[cfg(test)]
+extern crate test;
+#[cfg(test)]
+use test::Bencher;
+#[cfg(test)]
+const N: i32 = 1000;
+
+use std::{
+    fmt::Display,
+    ops::{Add, Div, Mul, Neg, Sub},
+};
 
 use super::{array_base::ArrayBase, coordinates4::Coordinates4};
 use crate::core3d::tuple::Tuple;
@@ -19,14 +29,14 @@ impl Vector {
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
-    /// let vector = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!(1.0, vector.x());
-    /// assert_eq!(2.0, vector.y());
-    /// assert_eq!(3.0, vector.z());
-    /// assert_eq!(0.0, vector.w());
-    /// assert!(vector.is_vector() == true);
-    /// assert!(vector.is_point() == false);
-    /// assert!(vector.is_valid());
+    /// let a = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!(1.0, a.x());
+    /// assert_eq!(2.0, a.y());
+    /// assert_eq!(3.0, a.z());
+    /// assert_eq!(0.0, a.w());
+    /// assert!(a.is_vector() == true);
+    /// assert!(a.is_point() == false);
+    /// assert!(a.is_valid());
     /// ```
     #[must_use]
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
@@ -42,27 +52,60 @@ mod tests_vector {
 
     #[test]
     fn new() {
-        let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+        let a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     }
 
     #[test]
     #[allow(clippy::clone_on_copy)]
     fn copy_clone() {
-        let vector = Vector::new(1.0, 2.0, 3.0);
-        let vector_copy = vector;
-        let vector_clone = vector.clone();
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector_copy.tuple);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector_clone.tuple);
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let a_copy = a;
+        let a_clone = a.clone();
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a_clone.tuple);
     }
 
     #[test]
     fn debug_fmt() {
-        let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!(
-            "Vector { tuple: [1.0, 2.0, 3.0, 0.0] }",
-            format!("{vector:?}")
-        );
+        let a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!("Vector { tuple: [1.0, 2.0, 3.0, 0.0] }", format!("{a:?}"));
+    }
+}
+
+#[cfg(test)]
+mod benchs_vector {
+    use super::*;
+
+    #[bench]
+    fn new(bench: &mut Bencher) {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        bench.iter(|| {
+            (0..N).fold(a, |a, b| {
+                Vector::new(a.x() + b as f32, a.y() + b as f32, a.z() + b as f32)
+            })
+        });
+    }
+
+    #[bench]
+    fn copy(bench: &mut Bencher) {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(4.0, 5.0, 6.0);
+        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a } else { b }));
+    }
+
+    #[bench]
+    #[allow(clippy::clone_on_copy)]
+    fn clone(bench: &mut Bencher) {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(4.0, 5.0, 6.0);
+        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a.clone() } else { b.clone() }));
+    }
+
+    #[bench]
+    fn debug_fmt(bench: &mut Bencher) {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{a:?}")));
     }
 }
 
@@ -73,8 +116,8 @@ impl From<[f32; 3]> for Vector {
     ///
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Vector::from([1.0, 2.0, 3.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+    /// let a = Vector::from([1.0, 2.0, 3.0]);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
         Self::new(arr[0], arr[1], arr[2])
@@ -89,16 +132,16 @@ impl From<Tuple> for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+    /// let a = Vector::from(Tuple::from([1.0, 2.0, 3.0, 0.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     /// ```
     ///
     /// ```
     /// # use std::panic;
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
+    /// let a = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+    /// assert!(panic::catch_unwind(|| Vector::from(a)).is_err());
     /// ```
     fn from(tuple: Tuple) -> Self {
         debug_assert!(tuple.is_vector());
@@ -114,8 +157,8 @@ impl From<Vector> for Tuple {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Tuple::from(Vector::from([1.0, 2.0, 3.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+    /// let a = Tuple::from(Vector::from([1.0, 2.0, 3.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     /// ```
     fn from(vector: Vector) -> Self {
         debug_assert!(vector.is_vector());
@@ -130,26 +173,26 @@ mod tests_from {
 
     #[test]
     fn from_array() {
-        let vector = Vector::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+        let a = Vector::from([1.0, 2.0, 3.0]);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     }
 
     #[test]
     fn from_tuple() {
-        let vector = Vector::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
+        let a = Vector::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
 
-        let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
+        let a = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+        assert!(panic::catch_unwind(|| Vector::from(a)).is_err());
     }
 
     #[test]
     fn into_tuple() {
-        let tuple = Tuple::from(Vector::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.tuple);
+        let a = Tuple::from(Vector::new(1.0, 2.0, 3.0));
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
 
-        let tuple: Tuple = Vector::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 0.0], tuple.tuple);
+        let a: Tuple = Vector::new(1.0, 2.0, 3.0).into();
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
     }
 }
 
@@ -163,8 +206,8 @@ impl ArrayBase for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], vector.get_array());
+    /// let a = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], a.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
         self.tuple
@@ -176,8 +219,8 @@ impl ArrayBase for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let vector = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
+    /// let a = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *a.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
         &self.tuple
@@ -189,13 +232,13 @@ impl ArrayBase for Vector {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// let mut vector = Vector::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_mut());
-    /// vector.get_array_mut()[0] += 10.0;
-    /// vector.get_array_mut()[1] += 10.0;
-    /// vector.get_array_mut()[2] += 10.0;
-    /// vector.get_array_mut()[3] += 10.0;
-    /// assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_mut());
+    /// let mut a = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0], *a.get_array_mut());
+    /// a.get_array_mut()[0] += 10.0;
+    /// a.get_array_mut()[1] += 10.0;
+    /// a.get_array_mut()[2] += 10.0;
+    /// a.get_array_mut()[3] += 10.0;
+    /// assert_eq!([11.0, 12.0, 13.0, 10.0], *a.get_array_mut());
     /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
         &mut self.tuple
@@ -208,23 +251,23 @@ mod tests_array_base {
 
     #[test]
     fn get_array() {
-        let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
-        assert_eq!([1.0, 2.0, 3.0, 0.0], vector.get_array());
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_ref());
+        let a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *a.get_array_ref());
+        assert_eq!([1.0, 2.0, 3.0, 0.0], a.get_array());
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *a.get_array_ref());
     }
 
     #[test]
     fn get_array_mut() {
-        let mut vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 0.0], *vector.get_array_mut());
-        vector.get_array_mut()[0] += 10.0;
-        vector.get_array_mut()[1] += 10.0;
-        vector.get_array_mut()[2] += 10.0;
-        vector.get_array_mut()[3] += 10.0;
-        assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_mut());
-        assert_eq!([11.0, 12.0, 13.0, 10.0], vector.get_array());
-        assert_eq!([11.0, 12.0, 13.0, 10.0], *vector.get_array_ref());
+        let mut a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 0.0], *a.get_array_mut());
+        a.get_array_mut()[0] += 10.0;
+        a.get_array_mut()[1] += 10.0;
+        a.get_array_mut()[2] += 10.0;
+        a.get_array_mut()[3] += 10.0;
+        assert_eq!([11.0, 12.0, 13.0, 10.0], *a.get_array_mut());
+        assert_eq!([11.0, 12.0, 13.0, 10.0], a.get_array());
+        assert_eq!([11.0, 12.0, 13.0, 10.0], *a.get_array_ref());
     }
 }
 
@@ -237,26 +280,69 @@ mod tests_coordinates4 {
 
     #[test]
     fn assign_array() {
-        let vector: Vector = Vector::from([3.0, 2.0, 1.0]);
-        assert_eq!(3.0, vector.x());
-        assert_eq!(2.0, vector.y());
-        assert_eq!(1.0, vector.z());
-        assert_eq!(0.0, vector.w());
-        assert!(vector.is_vector());
-        assert!(!vector.is_point());
-        assert!(vector.is_valid());
+        let a = Vector::from([3.0, 2.0, 1.0]);
+        assert_eq!(3.0, a.x());
+        assert_eq!(2.0, a.y());
+        assert_eq!(1.0, a.z());
+        assert_eq!(0.0, a.w());
+        assert!(a.is_vector());
+        assert!(!a.is_point());
+        assert!(a.is_valid());
     }
 
     #[test]
     fn create_new() {
-        let vector = Vector::new(1.0, 2.0, 3.0);
-        assert_eq!(1.0, vector.x());
-        assert_eq!(2.0, vector.y());
-        assert_eq!(3.0, vector.z());
-        assert_eq!(0.0, vector.w());
-        assert!(vector.is_vector());
-        assert!(!vector.is_point());
-        assert!(vector.is_valid());
+        let a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!(1.0, a.x());
+        assert_eq!(2.0, a.y());
+        assert_eq!(3.0, a.z());
+        assert_eq!(0.0, a.w());
+        assert!(a.is_vector());
+        assert!(!a.is_point());
+        assert!(a.is_valid());
+    }
+}
+
+impl Display for Vector {
+    /// Returns a string representation of the Point object as [{x}, {y}, {z}, {w}]
+    ///
+    /// ```
+    /// use rusty_ray_tracer::core3d::vector::Vector;
+    ///
+    /// let a = Vector::new(1.0, 2.0, 3.0);
+    /// assert_eq!("[1, 2, 3, 0]", format!("{}", a));
+    /// ```
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "[{}, {}, {}, {}]",
+            self.get_at(0),
+            self.get_at(1),
+            self.get_at(2),
+            self.get_at(3),
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests_display {
+    use super::*;
+
+    #[test]
+    fn display() {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!("[1, 2, 3, 0]", format!("{a}"));
+    }
+}
+
+#[cfg(test)]
+mod benchs_display {
+    use super::*;
+
+    #[bench]
+    fn display(bench: &mut Bencher) {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{a}")));
     }
 }
 
@@ -472,6 +558,33 @@ mod tests_add {
     }
 }
 
+#[cfg(test)]
+mod benchs_add {
+    use super::*;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn identity(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn associative(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let c = Vector::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a + (b + c)));
+    }
+}
+
 impl Sub for Vector {
     /// The resulting type after applying the `-` operator.
     type Output = Self;
@@ -548,6 +661,33 @@ mod tests_sub {
     }
 }
 
+#[cfg(test)]
+mod benchs_sub {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+    }
+
+    #[bench]
+    fn not_associative(bench: &mut Bencher) {
+        let a = Vector::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        let c = Vector::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a - (b - c)));
+    }
+}
+
 impl Neg for Vector {
     type Output = Self;
 
@@ -598,6 +738,23 @@ mod tests_neg {
     }
 }
 
+#[cfg(test)]
+mod benchs_neg {
+    use super::*;
+
+    #[bench]
+    fn neg(bench: &mut Bencher) {
+        let a = Vector::new(-1.23, -4.56, -7.89);
+        bench.iter(|| (0..N).fold(a, |a, _| -a));
+    }
+
+    #[bench]
+    fn double_neg(bench: &mut Bencher) {
+        let a = Vector::new(-1.23, -4.56, -7.89);
+        bench.iter(|| (0..N).fold(a, |a, _| -(-a)));
+    }
+}
+
 impl Mul<f32> for Vector {
     type Output = Self;
 
@@ -635,6 +792,17 @@ mod tests_mul {
         let a = Vector::new(1.23, 4.56, 7.89);
         let b = 1.0;
         assert_eq!(a * b, a);
+    }
+}
+
+#[cfg(test)]
+mod benchs_mul {
+    use super::*;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Vector::new(1.11, -2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, b| a * b as f32));
     }
 }
 
@@ -696,6 +864,17 @@ mod tests_div {
     }
 }
 
+#[cfg(test)]
+mod benchs_div {
+    use super::*;
+
+    #[bench]
+    fn closure(bench: &mut Bencher) {
+        let a = Vector::new(1.11, -2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, b| a / b as f32));
+    }
+}
+
 pub trait Magnitude {
     /// The resulting type
     type Output;
@@ -750,6 +929,20 @@ mod tests_magnitude {
         assert_eq!(3.741_657_5, Vector::new(-1.0, -2.0, -3.0).magnitude());
         assert_eq!(9.195_575, Vector::new(1.23, 4.56, 7.89).magnitude());
         assert_eq!(4.153_239_7, Vector::new(1.11, 2.22, 3.33).magnitude());
+    }
+}
+
+#[cfg(test)]
+mod benchs_magnitude {
+    use super::*;
+
+    #[bench]
+    fn test(bench: &mut Bencher) {
+        bench.iter(|| {
+            (0..N).fold(0.0, |a, b| {
+                a + Vector::new((b + 1) as f32, (b + 2) as f32, (b + 3) as f32).magnitude()
+            })
+        });
     }
 }
 
@@ -813,6 +1006,21 @@ mod tests_normalize {
             .normalize()
             .into_iter()
             .all(f32::is_nan));
+    }
+}
+
+#[cfg(test)]
+mod benchs_normalize {
+    use super::*;
+
+    #[bench]
+    fn test(bench: &mut Bencher) {
+        let a = Vector::new(1.11, -2.22, 3.33);
+        bench.iter(|| {
+            (0..N).fold(a, |a, b| {
+                Vector::new(a.x() + b as f32, a.y() + b as f32, a.x() + b as f32).normalize()
+            })
+        });
     }
 }
 
@@ -888,6 +1096,22 @@ mod tests_dot_product {
             32.0,
             Vector::dot(Vector::new(1.0, 2.0, 3.0), Vector::new(4.0, 5.0, 6.0))
         );
+    }
+}
+
+#[cfg(test)]
+mod benchs_dot_product {
+    use super::*;
+
+    #[bench]
+    fn test(bench: &mut Bencher) {
+        bench.iter(|| {
+            (0..N).fold(1.0, |a, b| {
+                let a = Vector::new(a, a, a);
+                let b = Vector::new(b as f32, b as f32, b as f32);
+                a.dot(b)
+            })
+        });
     }
 }
 
@@ -1031,5 +1255,29 @@ mod tests_cross_product {
             Vector::new(3.0, -6.0, 3.0),
             Vector::cross(Vector::new(4.0, 5.0, 6.0), Vector::new(1.0, 2.0, 3.0))
         );
+    }
+
+    #[test]
+    fn cross_cross() {
+        let a = Vector::new(1.0, 0.0, 1.0).normalize();
+        let b = Vector::new(0.0, 1.0, 0.0).normalize();
+        assert_eq!(a, b.cross(a).cross(b));
+        assert_eq!(b, a.cross(b).cross(a));
+    }
+}
+
+#[cfg(test)]
+mod benchs_cross_product {
+    use super::*;
+
+    #[bench]
+    fn test(bench: &mut Bencher) {
+        let a = Vector::new(1.11, -2.22, 3.33);
+        bench.iter(|| {
+            (0..N).fold(a, |a, b| {
+                let b = Vector::new(b as f32, b as f32, b as f32);
+                a.cross(b)
+            })
+        });
     }
 }
