@@ -26,6 +26,8 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - name: Install Valgrind
+        run: sudo apt install valgrind
       - name: Run bench
         run: cargo bench | tee output.txt
       - name: 'Upload Artifact'
@@ -38,7 +40,7 @@ jobs:
         with:
           name: ${{ runner.os }}-${{ runner.arch }}
           tool: 'cargo'
-          output-file-path: output.txt          
+          output-file-path: output.txt
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           alert-threshold: '150%'
