@@ -17,15 +17,25 @@ futures = "0.3"
 log = "0.4"
 # env_logger = "*"
 # test-log = "0.2"
+criterion = { version = '0.4', features=['real_blackbox'] }
+iai = { version = "0.1", features=['real_blackbox'] }
 
 [[test]]
 name = "example" # this should be the same as the filename of your test target
 harness = false  # allows Cucumber to print output instead of libtest
 
-[[test]]
-name = "tuples_feature" # this should be the same as the filename of your test target
-harness = false  # allows Cucumber to print output instead of libtest
+[[bench]]
+name = "example_bench"
+harness = false
 
 [[test]]
-name = "canvas_feature" # this should be the same as the filename of your test target
-harness = false  # allows Cucumber to print output instead of libtest
+name = "tuples_feature"
+harness = false
+
+[[bench]]
+name = "tuples_bench"
+harness = false
+
+[[test]]
+name = "canvas_feature"
+harness = false
