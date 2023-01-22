@@ -1,7 +1,7 @@
 #[cfg(test)]
 extern crate test;
 #[cfg(test)]
-use test::Bencher;
+use test::{black_box, Bencher};
 #[cfg(test)]
 const N: i32 = 1000;
 
@@ -67,11 +67,13 @@ mod tests_tuple {
 mod benchs_tuple {
     use super::*;
 
+    const A: Tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
+    const B: Tuple = Tuple::new(5.0, 6.0, 7.0, 8.0);
+
     #[bench]
     fn new(bench: &mut Bencher) {
-        let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
         bench.iter(|| {
-            (0..N).fold(a, |a, b| {
+            (0..N).fold(A, |a, b| {
                 Tuple::new(
                     a.tuple[0] + b as f32,
                     a.tuple[1] + b as f32,
@@ -84,23 +86,18 @@ mod benchs_tuple {
 
     #[bench]
     fn copy(bench: &mut Bencher) {
-        let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
-        let b = Tuple::new(5.0, 6.0, 7.0, 8.0);
-        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a } else { b }));
+        bench.iter(|| (0..N).fold(A, |a, i| if i == 0 { a } else { B }));
     }
 
     #[bench]
     #[allow(clippy::clone_on_copy)]
     fn clone(bench: &mut Bencher) {
-        let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
-        let b = Tuple::new(5.0, 6.0, 7.0, 8.0);
-        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a.clone() } else { b.clone() }));
+        bench.iter(|| (0..N).fold(A, |a, i| if i == 0 { a.clone() } else { B.clone() }));
     }
 
     #[bench]
     fn debug_fmt(bench: &mut Bencher) {
-        let a = Tuple::new(1.0, 2.0, 3.0, 4.0);
-        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{a:?}")));
+        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{A:?}")));
     }
 }
 
@@ -137,16 +134,8 @@ mod benchs_from {
 
     #[bench]
     fn from_array(bench: &mut Bencher) {
-        bench.iter(|| {
-            (0..N).map(|b| {
-                Tuple::from([
-                    (1 + b) as f32,
-                    (2 + b) as f32,
-                    (3 + b) as f32,
-                    (4 + b) as f32,
-                ])
-            })
-        });
+        let arr = black_box([1.0, 2.0, 3.0, 4.0]);
+        bench.iter(|| (0..N).map(|_| Tuple::from(arr)));
     }
 }
 
@@ -516,26 +505,24 @@ mod tests_add {
 mod benchs_add {
     use super::*;
 
+    const A: Tuple = Tuple::new(1.23, 4.56, 7.89, 10.11);
+    const B: Tuple = Tuple::new(1.11, 2.22, 3.33, 4.44);
+    const C: Tuple = Tuple::new(5.55, 6.66, 7.77, 8.88);
+
     #[bench]
     fn closure(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
-        let b = Tuple::new(1.11, 2.22, 3.33, 1.0);
-        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+        bench.iter(|| (0..N).fold(A, |a, _| a + B));
     }
 
     #[bench]
     fn identity(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = Tuple::default();
-        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+        bench.iter(|| (0..N).fold(A, |a, _| a + b));
     }
 
     #[bench]
     fn associative(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 1.01);
-        let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
-        let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
-        bench.iter(|| (0..N).fold(a, |a, _| a + (b + c)));
+        bench.iter(|| (0..N).fold(A, |a, _| a + (black_box(B) + black_box(C))));
     }
 }
 
@@ -619,26 +606,24 @@ mod tests_sub {
 mod benchs_sub {
     use super::*;
 
+    const A: Tuple = Tuple::new(1.23, 4.56, 7.89, 10.11);
+    const B: Tuple = Tuple::new(1.11, 2.22, 3.33, 4.44);
+    const C: Tuple = Tuple::new(5.55, 6.66, 7.77, 8.88);
+
     #[bench]
     fn not_closure(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 10.11);
-        let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
-        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+        bench.iter(|| (0..N).fold(A, |a, _| a - B));
     }
 
     #[bench]
     fn not_identity(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 10.11);
         let b = Tuple::default();
-        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+        bench.iter(|| (0..N).fold(A, |a, _| a - b));
     }
 
     #[bench]
     fn not_associative(bench: &mut Bencher) {
-        let a = Tuple::new(1.23, 4.56, 7.89, 10.11);
-        let b = Tuple::new(1.11, 2.22, 3.33, 4.44);
-        let c = Tuple::new(5.55, 6.66, 7.77, 8.88);
-        bench.iter(|| (0..N).fold(a, |a, _| a - (b - c)));
+        bench.iter(|| (0..N).fold(A, |a, _| a - (black_box(B) - black_box(C))));
     }
 }
 
@@ -696,16 +681,16 @@ mod tests_neg {
 mod benchs_neg {
     use super::*;
 
+    const A: Tuple = Tuple::new(-1.23, -4.56, -7.89, 0.0);
+
     #[bench]
     fn neg(bench: &mut Bencher) {
-        let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
-        bench.iter(|| (0..N).fold(a, |a, _| -a));
+        bench.iter(|| (0..N).fold(A, |a, _| -a));
     }
 
     #[bench]
     fn double_neg(bench: &mut Bencher) {
-        let a = Tuple::new(-1.23, -4.56, -7.89, 0.0);
-        bench.iter(|| (0..N).fold(a, |a, _| -(-a)));
+        bench.iter(|| (0..N).fold(A, |a, _| -(-a)));
     }
 }
 
@@ -753,10 +738,11 @@ mod tests_mul {
 mod benchs_mul {
     use super::*;
 
+    const A: Tuple = Tuple::new(1.11, -2.22, 3.33, 0.0);
+
     #[bench]
     fn closure(bench: &mut Bencher) {
-        let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
-        bench.iter(|| (0..N).fold(a, |a, b| a * b as f32));
+        bench.iter(|| (0..N).fold(A, |a, b| a * b as f32));
     }
 }
 
@@ -821,10 +807,11 @@ mod tests_div {
 #[cfg(test)]
 mod benchs_div {
     use super::*;
+    
+    const A: Tuple = Tuple::new(1.11, -2.22, 3.33, 0.0);
 
     #[bench]
     fn closure(bench: &mut Bencher) {
-        let a = Tuple::new(1.11, -2.22, 3.33, 0.0);
-        bench.iter(|| (0..N).fold(a, |a, b| a / b as f32));
+        bench.iter(|| (0..N).fold(A, |a, b| a / b as f32));
     }
 }
