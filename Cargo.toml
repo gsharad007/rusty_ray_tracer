@@ -29,9 +29,13 @@ name = "example_bench"
 harness = false
 
 [[test]]
-name = "tuples_feature" # this should be the same as the filename of your test target
-harness = false  # allows Cucumber to print output instead of libtest
+name = "tuples_feature"
+harness = false
+
+[[bench]]
+name = "tuples_bench"
+harness = false
 
 [[test]]
-name = "canvas_feature" # this should be the same as the filename of your test target
-harness = false  # allows Cucumber to print output instead of libtest
+name = "canvas_feature"
+harness = false
