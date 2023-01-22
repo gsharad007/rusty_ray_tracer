@@ -807,7 +807,7 @@ mod tests_div {
 #[cfg(test)]
 mod benchs_div {
     use super::*;
-    
+
     const A: Tuple = Tuple::new(1.11, -2.22, 3.33, 0.0);
 
     #[bench]

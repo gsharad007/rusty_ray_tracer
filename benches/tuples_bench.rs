@@ -19,6 +19,7 @@ fn new() -> Tuple {
     )
 }
 
+#[allow(clippy::clone_on_copy)]
 fn clone() -> Tuple {
     A.clone()
 }
