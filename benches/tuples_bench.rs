@@ -69,6 +69,14 @@ fn double_neg() -> Tuple {
     -(-A)
 }
 
+fn mul_closure() -> Tuple {
+    A * black_box(100.1)
+}
+
+fn div_closure() -> Tuple {
+    A / black_box(100.1)
+}
+
 iai_main!(
     new,
     clone,
@@ -82,7 +90,9 @@ iai_main!(
     sub_not_identity,
     sub_not_associative,
     neg,
-    double_neg
+    double_neg,
+    mul_closure,
+    div_closure,
 );
 crit_group!(
     benches,
@@ -98,7 +108,9 @@ crit_group!(
     sub_not_identity,
     sub_not_associative,
     neg,
-    double_neg
+    double_neg,
+    mul_closure,
+    div_closure,
 );
 crit_main!(benches);
 fn main() {
