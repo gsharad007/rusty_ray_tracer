@@ -29,8 +29,10 @@ jobs:
           override: true
       - name: Install Valgrind
         continue-on-error: true
-        run: sudo apt-get update
-        run: sudo apt install -y valgrind
+        run: |
+          sudo apt-get update;
+          sudo apt install -y valgrind;
+          sudo apt install -y gnuplot;
       - name: Run bench
         run: cargo bench | tee output.txt
       - name: 'Upload Artifact'
