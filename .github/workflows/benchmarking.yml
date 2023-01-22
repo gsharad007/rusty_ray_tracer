@@ -28,7 +28,9 @@ jobs:
           toolchain: nightly
           override: true
       - name: Install Valgrind
-        run: sudo apt install valgrind
+        continue-on-error: true
+        run: sudo apt-get update
+        run: sudo apt install -y valgrind
       - name: Run bench
         run: cargo bench | tee output.txt
       - name: 'Upload Artifact'
