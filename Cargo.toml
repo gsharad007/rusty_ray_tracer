@@ -29,3 +29,7 @@ harness = false  # allows Cucumber to print output instead of libtest
 [[test]]
 name = "canvas_feature" # this should be the same as the filename of your test target
 harness = false  # allows Cucumber to print output instead of libtest
+
+[[test]]
+name = "matrices_feature" # this should be the same as the filename of your test target
+harness = false  # allows Cucumber to print output instead of libtest
