@@ -1,5 +1,5 @@
 use cucumber::{gherkin::Step, given, then, World};
-use rusty_ray_tracer::core3d::{matrix44f32::Matrix44f32, tuple::Tuple, array_base::ArrayBase};
+use rusty_ray_tracer::core3d::{array_base::ArrayBase, matrix44f32::Matrix44f32, tuple::Tuple};
 
 #[derive(World, Default, Debug)]
 pub struct TheWorld {
