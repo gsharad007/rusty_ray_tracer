@@ -85,16 +85,16 @@ fn the_following_matrix_a(world: &mut TheWorld, name: String, step: &Step) {
 
 #[then(expr = "A = B")]
 fn a_equal_b(world: &mut TheWorld) {
-    let a = *world.get_matrix("a");
-    let b = *world.get_matrix("b");
+    let a = *world.get_matrix("A");
+    let b = *world.get_matrix("B");
 
     assert_eq!(a, b);
 }
 
-#[then(expr = "A !&#x3D; B")]
+#[then(expr = "A != B")]
 fn a_not_equal_b(world: &mut TheWorld) {
-    let a = *world.get_matrix("a");
-    let b = *world.get_matrix("b");
+    let a = *world.get_matrix("A");
+    let b = *world.get_matrix("B");
 
     assert_ne!(a, b);
 }
