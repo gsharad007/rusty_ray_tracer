@@ -1,3 +1,6 @@
+#![feature(iter_array_chunks)]
+#![feature(slice_as_chunks)]
+
 pub mod asset_types;
 pub mod core3d;
 pub mod graphics2d;

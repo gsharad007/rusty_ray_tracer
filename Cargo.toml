@@ -9,6 +9,7 @@ edition = "2021"
 float-cmp = "0.9"
 derive_more = "0.99"
 num = "0.4"
+itertools = "0.10.*"
 
 [dev-dependencies]
 async-trait = "0.1"

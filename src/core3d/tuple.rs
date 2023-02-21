@@ -1,4 +1,4 @@
-use super::{array_base::ArrayBase, coordinates4::Coordinates4};
+use super::{array_base::ArrayBase, coordinates4::Coordinates4, dot_product::DotProduct};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
 use std::ops::{Div, Mul, Neg};
@@ -499,5 +499,70 @@ mod tests_div {
         let a = Tuple::new(1.23, 4.56, 7.89, 0.0);
         let b = 1.0;
         assert_eq!(a / b, a);
+    }
+}
+
+impl DotProduct for Tuple {}
+
+#[cfg(test)]
+mod tests_dot_product {
+    use super::*;
+
+    #[test]
+    fn test() {
+        assert_eq!(
+            0.0,
+            Tuple::new(0.0, 0.0, 0.0, 0.0).dot(Tuple::new(0.0, 0.0, 0.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Tuple::new(1.0, 0.0, 0.0, 0.0).dot(Tuple::new(1.0, 0.0, 0.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Tuple::new(0.0, 1.0, 0.0, 0.0).dot(Tuple::new(0.0, 1.0, 0.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Tuple::new(0.0, 0.0, 1.0, 0.0).dot(Tuple::new(0.0, 0.0, 1.0, 0.0))
+        );
+        assert_eq!(
+            1.0,
+            Tuple::new(0.0, 0.0, 0.0, 1.0).dot(Tuple::new(0.0, 0.0, 0.0, 1.0))
+        );
+        assert_eq!(
+            1.0,
+            Tuple::new(0.5, 0.5, 0.5, 0.5).dot(Tuple::new(0.5, 0.5, 0.5, 0.5))
+        );
+
+        assert_eq!(
+            14.0,
+            Tuple::dot(
+                Tuple::new(1.0, 2.0, 3.0, 0.0),
+                Tuple::new(1.0, 2.0, 3.0, 0.0)
+            )
+        );
+        assert_eq!(
+            14.0,
+            Tuple::dot(
+                Tuple::new(-1.0, -2.0, -3.0, 0.0),
+                Tuple::new(-1.0, -2.0, -3.0, 0.0)
+            )
+        );
+        assert_eq!(
+            -14.0,
+            Tuple::dot(
+                Tuple::new(1.0, 2.0, 3.0, 0.0),
+                Tuple::new(-1.0, -2.0, -3.0, 0.0)
+            )
+        );
+
+        assert_eq!(
+            32.0,
+            Tuple::dot(
+                Tuple::new(1.0, 2.0, 3.0, 0.0),
+                Tuple::new(4.0, 5.0, 6.0, 0.0)
+            )
+        );
     }
 }
