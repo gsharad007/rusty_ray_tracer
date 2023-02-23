@@ -1,5 +1,6 @@
 use std::ops::Mul;
 
+use float_cmp::ApproxEq;
 use itertools::{iproduct, Itertools};
 
 use crate::core3d::{dot_product::DotProduct, tuple::Tuple};
@@ -50,6 +51,31 @@ impl Matrix44f32 {
                 [rc10, rc11, rc12, rc13],
                 [rc20, rc21, rc22, rc23],
                 [rc30, rc31, rc32, rc33],
+            ],
+        }
+    }
+
+    /// Creates a new identity Matrix44f32
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix44f32;
+    ///
+    /// let matrix = Matrix44f32::identity();
+    /// assert_eq!([1.0, 0.0, 0.0, 0.0], matrix.matrix[0]);
+    /// assert_eq!([0.0, 1.0, 0.0, 0.0], matrix.matrix[1]);
+    /// assert_eq!([0.0, 0.0, 1.0, 0.0], matrix.matrix[2]);
+    /// assert_eq!([0.0, 0.0, 0.0, 1.0], matrix.matrix[3]);
+    /// ```
+    #[must_use]
+    pub const fn identity() -> Self {
+        Self {
+            matrix: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
             ],
         }
     }
@@ -119,6 +145,7 @@ impl From<[[f32; 4]; 4]> for Matrix44f32 {
     /// assert_eq!([8.0, 7.0, 6.0, 5.0], matrix.matrix[2]);
     /// assert_eq!([4.0, 3.0, 2.0, 1.0], matrix.matrix[3]);
     /// ```
+    #[must_use]
     fn from(arr: [[f32; 4]; 4]) -> Self {
         Self { matrix: arr }
     }
@@ -143,6 +170,7 @@ impl From<Vec<Vec<f32>>> for Matrix44f32 {
     /// assert_eq!([8.0, 7.0, 6.0, 5.0], matrix.matrix[2]);
     /// assert_eq!([4.0, 3.0, 2.0, 1.0], matrix.matrix[3]);
     /// ```
+    #[must_use]
     fn from(vec: Vec<Vec<f32>>) -> Self {
         let mut matrix = Self::default();
 
@@ -186,9 +214,101 @@ mod tests_from {
     }
 }
 
+impl ApproxEq for Matrix44f32 {
+    type Margin = <f32 as ApproxEq>::Margin;
+
+    /// Performs the `~=` operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix44f32;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.000000000000)));
+    /// let b = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.000000000001)));
+    /// assert!(a.approx_eq(b, <Matrix44f32 as ApproxEq>::Margin::default()));
+    /// ```
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix44f32;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.0000000)));
+    /// let b = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.0000001)));
+    /// assert!(a.approx_eq(b, <Matrix44f32 as ApproxEq>::Margin::default().ulps(2)));
+    /// ```
+    ///
+    /// ```
+    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix44f32;
+    /// # use float_cmp::ApproxEq;
+    /// let a = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.0)));
+    /// let b = Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.0)));
+    /// assert!(a.approx_eq(b, <Matrix44f32 as ApproxEq>::Margin::default().epsilon(1.0)));
+    /// ```
+    fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
+        let margin = margin.into();
+
+        self.matrix
+            .flatten()
+            .into_iter()
+            .zip_eq(other.matrix.flatten().into_iter())
+            .all(|(a, b)| (*a).approx_eq(*b, margin))
+    }
+}
+
+#[cfg(test)]
+mod tests_approx_eq {
+    use super::*;
+    use float_cmp::assert_approx_eq;
+    use std::panic;
+
+    #[test]
+    fn eq() {
+        assert_approx_eq!(
+            Matrix44f32,
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.000_000_000_000))),
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.000_000_000_001)))
+        );
+        assert_approx_eq!(
+            Matrix44f32,
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.000_000_0))),
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.000_000_1))),
+            ulps = 2
+        );
+        assert_approx_eq!(
+            Matrix44f32,
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 0.0))),
+            Matrix44f32::from(vec!(vec!(1.23, 4.56, 7.89, 1.0))),
+            epsilon = 1.0
+        );
+    }
+
+    #[test]
+    fn ne() {
+        {
+            let a = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 1.000_000]]);
+            let b = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 1.000_001]]);
+            assert!(a.approx_ne(b, <Matrix44f32 as ApproxEq>::Margin::default()));
+        }
+        {
+            let a = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 1.000_000]]);
+            let b = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 1.000_001]]);
+            assert!(a.approx_ne(b, <Matrix44f32 as ApproxEq>::Margin::default().ulps(2)));
+        }
+        {
+            let a = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 0.000_000_0]]);
+            let b = Matrix44f32::from(vec![vec![1.23, 4.56, 7.89, 1.000_000_1]]);
+            assert!(a.approx_ne(b, <Matrix44f32 as ApproxEq>::Margin::default().epsilon(1.0)));
+        }
+    }
+}
+
 impl Mul for Matrix44f32 {
     type Output = Self;
 
+    #[must_use]
     fn mul(self, rhs: Self) -> Self::Output {
         assert_eq!(self.matrix[0].len(), rhs.matrix.len());
 
@@ -218,5 +338,148 @@ impl Mul for Matrix44f32 {
         Self {
             matrix: [arr[0], arr[1], arr[2], arr[3]],
         }
+    }
+}
+
+#[cfg(test)]
+mod tests_mul {
+    use float_cmp::assert_approx_eq;
+
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let a = Matrix44f32::from([
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+        ]);
+        let b = Matrix44f32::from([
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+        ]);
+        let expected = Matrix44f32::from([
+            [15.184801, 30.369602, 45.554398, 13.68],
+            [15.184801, 30.369602, 45.554398, 13.68],
+            [15.184801, 30.369602, 45.554398, 13.68],
+            [15.184801, 30.369602, 45.554398, 13.68],
+        ]);
+        assert_eq!(expected, a * b);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Matrix44f32::from([
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+        ]);
+        let b = Matrix44f32::identity();
+        assert_eq!(a * b, a);
+        assert_eq!(b * a, a);
+    }
+
+    #[test]
+    fn associative() {
+        let a = Matrix44f32::from([
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+        ]);
+        let b = Matrix44f32::from([
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+        ]);
+        let c = Matrix44f32::from([
+            [2.34, 6.78, 11.22, 1.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+        ]);
+        assert_approx_eq!(Matrix44f32, a * (b * c), (a * b) * c);
+        assert_approx_eq!(Matrix44f32, c * (a * b), (c * a) * b);
+    }
+}
+
+impl Mul<Tuple> for Matrix44f32 {
+    type Output = Tuple;
+
+    #[must_use]
+    fn mul(self, rhs: Tuple) -> Self::Output {
+        assert_eq!(self.matrix[0].len(), rhs.tuple.len());
+
+        let binding = (0..4)
+            .map(|r| {
+                let a = Tuple::new(
+                    self.matrix[r][0],
+                    self.matrix[r][1],
+                    self.matrix[r][2],
+                    self.matrix[r][3],
+                );
+                let b = Tuple::new(rhs.tuple[0], rhs.tuple[1], rhs.tuple[2], rhs.tuple[3]);
+
+                a.dot(b)
+            })
+            .collect_vec();
+        let (arr, []) = binding
+            .as_chunks::<4>() else {
+                panic!("matrix tuple multiplication resulted in misformed matrix!")
+            };
+
+        Tuple::from(arr[0])
+    }
+}
+
+#[cfg(test)]
+mod tests_mul_tuple {
+    use float_cmp::assert_approx_eq;
+
+    use super::*;
+
+    #[test]
+    fn closure() {
+        let a = Matrix44f32::from([
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+        ]);
+        let b = Tuple::from([1.11, 2.22, 3.33, 1.0]);
+        let expected = Tuple::from([37.7622, 37.7622, 37.7622, 37.7622]);
+        assert_eq!(expected, a * b);
+    }
+
+    #[test]
+    fn identity() {
+        let a = Matrix44f32::identity();
+        let b = Tuple::from([1.23, 4.56, 7.89, 0.0]);
+        assert_eq!(a * b, b);
+        // assert_eq!(b * a, a);
+    }
+
+    #[test]
+    fn associative() {
+        let a = Matrix44f32::from([
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+            [1.23, 4.56, 7.89, 0.0],
+        ]);
+        let b = Matrix44f32::from([
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+            [1.11, 2.22, 3.33, 1.0],
+        ]);
+        let c = Tuple::from([2.34, 6.78, 11.22, 1.0]);
+        assert_approx_eq!(Tuple, a * (b * c), (a * b) * c);
+        // assert_approx_eq!(Tuple, c * (a * b), (c * a) * b);
     }
 }

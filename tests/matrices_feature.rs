@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
-use rusty_ray_tracer::core3d::matrix::Matrix44f32;
+use rusty_ray_tracer::core3d::{matrix::Matrix44f32, tuple::Tuple};
+
+mod captures;
+use crate::captures::CaptureTuple;
 
 #[derive(World, Default, Debug)]
 pub struct TheWorld {
     m: Matrix44f32,
     matrices: HashMap<String, Matrix44f32>,
+    b: Tuple,
 }
 impl TheWorld {
     fn get_matrix(&mut self, name: &str) -> &mut Matrix44f32 {
@@ -90,6 +94,22 @@ fn a_mul_b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
 
     let a = *world.get_matrix("A");
     let b = *world.get_matrix("B");
+
+    let result = a * b;
+    assert_eq!(result, expected);
+}
+
+#[given(expr = "b ← {tuple}")]
+fn b_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
+    world.b = *tuple;
+}
+
+#[then(expr = "A * b = {tuple}")]
+fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
+    let expected = *tuple;
+
+    let a = *world.get_matrix("A");
+    let b = world.b;
 
     let result = a * b;
     assert_eq!(result, expected);
