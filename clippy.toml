@@ -1,1 +1,2 @@
-warn = ["clippy::pedantic", "clippy::pedantic", "clippy::restriction", "clippy::nursery", "clippy::cargo"]
+warn = []
+allow = []

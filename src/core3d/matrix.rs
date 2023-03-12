@@ -26,6 +26,7 @@ impl Matrix44f32 {
     /// assert_eq!([8.0, 7.0, 6.0, 5.0], matrix.matrix[2]);
     /// assert_eq!([4.0, 3.0, 2.0, 1.0], matrix.matrix[3]);
     /// ```
+    #[allow(clippy::too_many_arguments)]
     #[must_use]
     pub const fn new(
         rc00: f32,
@@ -252,8 +253,8 @@ impl ApproxEq for Matrix44f32 {
 
         self.matrix
             .flatten()
-            .into_iter()
-            .zip_eq(other.matrix.flatten().into_iter())
+            .iter()
+            .zip_eq(other.matrix.flatten().iter())
             .all(|(a, b)| (*a).approx_eq(*b, margin))
     }
 }
