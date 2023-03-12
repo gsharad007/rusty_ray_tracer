@@ -10,13 +10,19 @@ use crate::captures::CaptureTuple;
 pub struct TheWorld {
     m: Matrix44f32,
     matrices: HashMap<String, Matrix44f32>,
-    b: Tuple,
+    tuples: HashMap<String, Tuple>,
 }
 impl TheWorld {
     fn get_matrix(&mut self, name: &str) -> &mut Matrix44f32 {
         self.matrices
             .entry(name.to_string())
             .or_insert_with(Matrix44f32::default)
+    }
+
+    fn get_tuple(&mut self, name: &str) -> &mut Tuple {
+        self.tuples
+            .entry(name.to_string())
+            .or_insert_with(Tuple::default)
     }
 }
 // This runs before everything else, so you can setup things here.
@@ -99,9 +105,9 @@ fn a_mul_b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
     assert_eq!(result, expected);
 }
 
-#[given(expr = "b ← {tuple}")]
-fn b_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
-    world.b = *tuple;
+#[given(expr = "{word} ← {tuple}")]
+fn b_tuple(world: &mut TheWorld, name: String, tuple: CaptureTuple) {
+    *world.get_tuple(&name) = *tuple;
 }
 
 #[then(expr = "A * b = {tuple}")]
@@ -109,8 +115,26 @@ fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
     let expected = *tuple;
 
     let a = *world.get_matrix("A");
-    let b = world.b;
+    let b = *world.get_tuple("b");
 
     let result = a * b;
     assert_eq!(result, expected);
+}
+
+#[then(expr = "A * identity_matrix = A")]
+fn a_identity_matrix_x_d_a(world: &mut TheWorld) {
+    let a = *world.get_matrix("A");
+    let identity = Matrix44f32::identity();
+
+    let result = a * identity;
+    assert_eq!(result, a);
+}
+
+#[then(expr = "identity_matrix * a = a")]
+fn identity_matrix_a_x_d_a(world: &mut TheWorld) {
+    let identity = Matrix44f32::identity();
+    let a = *world.get_tuple("a");
+
+    let result = identity * a;
+    assert_eq!(result, a);
 }
