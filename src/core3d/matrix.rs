@@ -484,3 +484,46 @@ mod tests_mul_tuple {
         // assert_approx_eq!(Tuple, c * (a * b), (c * a) * b);
     }
 }
+
+pub trait Transpose {
+    fn transpose(self) -> Self;
+}
+
+impl Transpose for Matrix44f32 {
+    fn transpose(self) -> Self {
+        let result = iproduct!(0..4, 0..4).fold(Matrix44f32::default(), |mut acc, (r, c)| {
+            acc.matrix[c][r] = self.matrix[r][c];
+            acc
+        });
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests_transpose {
+    use super::*;
+
+    #[test]
+    fn test_transpose() {
+        let a = Matrix44f32::from([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        let b = Matrix44f32::from([
+            [1.0, 5.0, 9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0],
+        ]);
+        assert_eq!(a.transpose(), b);
+    }
+
+    #[test]
+    fn test_transpose_identity() {
+        let a = Matrix44f32::identity();
+        let b = Matrix44f32::identity().transpose();
+        assert_eq!(a, b);
+    }
+}

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
+use rusty_ray_tracer::core3d::matrix::Transpose;
 use rusty_ray_tracer::core3d::{matrix::Matrix44f32, tuple::Tuple};
 
 mod captures;
@@ -53,32 +54,32 @@ fn parse_step_table_for_matrix(step: &Step) -> Matrix44f32 {
     Matrix44f32::from(table)
 }
 
-#[given(expr = "the following 4x4 matrix M:")]
+#[given(expr = r"the following 4x4 matrix M:")]
 fn the_following_4x4_matrix_m(world: &mut TheWorld, step: &Step) {
     world.m = parse_step_table_for_matrix(step);
 }
 
-#[then(expr = "M[{int},{int}] = {float}")]
+#[then(expr = r"M[{int},{int}] = {float}")]
 fn m_x_f(world: &mut TheWorld, r: usize, c: usize, result: f32) {
     assert_eq!(world.m.matrix[r][c], result);
 }
 
-#[given(expr = "the following 2x2 matrix M:")]
+#[given(expr = r"the following 2x2 matrix M:")]
 fn the_following_2x2_matrix_m(world: &mut TheWorld, step: &Step) {
     world.m = parse_step_table_for_matrix(step);
 }
 
-#[given(expr = "the following 3x3 matrix M:")]
+#[given(expr = r"the following 3x3 matrix M:")]
 fn the_following_3x3_matrix_m(world: &mut TheWorld, step: &Step) {
     world.m = parse_step_table_for_matrix(step);
 }
 
-#[given(expr = "the following matrix {word}:")]
+#[given(expr = r"the following matrix {word}:")]
 fn the_following_matrix_a(world: &mut TheWorld, name: String, step: &Step) {
     *world.get_matrix(&name) = parse_step_table_for_matrix(step);
 }
 
-#[then(expr = "A = B")]
+#[then(expr = r"A = B")]
 fn a_equal_b(world: &mut TheWorld) {
     let a = *world.get_matrix("A");
     let b = *world.get_matrix("B");
@@ -86,7 +87,7 @@ fn a_equal_b(world: &mut TheWorld) {
     assert_eq!(a, b);
 }
 
-#[then(expr = "A != B")]
+#[then(expr = r"A != B")]
 fn a_not_equal_b(world: &mut TheWorld) {
     let a = *world.get_matrix("A");
     let b = *world.get_matrix("B");
@@ -94,7 +95,7 @@ fn a_not_equal_b(world: &mut TheWorld) {
     assert_ne!(a, b);
 }
 
-#[then(expr = "A * B is the following 4x4 matrix:")]
+#[then(expr = r"A * B is the following 4x4 matrix:")]
 fn a_mul_b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
     let expected = parse_step_table_for_matrix(step);
 
@@ -105,12 +106,12 @@ fn a_mul_b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
     assert_eq!(result, expected);
 }
 
-#[given(expr = "{word} ← {tuple}")]
+#[given(expr = r"{word} ← {tuple}")]
 fn b_tuple(world: &mut TheWorld, name: String, tuple: CaptureTuple) {
     *world.get_tuple(&name) = *tuple;
 }
 
-#[then(expr = "A * b = {tuple}")]
+#[then(expr = r"A * b = {tuple}")]
 fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
     let expected = *tuple;
 
@@ -121,7 +122,7 @@ fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
     assert_eq!(result, expected);
 }
 
-#[then(expr = "A * identity_matrix = A")]
+#[then(expr = r"A * identity_matrix = A")]
 fn a_identity_matrix_x_d_a(world: &mut TheWorld) {
     let a = *world.get_matrix("A");
     let identity = Matrix44f32::identity();
@@ -130,11 +131,34 @@ fn a_identity_matrix_x_d_a(world: &mut TheWorld) {
     assert_eq!(result, a);
 }
 
-#[then(expr = "identity_matrix * a = a")]
+#[then(expr = r"identity_matrix * a = a")]
 fn identity_matrix_a_x_d_a(world: &mut TheWorld) {
     let identity = Matrix44f32::identity();
     let a = *world.get_tuple("a");
 
     let result = identity * a;
     assert_eq!(result, a);
+}
+
+#[then(expr = r"transpose\(A) is the following matrix:")]
+fn transpose_a_is_the_following_matrix(world: &mut TheWorld, step: &Step) {
+    let expected = parse_step_table_for_matrix(step);
+
+    let a = *world.get_matrix("A");
+
+    let result = Matrix44f32::transpose(a);
+    assert_eq!(result, expected);
+}
+
+#[given(expr = r"A ← transpose\(identity_matrix)")]
+fn a_transpose_identity_matrix(world: &mut TheWorld) {
+    *world.get_matrix("A") = Matrix44f32::transpose(Matrix44f32::identity());
+}
+
+#[then(expr = r"A = identity_matrix")]
+fn a_x_d_identity_matrix(world: &mut TheWorld) {
+    let a = *world.get_matrix("A");
+    let identity = Matrix44f32::identity();
+
+    assert_eq!(a, identity);
 }
