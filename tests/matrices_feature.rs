@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
+use rusty_ray_tracer::core3d::matrix::Cofactor;
+use rusty_ray_tracer::core3d::matrix::Determinant;
+use rusty_ray_tracer::core3d::matrix::Minor;
+use rusty_ray_tracer::core3d::matrix::Submatrix;
 use rusty_ray_tracer::core3d::matrix::Transpose;
 use rusty_ray_tracer::core3d::{matrix::Matrix44f32, tuple::Tuple};
 
@@ -9,7 +13,6 @@ use crate::captures::CaptureTuple;
 
 #[derive(World, Default, Debug)]
 pub struct TheWorld {
-    m: Matrix44f32,
     matrices: HashMap<String, Matrix44f32>,
     tuples: HashMap<String, Tuple>,
 }
@@ -54,24 +57,25 @@ fn parse_step_table_for_matrix(step: &Step) -> Matrix44f32 {
     Matrix44f32::from(table)
 }
 
-#[given(expr = r"the following 4x4 matrix M:")]
-fn the_following_4x4_matrix_m(world: &mut TheWorld, step: &Step) {
-    world.m = parse_step_table_for_matrix(step);
+#[given(expr = r"the following 4x4 matrix {word}:")]
+fn the_following_4x4_matrix_m(world: &mut TheWorld, name: String, step: &Step) {
+    *world.get_matrix(&name) = parse_step_table_for_matrix(step);
 }
 
-#[then(expr = r"M[{int},{int}] = {float}")]
-fn m_x_f(world: &mut TheWorld, r: usize, c: usize, result: f32) {
-    assert_eq!(world.m.matrix[r][c], result);
+#[then(expr = r"{word}[{int},{int}] = {float}")]
+fn m_x_f(world: &mut TheWorld, name: String, r: usize, c: usize, result: f32) {
+    let a = *world.get_matrix(&name);
+    assert_eq!(a.matrix[r][c], result);
 }
 
-#[given(expr = r"the following 2x2 matrix M:")]
-fn the_following_2x2_matrix_m(world: &mut TheWorld, step: &Step) {
-    world.m = parse_step_table_for_matrix(step);
+#[given(expr = r"the following 2x2 matrix {word}:")]
+fn the_following_2x2_matrix_m(world: &mut TheWorld, name: String, step: &Step) {
+    *world.get_matrix(&name) = parse_step_table_for_matrix(step);
 }
 
-#[given(expr = r"the following 3x3 matrix M:")]
-fn the_following_3x3_matrix_m(world: &mut TheWorld, step: &Step) {
-    world.m = parse_step_table_for_matrix(step);
+#[given(expr = r"the following 3x3 matrix {word}:")]
+fn the_following_3x3_matrix_m(world: &mut TheWorld, name: String, step: &Step) {
+    *world.get_matrix(&name) = parse_step_table_for_matrix(step);
 }
 
 #[given(expr = r"the following matrix {word}:")]
@@ -161,4 +165,52 @@ fn a_x_d_identity_matrix(world: &mut TheWorld) {
     let identity = Matrix44f32::identity();
 
     assert_eq!(a, identity);
+}
+
+#[then(expr = r"determinant\({word}) = {int}")]
+fn determinant_a_x_d(world: &mut TheWorld, name: String, expected: f32) {
+    let a = *world.get_matrix(&name);
+    let d = Matrix44f32::determinant(a);
+
+    assert_eq!(d, expected);
+}
+
+#[then(expr = r"submatrix\({word}, {int}, {int}) is the following {int}x{int} matrix:")]
+fn submatrix_a_is_the_following_x_matrix(
+    world: &mut TheWorld,
+    name: String,
+    r: usize,
+    c: usize,
+    _width: usize,
+    _height: usize,
+    step: &Step,
+) {
+    let expected = parse_step_table_for_matrix(step);
+
+    let a = *world.get_matrix(&name);
+    let b = Matrix44f32::submatrix(a, r, c);
+
+    assert_eq!(b, expected);
+}
+
+#[given(expr = r"{word} ← submatrix\({word}, {int}, {int})")]
+fn b_submatrix_a(world: &mut TheWorld, name_b: String, name_a: String, r: usize, c: usize) {
+    let a = *world.get_matrix(&name_a);
+    *world.get_matrix(&name_b) = a.submatrix(r, c);
+}
+
+#[then(expr = r"minor\({word}, {int}, {int}) = {float}")]
+fn minor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
+    let a = *world.get_matrix(&name);
+    let b = Matrix44f32::minor(a, r, c);
+
+    assert_eq!(b, expected);
+}
+
+#[then(expr = r"cofactor\({word}, {int}, {int}) = {float}")]
+fn cofactor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
+    let a = *world.get_matrix(&name);
+    let b = Matrix44f32::cofactor(a, r, c);
+
+    assert_eq!(b, expected);
 }

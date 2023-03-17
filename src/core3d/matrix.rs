@@ -491,11 +491,10 @@ pub trait Transpose {
 
 impl Transpose for Matrix44f32 {
     fn transpose(self) -> Self {
-        let result = iproduct!(0..4, 0..4).fold(Matrix44f32::default(), |mut acc, (r, c)| {
+        iproduct!(0..4, 0..4).fold(Self::default(), |mut acc, (r, c)| {
             acc.matrix[c][r] = self.matrix[r][c];
             acc
-        });
-        result
+        })
     }
 }
 
@@ -525,5 +524,143 @@ mod tests_transpose {
         let a = Matrix44f32::identity();
         let b = Matrix44f32::identity().transpose();
         assert_eq!(a, b);
+    }
+}
+
+pub trait Determinant {
+    fn determinant(self) -> f32;
+}
+
+impl Determinant for Matrix44f32 {
+    fn determinant(self) -> f32 {
+        (self.matrix[0][0] * self.matrix[1][1]) - (self.matrix[0][1] * self.matrix[1][0])
+    }
+}
+
+#[cfg(test)]
+mod tests_determinant {
+    use super::*;
+
+    #[test]
+    fn test_2x2_determinant() {
+        let a = Matrix44f32::from([
+            [1.0, 2.0, 0.0, 0.0],
+            [5.0, 6.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ]);
+        assert_eq!(a.determinant(), -4.0);
+    }
+}
+
+pub trait Submatrix {
+    fn submatrix(self, r: usize, c: usize) -> Self;
+}
+
+impl Submatrix for Matrix44f32 {
+    fn submatrix(self, skiprow: usize, skipcol: usize) -> Self {
+        iproduct!(0..4, 0..4)
+            .filter(|(r, c)| *r != skiprow && *c != skipcol)
+            .enumerate()
+            .fold(Self::default(), |mut acc, (i, (skipr, skipc))| {
+                let ir = i / 3;
+                let ic = i % 3;
+                acc.matrix[ir][ic] = self.matrix[skipr][skipc];
+                acc
+            })
+    }
+}
+
+#[cfg(test)]
+mod tests_submatrix {
+    use super::*;
+
+    #[test]
+    fn test_submatrix() {
+        let a = Matrix44f32::from([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        let expected = Matrix44f32::from([
+            [5.0, 6.0, 8.0, 0.0],
+            [9.0, 10.0, 12.0, 0.0],
+            [13.0, 14.0, 16.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ]);
+        let result = a.submatrix(0, 2);
+        assert_eq!(result, expected);
+    }
+}
+
+pub trait Minor {
+    fn minor(self, r: usize, c: usize) -> f32;
+}
+
+impl Minor for Matrix44f32 {
+    fn minor(self, r: usize, c: usize) -> f32 {
+        self.submatrix(r, c).determinant()
+    }
+}
+
+#[cfg(test)]
+mod tests_minor {
+    use super::*;
+
+    #[test]
+    fn test_minor() {
+        let a = Matrix44f32::from([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert_eq!(a.minor(0, 0), -4.0);
+        assert_eq!(a.minor(0, 1), -8.0);
+        assert_eq!(a.minor(0, 2), -4.0);
+
+        assert_eq!(a.minor(1, 0), -8.0);
+        assert_eq!(a.minor(1, 1), -16.0);
+        assert_eq!(a.minor(1, 2), -8.0);
+
+        assert_eq!(a.minor(2, 2), -4.0);
+        assert_eq!(a.minor(3, 3), -4.0);
+    }
+}
+
+pub trait Cofactor {
+    fn cofactor(self, r: usize, c: usize) -> f32;
+}
+
+impl Cofactor for Matrix44f32 {
+    fn cofactor(self, r: usize, c: usize) -> f32 {
+        let sign = if (r + c) % 2 == 0 { 1.0 } else { -1.0 };
+        self.minor(r, c) * sign
+    }
+}
+
+#[cfg(test)]
+mod tests_cofactor {
+    use super::*;
+
+    #[test]
+    fn test_cofactor() {
+        let a = Matrix44f32::from([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert_eq!(a.cofactor(0, 0), -4.0);
+        assert_eq!(a.cofactor(0, 1), 8.0);
+        assert_eq!(a.cofactor(0, 2), -4.0);
+
+        assert_eq!(a.cofactor(1, 0), 8.0);
+        assert_eq!(a.cofactor(1, 1), -16.0);
+        assert_eq!(a.cofactor(1, 2), 8.0);
+
+        assert_eq!(a.cofactor(2, 2), -4.0);
+        assert_eq!(a.cofactor(3, 3), -4.0);
     }
 }
