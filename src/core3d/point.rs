@@ -166,7 +166,7 @@ mod tests_from {
         assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert!(panic::catch_unwind(|| Point::from(tuple)).is_err());
+        panic::catch_unwind(|| Point::from(tuple)).unwrap_err();
     }
 
     #[test]

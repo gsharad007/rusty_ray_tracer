@@ -78,8 +78,8 @@ mod tests_buffer {
         assert_eq!(Some(9), get_2dbuffer_index(1, 1, 8, 8));
         assert_eq!(Some(63), get_2dbuffer_index(7, 7, 8, 8));
 
-        assert!(panic::catch_unwind(|| get_2dbuffer_index(8, 0, 8, 8)).is_err());
-        assert!(panic::catch_unwind(|| get_2dbuffer_index(0, 8, 8, 8)).is_err());
+        panic::catch_unwind(|| get_2dbuffer_index(8, 0, 8, 8)).unwrap_err();
+        panic::catch_unwind(|| get_2dbuffer_index(0, 8, 8, 8)).unwrap_err();
     }
 }
 

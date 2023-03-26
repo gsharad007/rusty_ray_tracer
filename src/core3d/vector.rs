@@ -140,7 +140,7 @@ mod tests_from {
         assert_eq!([1.0, 2.0, 3.0, 0.0], vector.tuple);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert!(panic::catch_unwind(|| Vector::from(tuple)).is_err());
+        panic::catch_unwind(|| Vector::from(tuple)).unwrap_err();
     }
 
     #[test]

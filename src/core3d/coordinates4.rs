@@ -142,8 +142,8 @@ mod tests {
         assert_eq!(2.0, tuple.get_at(2));
         assert_eq!(3.0, tuple.get_at(3));
 
-        assert!(panic::catch_unwind(|| tuple.get_at(4)).is_err());
-        assert!(panic::catch_unwind(|| tuple.get_at(usize::MAX)).is_err());
+        panic::catch_unwind(|| tuple.get_at(4)).unwrap_err();
+        panic::catch_unwind(|| tuple.get_at(usize::MAX)).unwrap_err();
 
         let mut tuple_clone = tuple.clone();
         assert_eq!([0.0, 1.0, 2.0, 3.0], *tuple_clone.get_array_mut());
@@ -199,6 +199,6 @@ mod tests {
         };
         assert!(!tuple.is_point());
         assert!(!tuple.is_vector());
-        assert!(panic::catch_unwind(|| tuple.is_valid()).is_err());
+        panic::catch_unwind(|| tuple.is_valid()).unwrap_err();
     }
 }

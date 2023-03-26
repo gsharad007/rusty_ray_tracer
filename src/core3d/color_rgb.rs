@@ -96,8 +96,8 @@ mod tests {
         assert_eq!(2.0, color.get_at(2));
         assert_eq!(3.0, color.get_at(3));
 
-        assert!(panic::catch_unwind(|| color.get_at(4)).is_err());
-        assert!(panic::catch_unwind(|| color.get_at(usize::MAX)).is_err());
+        panic::catch_unwind(|| color.get_at(4)).unwrap_err();
+        panic::catch_unwind(|| color.get_at(usize::MAX)).unwrap_err();
 
         let mut color_clone = color.clone();
         assert_eq!([0.0, 1.0, 2.0, 3.0], *color_clone.get_array_mut());

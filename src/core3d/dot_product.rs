@@ -1,7 +1,7 @@
 use super::array_base::ArrayBase;
 
 pub trait DotProduct: ArrayBase<Item = f32> {
-    /// Calculate Dot Product on two ArrayBasedStructs
+    /// Calculate Dot Product on two `ArrayBasedStructs`
     ///
     /// # Example
     ///

@@ -176,7 +176,7 @@ impl From<Vec<Vec<f32>>> for Matrix44f32 {
         let mut matrix = Self::default();
 
         vec.iter().enumerate().for_each(|(i, v)| {
-            matrix.matrix[i].iter_mut().set_from(v.iter().cloned());
+            matrix.matrix[i].iter_mut().set_from(v.iter().copied());
         });
 
         matrix
@@ -533,7 +533,7 @@ mod tests_transpose {
 //   | a  b |
 //   | c  d |
 //   a * d - b * c
-// 
+//
 //   | 1  2 |
 //   | 3  4 |
 //   1 * 4 - 2 * 3 = -2
