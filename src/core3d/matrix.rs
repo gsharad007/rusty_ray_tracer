@@ -485,6 +485,7 @@ mod tests_mul_tuple {
     }
 }
 
+// This is a trait used to transpose a 4x4 matrix.
 pub trait Transpose {
     fn transpose(self) -> Self;
 }
@@ -527,6 +528,15 @@ mod tests_transpose {
     }
 }
 
+// Given a 2x2 matrix, return the determinant.
+// The determinant of a 2x2 matrix is:
+//   | a  b |
+//   | c  d |
+//   a * d - b * c
+// 
+//   | 1  2 |
+//   | 3  4 |
+//   1 * 4 - 2 * 3 = -2
 pub trait Determinant {
     fn determinant(self) -> f32;
 }
@@ -553,6 +563,12 @@ mod tests_determinant {
     }
 }
 
+// This code implements the Submatrix trait for the Matrix44f32 type.
+// It takes a matrix and two indices for rows and columns and returns
+// a submatrix of the original matrix without the row and column specified
+// by the indices.
+// The indices are zero-based.
+// The function is used by the determinant function.
 pub trait Submatrix {
     fn submatrix(self, r: usize, c: usize) -> Self;
 }
@@ -594,13 +610,17 @@ mod tests_submatrix {
     }
 }
 
+// This trait defines the minor function for the Matrix44f32 struct. The minor function
+// returns the determinant of a submatrix of the matrix. The row and column parameters
+// specify the row and column of the submatrix.
 pub trait Minor {
-    fn minor(self, r: usize, c: usize) -> f32;
+    fn minor(self, row: usize, col: usize) -> f32;
 }
 
 impl Minor for Matrix44f32 {
-    fn minor(self, r: usize, c: usize) -> f32 {
-        self.submatrix(r, c).determinant()
+    fn minor(self, row: usize, col: usize) -> f32 {
+        let submatrix = self.submatrix(row, col);
+        submatrix.determinant()
     }
 }
 
@@ -630,13 +650,14 @@ mod tests_minor {
 }
 
 pub trait Cofactor {
-    fn cofactor(self, r: usize, c: usize) -> f32;
+    fn cofactor(self, row: usize, col: usize) -> f32;
 }
 
 impl Cofactor for Matrix44f32 {
-    fn cofactor(self, r: usize, c: usize) -> f32 {
-        let sign = if (r + c) % 2 == 0 { 1.0 } else { -1.0 };
-        self.minor(r, c) * sign
+    fn cofactor(self, row: usize, col: usize) -> f32 {
+        let minor = self.minor(row, col);
+        let sign = if (row + col) % 2 == 0 { 1.0 } else { -1.0 };
+        minor * sign
     }
 }
 
