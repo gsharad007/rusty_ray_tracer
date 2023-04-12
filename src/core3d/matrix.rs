@@ -186,8 +186,8 @@ mod tests_index {
 ///
 /// Example:
 /// ```
-/// use rusty_ray_tracer::core3d::matrix::Matrix;
-/// use rusty_ray_tracer::core3d::matrix::Identity;
+/// # use rusty_ray_tracer::core3d::matrix::Matrix;
+/// # use rusty_ray_tracer::core3d::matrix::Identity;
 ///
 /// let a = Matrix::<4, 4, f32>::identity();
 /// assert_eq!(
@@ -248,7 +248,7 @@ impl<const ROW: usize, const COL: usize, T> From<[[T; COL]; ROW]> for Matrix<ROW
     /// # Examples
     ///
     /// ```
-    /// # use rusty_ray_tracer::core3d::matrix::Matrix::<4, 4, f32>;
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     ///
     /// let matrix = Matrix::<4, 4, f32>::from([
     ///     [1.0, 2.0, 3.0, 4.0],
@@ -277,7 +277,7 @@ where
     /// # Examples
     ///
     /// ```
-    /// # use rusty_ray_tracer::core3d::matrix::Matrix::<4, 4, f32>;
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     ///
     /// let matrix = Matrix::<4, 4, f32>::from([
     ///     [1.0, 2.0, 3.0, 4.0],
@@ -345,8 +345,8 @@ where
     /// # Example
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix::<4, 4, f32>;
+    /// # use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     /// # use float_cmp::ApproxEq;
     /// let a = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 0.000000000000)));
     /// let b = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 0.000000000001)));
@@ -354,8 +354,8 @@ where
     /// ```
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix::<4, 4, f32>;
+    /// # use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     /// # use float_cmp::ApproxEq;
     /// let a = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 1.0000000)));
     /// let b = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 1.0000001)));
@@ -363,8 +363,8 @@ where
     /// ```
     ///
     /// ```
-    /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
-    /// # use crate::rusty_ray_tracer::core3d::matrix::Matrix::<4, 4, f32>;
+    /// # use rusty_ray_tracer::core3d::coordinates4::Coordinates4;
+    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     /// # use float_cmp::ApproxEq;
     /// let a = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 0.0)));
     /// let b = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 1.0)));
@@ -722,21 +722,47 @@ mod tests_submatrix {
     }
 }
 
-// Given a 2x2 matrix, return the determinant.
-// The determinant of a 2x2 matrix is:
-//   | a  b |
-//   | c  d |
-//   a * d - b * c
-//
-//   | 1  2 |
-//   | 3  4 |
-//   1 * 4 - 2 * 3 = -2
+/// Given a 2x2 matrix, return the determinant.
+/// The determinant of a 2x2 matrix is:
+///   | a  b |
+///   | c  d |
+///   a * d - b * c
+///
+///   | 1  2 |
+///   | 3  4 |
+///   1 * 4 - 2 * 3 = -2
+/// # Examples
+/// ```rust
+/// # use rusty_ray_tracer::core3d::matrix::Matrix;
+/// # use rusty_ray_tracer::core3d::matrix::Determinant;
+///
+/// let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
+/// assert_eq!(m.determinant(), -2.0);
+/// ```
+// pub trait Determinant<const ROW: usize, const COL: usize, T> {
+//     fn determinant(&self) -> f32 {
+//         (0..COL).fold(T::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+//     }
+// }
+
 pub trait Determinant {
-    fn determinant(self) -> f32;
+    fn determinant(&self) -> f32;
+}
+
+impl Determinant for Matrix<4,4,f32> {
+    fn determinant(&self) -> f32 {
+        (0..4).fold(f32::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+    }
+}
+
+impl Determinant for Matrix<3,3,f32> {
+    fn determinant(&self) -> f32 {
+        (0..3).fold(f32::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+    }
 }
 
 impl Determinant for Matrix<2, 2, f32> {
-    fn determinant(self) -> f32 {
+    fn determinant(&self) -> f32 {
         (self.matrix[0][0] * self.matrix[1][1]) - (self.matrix[0][1] * self.matrix[1][0])
     }
 }
@@ -752,22 +778,69 @@ mod tests_determinant {
     }
 }
 
-// This trait defines the minor function for the Matrix::<4, 4, f32> struct. The minor function
-// returns the determinant of a submatrix of the matrix. The row and column parameters
-// specify the row and column of the submatrix.
+/// Determine the minor of a matrix at a given row and column.
+///
+/// The minor of a matrix is the determinant of the submatrix that is created
+/// when the given row and column are omitted. For example, the minor of a 3x3
+/// matrix at row 0 and column 0 is the determinant of the 2x2 matrix that is
+/// formed by omitting the first row and first column.
+///
+/// # Arguments
+///
+/// * `row` - The row to omit when calculating the minor
+/// * `col` - The column to omit when calculating the minor
+///
+/// # Examples
+///
+/// ```
+/// # use rusty_ray_tracer::core3d::matrix::Matrix;
+/// # use rusty_ray_tracer::core3d::matrix::Minor;
+///
+/// let a = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0],
+///                                   [4.0, 5.0, 6.0],
+///                                   [7.0, 8.0, 9.0]]);
+/// assert_eq!(a.minor(0, 0), -3.0);
+/// assert_eq!(a.minor(0, 1), -6.0);
+/// assert_eq!(a.minor(0, 2), -3.0);
+/// assert_eq!(a.minor(1, 0), -6.0);
+/// assert_eq!(a.minor(1, 1), -12.0);
+/// assert_eq!(a.minor(1, 2), -6.0);
+/// assert_eq!(a.minor(2, 0), -3.0);
+/// assert_eq!(a.minor(2, 1), -6.0);
+/// assert_eq!(a.minor(2, 2), -3.0);
+///
+/// // let m = Matrix4::new(1.0, 2.0, 3.0, 4.0,
+/// //                      5.0, 6.0, 7.0, 8.0,
+/// //                      9.0, 10.0, 11.0, 12.0,
+/// //                      13.0, 14.0, 15.0, 16.0);
+/// // assert_eq!(m.minor(0, 0), 0.0);
+/// // assert_eq!(m.minor(0, 1), 0.0);
+/// // assert_eq!(m.minor(0, 2), 0.0);
+/// // assert_eq!(m.minor(0, 3), 0.0);
+/// // assert_eq!(m.minor(1, 0), 0.0);
+/// // assert_eq!(m.minor(1, 1), 0.0);
+/// // assert_eq!(m.minor(1, 2), 0.0);
+/// // assert_eq!(m.minor(1, 3), 0.0);
+/// // assert_eq!(m.minor(2, 0), 0.0);
+/// // assert_eq!(m.minor(2, 1), 0.0);
+/// // assert_eq!(m.minor(2, 2), 0.0);
+/// // assert_eq!(m.minor(2, 3), 0.0);
+/// // assert_eq!(m.minor(3, 0), 0.0);
+/// // assert_eq!(m.minor(3, 1), 0.0);
+/// // assert_eq!(m.minor(3, 2), 0.0);
+/// // assert_eq!(m.minor(3, 3), 0.0);
+/// ```
 pub trait Minor<const ROW: usize, const COL: usize, T>
 where
     Self: Submatrix<ROW, COL, T> + Sized,
     T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant, //<(ROW - 1), (COL - 1), T>,
 {
     fn minor(self, row: usize, col: usize) -> f32 {
         let submatrix = self.submatrix(row, col);
         submatrix.determinant()
     }
 }
-
-// impl Minor<3, 3, f32> for Matrix<3, 3, f32> {}
 
 #[cfg(test)]
 mod tests_minor {
@@ -808,22 +881,46 @@ mod tests_minor {
     // }
 }
 
-// Cofactor trait for a matrix
-// This trait is implemented for any matrix that implements the Submatrix and Determinant traits
-// It has a function called cofactor that calculates the cofactor of a given element in the matrix
-// It takes in a row and column index
-// It returns the cofactor of the given element
-// The sign of the cofactor depends on whether the sum of the row and column indices is even or odd
+/// Cofactor trait for a matrix
+/// This trait is implemented for any matrix that implements the Submatrix and Determinant traits
+/// It has a function called cofactor that calculates the cofactor of a given element in the matrix
+/// It takes in a row and column index
+/// It returns the cofactor of the given element
+/// The sign of the cofactor depends on whether the sum of the row and column indices is even or odd
+/// Returns the minor of the given matrix at the given row and column.
+///
+/// # Example
+/// ```
+/// # use rusty_ray_tracer::core3d::matrix::Matrix;
+/// # use rusty_ray_tracer::core3d::matrix::Cofactor;
+///
+/// let a = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0],
+///                                   [4.0, 5.0, 6.0],
+///                                   [7.0, 8.0, 9.0]]);
+/// assert_eq!(a.cofactor(0, 0), -3.0);
+/// assert_eq!(a.cofactor(0, 1), 6.0);
+/// assert_eq!(a.cofactor(0, 2), -3.0);
+/// assert_eq!(a.cofactor(1, 0), 6.0);
+/// assert_eq!(a.cofactor(1, 1), -12.0);
+/// assert_eq!(a.cofactor(1, 2), 6.0);
+/// assert_eq!(a.cofactor(2, 0), -3.0);
+/// assert_eq!(a.cofactor(2, 1), 6.0);
+/// assert_eq!(a.cofactor(2, 2), -3.0);
+/// ```
 pub trait Cofactor<const ROW: usize, const COL: usize, T>
 where
     Self: Minor<ROW, COL, T>,
     T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant, //<ROW, COL, T>,
 {
     fn cofactor(self, row: usize, col: usize) -> f32 {
         let minor = self.minor(row, col);
-        let sign = if (row + col) % 2 == 0 { 1.0 } else { -1.0 };
-        minor * sign
+        let is_positive_cell = (row + col) % 2 == 0;
+        if is_positive_cell {
+            minor
+        } else {
+            -minor
+        }
     }
 }
 
@@ -876,6 +973,9 @@ impl Identity<4, f32> for Matrix44f32 {}
 impl Identity<3, f32> for Matrix33f32 {}
 impl Identity<2, f32> for Matrix22f32 {}
 
+// impl Determinant<4, 4, f32> for Matrix44f32 {}
+// impl Determinant<3, 3, f32> for Matrix33f32 {}
+
 impl Submatrix<4, 4, f32> for Matrix44f32 {
     type Result = Matrix<3, 3, f32>;
 }
@@ -883,8 +983,8 @@ impl Submatrix<3, 3, f32> for Matrix33f32 {
     type Result = Matrix<2, 2, f32>;
 }
 
-// impl Minor<4, 4, f32> for Matrix44f32 {}
+impl Minor<4, 4, f32> for Matrix44f32 {}
 impl Minor<3, 3, f32> for Matrix33f32 {}
 
-// impl Cofactor<4, 4, f32> for Matrix44f32 {}
+impl Cofactor<4, 4, f32> for Matrix44f32 {}
 impl Cofactor<3, 3, f32> for Matrix33f32 {}

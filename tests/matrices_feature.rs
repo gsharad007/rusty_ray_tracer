@@ -197,10 +197,16 @@ fn a_x_d_identity_matrix(world: &mut TheWorld) {
 
 #[then(expr = r"determinant\({word}) = {int}")]
 fn determinant_a_x_d(world: &mut TheWorld, name: String, expected: f32) {
-    let AnyMatrix::Mat22(a) = *world.get_matrix(&name) else {unreachable!()};
-    let d = Matrix22f32::determinant(a);
+    let a = *world.get_matrix(&name);
 
-    assert_eq!(d, expected);
+    let result = match a {
+        AnyMatrix::Mat44(a) => a.determinant(),
+        AnyMatrix::Mat33(a) => a.determinant(),
+        AnyMatrix::Mat22(a) => a.determinant(),
+        AnyMatrix::None => unreachable!(),
+    };
+
+    assert_eq!(result, expected);
 }
 
 #[then(expr = r"submatrix\({word}, {int}, {int}) is the following {int}x{int} matrix:")]
@@ -244,9 +250,9 @@ fn minor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected:
     let a = *world.get_matrix(&name);
 
     let b = match a {
-        AnyMatrix::Mat44(a) => todo!(), //a.minor(r, c),
+        AnyMatrix::Mat44(a) => a.minor(r, c),
         AnyMatrix::Mat33(a) => a.minor(r, c),
-        AnyMatrix::Mat22(a) => todo!(), //a.minor(r, c),
+        AnyMatrix::Mat22(_a) => todo!(), //a.minor(r, c),
         AnyMatrix::None => todo!(),
     };
 
@@ -258,9 +264,9 @@ fn cofactor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expect
     let a = *world.get_matrix(&name);
 
     let b = match a {
-        AnyMatrix::Mat44(a) => todo!(), //a.cofactor(r, c),
+        AnyMatrix::Mat44(a) => a.cofactor(r, c),
         AnyMatrix::Mat33(a) => a.cofactor(r, c),
-        AnyMatrix::Mat22(a) => todo!(), //a.cofactor(r, c),
+        AnyMatrix::Mat22(_a) => todo!(), //a.cofactor(r, c),
         AnyMatrix::None => todo!(),
     };
 
