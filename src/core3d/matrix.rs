@@ -749,15 +749,19 @@ pub trait Determinant {
     fn determinant(&self) -> f32;
 }
 
-impl Determinant for Matrix<4,4,f32> {
+impl Determinant for Matrix<4, 4, f32> {
     fn determinant(&self) -> f32 {
-        (0..4).fold(f32::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+        (0..4).fold(f32::default(), |acc, c| {
+            acc + (self[(0, c)] * self.cofactor(0, c))
+        })
     }
 }
 
-impl Determinant for Matrix<3,3,f32> {
+impl Determinant for Matrix<3, 3, f32> {
     fn determinant(&self) -> f32 {
-        (0..3).fold(f32::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+        (0..3).fold(f32::default(), |acc, c| {
+            acc + (self[(0, c)] * self.cofactor(0, c))
+        })
     }
 }
 
@@ -834,7 +838,7 @@ pub trait Minor<const ROW: usize, const COL: usize, T>
 where
     Self: Submatrix<ROW, COL, T> + Sized,
     T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant, //<(ROW - 1), (COL - 1), T>,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
 {
     fn minor(self, row: usize, col: usize) -> f32 {
         let submatrix = self.submatrix(row, col);
@@ -911,7 +915,7 @@ pub trait Cofactor<const ROW: usize, const COL: usize, T>
 where
     Self: Minor<ROW, COL, T>,
     T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant, //<ROW, COL, T>,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
 {
     fn cofactor(self, row: usize, col: usize) -> f32 {
         let minor = self.minor(row, col);
