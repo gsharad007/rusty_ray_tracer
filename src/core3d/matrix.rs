@@ -5,7 +5,7 @@ use itertools::{iproduct, Itertools};
 
 use crate::core3d::{dot_product::DotProduct, tuple::Tuple};
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Matrix<const ROW: usize, const COL: usize, T> {
     pub matrix: [[T; COL]; ROW],
 }
@@ -13,7 +13,7 @@ pub struct Matrix<const ROW: usize, const COL: usize, T> {
 impl<const ROW: usize, const COL: usize, T> Matrix<ROW, COL, T> {
     #[must_use]
     pub fn new(matrix: [[T; COL]; ROW]) -> Self {
-        Matrix { matrix }
+        Self { matrix }
     }
 }
 
@@ -84,7 +84,7 @@ where
 {
     #[must_use]
     fn default() -> Self {
-        Matrix {
+        Self {
             matrix: [[T::default(); COL]; ROW],
         }
     }
@@ -269,7 +269,7 @@ impl<const ROW: usize, const COL: usize, T> From<[[T; COL]; ROW]> for Matrix<ROW
 
 impl<const ROW: usize, const COL: usize, T> From<Vec<Vec<T>>> for Matrix<ROW, COL, T>
 where
-    Matrix<ROW, COL, T>: Default,
+    Self: Default,
     T: Copy,
 {
     /// Creates a new matrix from an array of scaler values

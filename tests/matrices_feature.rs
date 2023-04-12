@@ -252,8 +252,7 @@ fn minor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected:
     let b = match a {
         AnyMatrix::Mat44(a) => a.minor(r, c),
         AnyMatrix::Mat33(a) => a.minor(r, c),
-        AnyMatrix::Mat22(_a) => todo!(), //a.minor(r, c),
-        AnyMatrix::None => todo!(),
+        AnyMatrix::Mat22(_) | AnyMatrix::None => unreachable!(),
     };
 
     assert_eq!(b, expected);
@@ -266,8 +265,7 @@ fn cofactor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expect
     let b = match a {
         AnyMatrix::Mat44(a) => a.cofactor(r, c),
         AnyMatrix::Mat33(a) => a.cofactor(r, c),
-        AnyMatrix::Mat22(_a) => todo!(), //a.cofactor(r, c),
-        AnyMatrix::None => todo!(),
+        AnyMatrix::Mat22(_) | AnyMatrix::None => unreachable!(),
     };
 
     assert_eq!(b, expected);
