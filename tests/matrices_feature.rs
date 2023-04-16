@@ -164,7 +164,7 @@ fn b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
     let b = *world.get_matrix("B");
 
     // assert_approx_eq!(AnyMatrix, b, expected, epsilon = 0.000001);
-    assert_approx_eq!(AnyMatrix, b, expected, ulps = 750);
+    assert_approx_eq!(AnyMatrix, b, expected, ulps = 10);
 }
 
 #[then(expr = r"A * B is the following 4x4 matrix:")]
@@ -327,4 +327,33 @@ fn a_is_not_invertible(world: &mut TheWorld) {
 fn b_inverse_a(world: &mut TheWorld) {
     let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
     *world.get_matrix("B") = AnyMatrix::Mat44(a.inverse().unwrap());
+}
+
+#[then(expr = r"inverse\(A) is the following 4x4 matrix:")]
+fn inverse_a_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
+    let AnyMatrix::Mat44(expected) = parse_step_table_for_matrix(step) else {unreachable!()};
+
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+
+    let result = Matrix44f32::inverse(&a).unwrap();
+    assert_approx_eq!(Matrix44f32, result, expected, ulps = 4);
+}
+
+#[given(expr = r"C ← A * B")]
+fn c_a_b(world: &mut TheWorld) {
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+    let AnyMatrix::Mat44(b) = *world.get_matrix("B") else {unreachable!()};
+
+    *world.get_matrix("C") = AnyMatrix::Mat44(a * b);
+}
+
+#[then(expr = r"C * inverse\(B) = A")]
+fn c_inverse_b_x_d_a(world: &mut TheWorld) {
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+    let AnyMatrix::Mat44(b) = *world.get_matrix("B") else {unreachable!()};
+    let AnyMatrix::Mat44(c) = *world.get_matrix("C") else {unreachable!()};
+
+    let inv_b = Matrix44f32::inverse(&b).unwrap();
+
+    assert_approx_eq!(Matrix44f32, c * inv_b, a, ulps = 10);
 }
