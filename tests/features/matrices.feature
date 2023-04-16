@@ -178,3 +178,39 @@ Feature: Matrices
     And cofactor(A, 0, 2) = 210
     And cofactor(A, 0, 3) = 51
     And determinant(A) = -4071
+
+  Scenario: Testing an invertible matrix for invertibility
+    Given the following 4x4 matrix A:
+      | 6 |  4 | 4 |  4 |
+      | 5 |  5 | 7 |  6 |
+      | 4 | -9 | 3 | -7 |
+      | 9 |  1 | 7 | -6 |
+    Then determinant(A) = -2120
+    And A is invertible
+
+  Scenario: Testing a noninvertible matrix for invertibility
+    Given the following 4x4 matrix A:
+      | -4 |  2 | -2 | -3 |
+      |  9 |  6 |  2 |  6 |
+      |  0 | -5 |  1 | -5 |
+      |  0 |  0 |  0 |  0 |
+    Then determinant(A) = 0
+    And A is not invertible
+
+  Scenario: Calculating the inverse of a matrix
+    Given the following 4x4 matrix A:
+      | -5 |  2 |  6 | -8 |
+      |  1 | -5 |  1 |  8 |
+      |  7 |  7 | -6 | -7 |
+      |  1 | -3 |  7 |  4 |
+    And B ← inverse(A)
+    Then determinant(A) = 532
+    And cofactor(A, 2, 3) = -160
+    And B[3,2] = -160/532
+    And cofactor(A, 3, 2) = 105
+    And B[2,3] = 105/532
+    And B is the following 4x4 matrix:
+      |  0.21805 |  0.45113 |  0.24060 | -0.04511 |
+      | -0.80827 | -1.45677 | -0.44361 |  0.52068 |
+      | -0.07895 | -0.22368 | -0.05263 |  0.19737 |
+      | -0.52256 | -0.81391 | -0.30075 |  0.30639 |

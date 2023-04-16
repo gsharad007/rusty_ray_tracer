@@ -1,4 +1,4 @@
-use std::ops::{Index, IndexMut, Mul};
+use std::ops::{Add, Div, Index, IndexMut, Mul, Neg};
 
 use float_cmp::ApproxEq;
 use itertools::{iproduct, Itertools};
@@ -250,7 +250,7 @@ impl<const ROW: usize, const COL: usize, T> From<[[T; COL]; ROW]> for Matrix<ROW
     /// ```
     /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     ///
-    /// let matrix = Matrix::<4, 4, f32>::from([
+    /// let matrix = Matrix::<4, 4, f32>::new([
     ///     [1.0, 2.0, 3.0, 4.0],
     ///     [5.0, 6.0, 7.0, 8.0],
     ///     [8.0, 7.0, 6.0, 5.0],
@@ -279,7 +279,7 @@ where
     /// ```
     /// # use rusty_ray_tracer::core3d::matrix::Matrix;
     ///
-    /// let matrix = Matrix::<4, 4, f32>::from([
+    /// let matrix = Matrix::<4, 4, f32>::new([
     ///     [1.0, 2.0, 3.0, 4.0],
     ///     [5.0, 6.0, 7.0, 8.0],
     ///     [8.0, 7.0, 6.0, 5.0],
@@ -478,19 +478,19 @@ mod tests_mul {
 
     #[test]
     fn closure() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
         ]);
-        let b = Matrix::<4, 4, f32>::from([
+        let b = Matrix::<4, 4, f32>::new([
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
         ]);
-        let expected = Matrix::<4, 4, f32>::from([
+        let expected = Matrix::<4, 4, f32>::new([
             [15.184_801, 30.369_602, 45.554_398, 13.68],
             [15.184_801, 30.369_602, 45.554_398, 13.68],
             [15.184_801, 30.369_602, 45.554_398, 13.68],
@@ -501,7 +501,7 @@ mod tests_mul {
 
     #[test]
     fn identity() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
@@ -514,19 +514,19 @@ mod tests_mul {
 
     #[test]
     fn associative() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
         ]);
-        let b = Matrix::<4, 4, f32>::from([
+        let b = Matrix::<4, 4, f32>::new([
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
         ]);
-        let c = Matrix::<4, 4, f32>::from([
+        let c = Matrix::<4, 4, f32>::new([
             [2.34, 6.78, 11.22, 1.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.11, 2.22, 3.33, 1.0],
@@ -574,7 +574,7 @@ mod tests_mul_tuple {
 
     #[test]
     fn closure() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
@@ -595,13 +595,13 @@ mod tests_mul_tuple {
 
     #[test]
     fn associative() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
             [1.23, 4.56, 7.89, 0.0],
         ]);
-        let b = Matrix::<4, 4, f32>::from([
+        let b = Matrix::<4, 4, f32>::new([
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
             [1.11, 2.22, 3.33, 1.0],
@@ -643,13 +643,13 @@ mod tests_transpose {
 
     #[test]
     fn test_transpose() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
             [9.0, 10.0, 11.0, 12.0],
             [13.0, 14.0, 15.0, 16.0],
         ]);
-        let b = Matrix::<4, 4, f32>::from([
+        let b = Matrix::<4, 4, f32>::new([
             [1.0, 5.0, 9.0, 13.0],
             [2.0, 6.0, 10.0, 14.0],
             [3.0, 7.0, 11.0, 15.0],
@@ -706,15 +706,15 @@ mod tests_submatrix {
 
     #[test]
     fn test_submatrix() {
-        let a = Matrix::<4, 4, f32>::from([
+        let a = Matrix::<4, 4, f32>::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
             [9.0, 10.0, 11.0, 12.0],
             [13.0, 14.0, 15.0, 16.0],
         ]);
         let a33 =
-            Matrix::<3, 3, f32>::from([[5.0, 6.0, 8.0], [9.0, 10.0, 12.0], [13.0, 14.0, 16.0]]);
-        let a22 = Matrix::<2, 2, f32>::from([[5.0, 8.0], [13.0, 16.0]]);
+            Matrix::<3, 3, f32>::new([[5.0, 6.0, 8.0], [9.0, 10.0, 12.0], [13.0, 14.0, 16.0]]);
+        let a22 = Matrix::<2, 2, f32>::new([[5.0, 8.0], [13.0, 16.0]]);
         let result = a.submatrix(0, 2);
         assert_eq!(result, a33);
         let result = a33.submatrix(1, 1);
@@ -739,17 +739,26 @@ mod tests_submatrix {
 /// let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
 /// assert_eq!(m.determinant(), -2.0);
 /// ```
-// pub trait Determinant<const ROW: usize, const COL: usize, T> {
-//     fn determinant(&self) -> f32 {
-//         (0..COL).fold(T::default(), |acc, c| acc + (self[(0, c)] * self.cofactor(0, c)))
+// pub trait Determinant<const ROW: usize, const COL: usize, T>
+// where
+//     Self: Index<(usize, usize), Output = T> + Cofactor<ROW, COL, T>,
+//     T: Copy + Default + Add<Output = T> + Neg<Output = T>,
+// {
+//     type Output = T;
+//     fn determinant(&self) -> T {
+//         (0..COL).fold(T::default(), |acc, c| {
+//             acc + (self[(0, c)] * self.cofactor(0, c))
+//         })
 //     }
 // }
 
-pub trait Determinant {
-    fn determinant(&self) -> f32;
+pub trait Determinant<const ROW: usize, const COL: usize, T> {
+    type Output;
+    fn determinant(&self) -> Self::Output;
 }
 
-impl Determinant for Matrix<4, 4, f32> {
+impl Determinant<4, 4, f32> for Matrix<4, 4, f32> {
+    type Output = f32;
     fn determinant(&self) -> f32 {
         (0..4).fold(f32::default(), |acc, c| {
             acc + (self[(0, c)] * self.cofactor(0, c))
@@ -757,7 +766,8 @@ impl Determinant for Matrix<4, 4, f32> {
     }
 }
 
-impl Determinant for Matrix<3, 3, f32> {
+impl Determinant<3, 3, f32> for Matrix<3, 3, f32> {
+    type Output = f32;
     fn determinant(&self) -> f32 {
         (0..3).fold(f32::default(), |acc, c| {
             acc + (self[(0, c)] * self.cofactor(0, c))
@@ -765,9 +775,17 @@ impl Determinant for Matrix<3, 3, f32> {
     }
 }
 
-impl Determinant for Matrix<2, 2, f32> {
+impl Determinant<2, 2, f32> for Matrix<2, 2, f32> {
+    type Output = f32;
     fn determinant(&self) -> f32 {
         (self.matrix[0][0] * self.matrix[1][1]) - (self.matrix[0][1] * self.matrix[1][0])
+    }
+}
+
+impl Determinant<1, 1, f32> for Matrix<1, 1, f32> {
+    type Output = f32;
+    fn determinant(&self) -> f32 {
+        self.matrix[0][0]
     }
 }
 
@@ -777,8 +795,25 @@ mod tests_determinant {
 
     #[test]
     fn test_2x2_determinant() {
-        let a = Matrix::<2, 2, f32>::from([[1.0, 2.0], [5.0, 6.0]]);
+        let a = Matrix::<2, 2, f32>::new([[1.0, 2.0], [5.0, 6.0]]);
         assert_eq!(a.determinant(), -4.0);
+    }
+
+    #[test]
+    fn test_3x3_determinant() {
+        let a = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        assert_eq!(a.determinant(), 0.0);
+    }
+
+    #[test]
+    fn test_4x4_determinant() {
+        let a = Matrix::<4, 4, f32>::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert_eq!(a.determinant(), 0.0);
     }
 }
 
@@ -813,34 +848,38 @@ mod tests_determinant {
 /// assert_eq!(a.minor(2, 1), -6.0);
 /// assert_eq!(a.minor(2, 2), -3.0);
 ///
-/// // let m = Matrix4::new(1.0, 2.0, 3.0, 4.0,
-/// //                      5.0, 6.0, 7.0, 8.0,
-/// //                      9.0, 10.0, 11.0, 12.0,
-/// //                      13.0, 14.0, 15.0, 16.0);
-/// // assert_eq!(m.minor(0, 0), 0.0);
-/// // assert_eq!(m.minor(0, 1), 0.0);
-/// // assert_eq!(m.minor(0, 2), 0.0);
-/// // assert_eq!(m.minor(0, 3), 0.0);
-/// // assert_eq!(m.minor(1, 0), 0.0);
-/// // assert_eq!(m.minor(1, 1), 0.0);
-/// // assert_eq!(m.minor(1, 2), 0.0);
-/// // assert_eq!(m.minor(1, 3), 0.0);
-/// // assert_eq!(m.minor(2, 0), 0.0);
-/// // assert_eq!(m.minor(2, 1), 0.0);
-/// // assert_eq!(m.minor(2, 2), 0.0);
-/// // assert_eq!(m.minor(2, 3), 0.0);
-/// // assert_eq!(m.minor(3, 0), 0.0);
-/// // assert_eq!(m.minor(3, 1), 0.0);
-/// // assert_eq!(m.minor(3, 2), 0.0);
-/// // assert_eq!(m.minor(3, 3), 0.0);
+/// let m = Matrix::<4, 4, f32>::new([
+///     [1.0, 2.0, 3.0, 4.0],
+///     [5.0, 6.0, 7.0, 8.0],
+///     [9.0, 10.0, 11.0, 12.0],
+///     [13.0, 14.0, 15.0, 16.0],
+/// ]);
+/// assert_eq!(m.minor(0, 0), 0.0);
+/// assert_eq!(m.minor(0, 1), 0.0);
+/// assert_eq!(m.minor(0, 2), 0.0);
+/// assert_eq!(m.minor(0, 3), 0.0);
+/// assert_eq!(m.minor(1, 0), 0.0);
+/// assert_eq!(m.minor(1, 1), 0.0);
+/// assert_eq!(m.minor(1, 2), 0.0);
+/// assert_eq!(m.minor(1, 3), 0.0);
+/// assert_eq!(m.minor(2, 0), 0.0);
+/// assert_eq!(m.minor(2, 1), 0.0);
+/// assert_eq!(m.minor(2, 2), 0.0);
+/// assert_eq!(m.minor(2, 3), 0.0);
+/// assert_eq!(m.minor(3, 0), 0.0);
+/// assert_eq!(m.minor(3, 1), 0.0);
+/// assert_eq!(m.minor(3, 2), 0.0);
+/// assert_eq!(m.minor(3, 3), 0.0);
 /// ```
 pub trait Minor<const ROW: usize, const COL: usize, T>
 where
     Self: Submatrix<ROW, COL, T> + Sized,
-    T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
+    T: Copy + Default + Add<Output = T>,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
 {
-    fn minor(self, row: usize, col: usize) -> f32 {
+    type Output = T;
+
+    fn minor(&self, row: usize, col: usize) -> T {
         let submatrix = self.submatrix(row, col);
         submatrix.determinant()
     }
@@ -852,7 +891,7 @@ mod tests_minor {
 
     #[test]
     fn test_minor3x3() {
-        let a = Matrix::<3, 3, f32>::from([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
+        let a = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
         assert_eq!(a.minor(0, 0), -4.0);
         assert_eq!(a.minor(0, 1), -8.0);
         assert_eq!(a.minor(0, 2), -4.0);
@@ -864,25 +903,34 @@ mod tests_minor {
         assert_eq!(a.minor(2, 2), -4.0);
     }
 
-    // #[test]
-    // fn test_minor() {
-    //     let a = Matrix::<4, 4, f32>::from([
-    //         [1.0, 2.0, 3.0, 4.0],
-    //         [5.0, 6.0, 7.0, 8.0],
-    //         [9.0, 10.0, 11.0, 12.0],
-    //         [13.0, 14.0, 15.0, 16.0],
-    //     ]);
-    //     assert_eq!(a.minor(0, 0), -4.0);
-    //     assert_eq!(a.minor(0, 1), -8.0);
-    //     assert_eq!(a.minor(0, 2), -4.0);
+    #[test]
+    fn test_minor4x4() {
+        let a = Matrix::<4, 4, f32>::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert_eq!(a.minor(0, 0), 0.0);
+        assert_eq!(a.minor(0, 1), -0.0);
+        assert_eq!(a.minor(0, 2), 0.0);
+        assert_eq!(a.minor(0, 3), -0.0);
 
-    //     assert_eq!(a.minor(1, 0), -8.0);
-    //     assert_eq!(a.minor(1, 1), -16.0);
-    //     assert_eq!(a.minor(1, 2), -8.0);
+        assert_eq!(a.minor(1, 0), 0.0);
+        assert_eq!(a.minor(1, 1), -0.0);
+        assert_eq!(a.minor(1, 2), 0.0);
+        assert_eq!(a.minor(1, 3), -0.0);
 
-    //     assert_eq!(a.minor(2, 2), -4.0);
-    //     assert_eq!(a.minor(3, 3), -4.0);
-    // }
+        assert_eq!(a.minor(2, 0), 0.0);
+        assert_eq!(a.minor(2, 1), -0.0);
+        assert_eq!(a.minor(2, 2), 0.0);
+        assert_eq!(a.minor(2, 3), -0.0);
+
+        assert_eq!(a.minor(3, 0), 0.0);
+        assert_eq!(a.minor(3, 1), -0.0);
+        assert_eq!(a.minor(3, 2), 0.0);
+        assert_eq!(a.minor(3, 3), -0.0);
+    }
 }
 
 /// Cofactor trait for a matrix
@@ -913,11 +961,13 @@ mod tests_minor {
 /// ```
 pub trait Cofactor<const ROW: usize, const COL: usize, T>
 where
-    Self: Minor<ROW, COL, T>,
-    T: Copy,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant,
+    Self: Minor<ROW, COL, T, Output = T>,
+    T: Copy + Default + Add<Output = T> + Neg<Output = T>,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
 {
-    fn cofactor(self, row: usize, col: usize) -> f32 {
+    type Output = T;
+
+    fn cofactor(&self, row: usize, col: usize) -> T {
         let minor = self.minor(row, col);
         let is_positive_cell = (row + col) % 2 == 0;
         if is_positive_cell {
@@ -928,15 +978,13 @@ where
     }
 }
 
-// impl Cofactor<3, 3, f32> for Matrix<3, 3, f32> {}
-
 #[cfg(test)]
 mod tests_cofactor {
     use super::*;
 
     #[test]
     fn test_cofactor3x3() {
-        let a = Matrix::<3, 3, f32>::from([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
+        let a = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]);
         assert_eq!(a.cofactor(0, 0), -4.0);
         assert_eq!(a.cofactor(0, 1), 8.0);
         assert_eq!(a.cofactor(0, 2), -4.0);
@@ -948,30 +996,204 @@ mod tests_cofactor {
         assert_eq!(a.cofactor(2, 2), -4.0);
     }
 
-    // #[test]
-    // fn test_cofactor() {
-    //     let a = Matrix::<4, 4, f32>::from([
-    //         [1.0, 2.0, 3.0, 4.0],
-    //         [5.0, 6.0, 7.0, 8.0],
-    //         [9.0, 10.0, 11.0, 12.0],
-    //         [13.0, 14.0, 15.0, 16.0],
-    //     ]);
-    //     assert_eq!(a.cofactor(0, 0), -4.0);
-    //     assert_eq!(a.cofactor(0, 1), 8.0);
-    //     assert_eq!(a.cofactor(0, 2), -4.0);
+    #[test]
+    fn test_cofactor4x4() {
+        let a = Matrix::<4, 4, f32>::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert_eq!(a.cofactor(0, 0), 0.0);
+        assert_eq!(a.cofactor(0, 1), -0.0);
+        assert_eq!(a.cofactor(0, 2), 0.0);
+        assert_eq!(a.cofactor(0, 3), -0.0);
 
-    //     assert_eq!(a.cofactor(1, 0), 8.0);
-    //     assert_eq!(a.cofactor(1, 1), -16.0);
-    //     assert_eq!(a.cofactor(1, 2), 8.0);
+        assert_eq!(a.cofactor(1, 0), 0.0);
+        assert_eq!(a.cofactor(1, 1), -0.0);
+        assert_eq!(a.cofactor(1, 2), 0.0);
+        assert_eq!(a.cofactor(1, 3), -0.0);
 
-    //     assert_eq!(a.cofactor(2, 2), -4.0);
-    //     assert_eq!(a.cofactor(3, 3), -4.0);
-    // }
+        assert_eq!(a.cofactor(2, 0), 0.0);
+        assert_eq!(a.cofactor(2, 1), -0.0);
+        assert_eq!(a.cofactor(2, 2), 0.0);
+        assert_eq!(a.cofactor(2, 3), -0.0);
+
+        assert_eq!(a.cofactor(3, 0), 0.0);
+        assert_eq!(a.cofactor(3, 1), -0.0);
+        assert_eq!(a.cofactor(3, 2), 0.0);
+        assert_eq!(a.cofactor(3, 3), -0.0);
+    }
+}
+
+/// This function computes the inverse of a matrix, if possible.
+/// It returns None if the matrix is not invertible.
+/// The inverse of a matrix is the matrix that, when multiplied with the original matrix, results in the identity matrix.
+/// The inverse of a matrix is denoted as A^-1.
+/// The inverse of a matrix can be computed by dividing the adjugate of the matrix by its determinant.
+/// The adjugate of a matrix is the transpose of the matrix of its cofactors.
+/// The cofactor of a matrix element is the determinant of the minor of the matrix that results from removing the row and column containing that element.
+/// The minor of a matrix element is the matrix obtained by removing the row and column containing that element.
+/// The determinant of a matrix is the sum of the products of the elements on the leading diagonal, minus the sum of the products of the elements on the other diagonal.
+/// The leading diagonal of a matrix is the diagonal from the upper left to the lower right.
+/// The other diagonal of a matrix is the diagonal from the lower left to the upper right.
+/// The determinant of a matrix can be computed by recursively computing the determinant of a smaller matrix until the matrix is 2x2.
+/// The determinant of a 2x2 matrix is the product of the elements in the leading diagonal minus the product of the elements in the other diagonal.
+/// To compute the determinant of a 2x2 matrix, the matrix is partitioned into four quadrants, as follows:
+/// A B
+/// C D
+/// The determinant of the matrix is then computed as follows:
+/// det(A) = (A)
+/// det(B) = (B)
+/// det(C) = (C)
+/// det(D) = (D)
+/// det(M) = (A*D - B*C)
+pub trait Invert<const ROW: usize, const COL: usize, T>
+where
+    Self: Sized
+        + Default
+        + IndexMut<(usize, usize), Output = T>
+        + Determinant<ROW, COL, T, Output = T>
+        + Cofactor<ROW, COL, T, Output = T>,
+    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
+    T: Copy + Default + Add<Output = T> + Div<Output = T> + PartialEq<f32> + Neg<Output = T>,
+{
+    fn is_invertible(&self) -> bool {
+        self.determinant() != 0.0_f32
+    }
+
+    fn inverse(&self) -> Option<Self> {
+        if !self.is_invertible() {
+            return None;
+        }
+
+        let det = self.determinant();
+        let result = iproduct!(0..ROW, 0..COL).fold(Self::default(), |mut acc, (row, col)| {
+            let c = self.cofactor(row, col);
+            acc[(col, row)] = c / det;
+            acc
+        });
+        Some(result)
+    }
+}
+
+#[cfg(test)]
+mod tests_invert {
+    use std::panic;
+
+    use super::*;
+
+    #[test]
+    fn test_is_invertible_2x2_true() {
+        // Test a 2x2 matrix that is invertible
+        let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
+        assert!(m.is_invertible());
+    }
+
+    #[test]
+    fn test_is_invertible_2x2_false() {
+        // Test a 2x2 matrix that is not invertible
+        let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [2.0, 4.0]]);
+        assert!(!m.is_invertible());
+    }
+
+    #[test]
+    fn test_is_invertible_3x3_true() {
+        // Test a 3x3 matrix that is invertible
+        let m = Matrix::<3, 3, f32>::new([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
+        assert!(m.is_invertible());
+    }
+
+    #[test]
+    fn test_is_invertible_3x3_false() {
+        // Test a 3x3 matrix that is invertible
+        let m = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        assert!(!m.is_invertible());
+    }
+
+    #[test]
+    fn test_is_invertible_4x4_true() {
+        // Test a 4x4 matrix that is invertible
+        let m = Matrix::<4, 4, f32>::new([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        assert!(m.is_invertible());
+    }
+
+    #[test]
+    fn test_is_invertible_4x4_false() {
+        // Test a 4x4 matrix that is invertible
+        let m = Matrix::<4, 4, f32>::new([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+        assert!(!m.is_invertible());
+    }
+
+    #[test]
+    fn test_inverse_2x2() {
+        // Test a 2x2 invertible matrix
+        let m = Matrix::<2, 2, f32>::new([[4.0, 7.0], [2.0, 6.0]]);
+        let m_inv = m.inverse().unwrap();
+        assert_eq!(m_inv, Matrix::<2, 2, f32>::new([[0.6, -0.7], [-0.2, 0.4]]));
+    }
+
+    #[test]
+    fn test_inverse_2x2_not_invertible() {
+        // Test a 2x2 matrix that is not invertible
+        let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [2.0, 4.0]]);
+        assert!(m.inverse().is_none());
+    }
+
+    #[test]
+    fn test_inverse_3x3() {
+        // Test a 3x3 invertible matrix
+        let m = Matrix::<3, 3, f32>::new([[3.0, 0.0, 2.0], [2.0, 0.0, -2.0], [0.0, 1.0, 1.0]]);
+        let m_inv = m.inverse().unwrap();
+        assert_eq!(
+            m_inv,
+            Matrix::<3, 3, f32>::new([[0.2, 0.2, 0.0], [-0.2, 0.3, 1.0], [0.2, -0.3, 0.0],])
+        );
+    }
+
+    #[test]
+    fn test_inverse_3x3_not_invertible() {
+        // Test a 3x3 matrix that is not invertible
+        let m = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        assert!(m.inverse().is_none());
+    }
+
+    #[test]
+    fn test_inverse_4x4() {
+        // Test a 4x4 invertible matrix
+        let m = Matrix::<4, 4, f32>::new([
+            [4.0, 0.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0, 0.0],
+            [0.0, 0.0, 0.5, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        let m_inv = m.inverse().unwrap();
+        assert_eq!(
+            m_inv,
+            Matrix::<4, 4, f32>::new([
+                [0.25, 0.0, 0.0, 0.0],
+                [0.0, 0.5, 0.0, 0.0],
+                [0.0, 0.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ])
+        );
+    }
 }
 
 pub type Matrix44f32 = Matrix<4, 4, f32>;
 pub type Matrix33f32 = Matrix<3, 3, f32>;
 pub type Matrix22f32 = Matrix<2, 2, f32>;
+// pub type Matrix11f32 = Matrix<1, 1, f32>;
 
 impl Identity<4, f32> for Matrix44f32 {}
 impl Identity<3, f32> for Matrix33f32 {}
@@ -986,9 +1208,18 @@ impl Submatrix<4, 4, f32> for Matrix44f32 {
 impl Submatrix<3, 3, f32> for Matrix33f32 {
     type Result = Matrix<2, 2, f32>;
 }
+impl Submatrix<2, 2, f32> for Matrix22f32 {
+    type Result = Matrix<1, 1, f32>;
+}
 
 impl Minor<4, 4, f32> for Matrix44f32 {}
 impl Minor<3, 3, f32> for Matrix33f32 {}
+impl Minor<2, 2, f32> for Matrix22f32 {}
 
 impl Cofactor<4, 4, f32> for Matrix44f32 {}
 impl Cofactor<3, 3, f32> for Matrix33f32 {}
+impl Cofactor<2, 2, f32> for Matrix22f32 {}
+
+impl Invert<4, 4, f32> for Matrix44f32 {}
+impl Invert<3, 3, f32> for Matrix33f32 {}
+impl Invert<2, 2, f32> for Matrix22f32 {}

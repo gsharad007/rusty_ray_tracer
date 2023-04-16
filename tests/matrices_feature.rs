@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
+use float_cmp::ApproxEq;
+use float_cmp::assert_approx_eq;
 use rusty_ray_tracer::core3d::matrix::Cofactor;
 use rusty_ray_tracer::core3d::matrix::Determinant;
 use rusty_ray_tracer::core3d::matrix::Identity;
+use rusty_ray_tracer::core3d::matrix::Invert;
 use rusty_ray_tracer::core3d::matrix::Matrix22f32;
 use rusty_ray_tracer::core3d::matrix::Matrix33f32;
 use rusty_ray_tracer::core3d::matrix::Minor;
@@ -21,6 +24,20 @@ enum AnyMatrix {
     Mat22(Matrix22f32),
     #[default]
     None,
+}
+
+impl ApproxEq for AnyMatrix
+{
+    type Margin = <f32 as ApproxEq>::Margin;
+
+    fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
+        match (self, other) {
+            (AnyMatrix::Mat44(m1), AnyMatrix::Mat44(m2)) => m1.approx_eq(m2, margin),
+            (AnyMatrix::Mat33(m1), AnyMatrix::Mat33(m2)) => m1.approx_eq(m2, margin),
+            (AnyMatrix::Mat22(m1), AnyMatrix::Mat22(m2)) => m1.approx_eq(m2, margin),
+            _ => false,
+        }
+    }
 }
 
 #[derive(World, Default, Debug)]
@@ -96,6 +113,20 @@ fn m_x_f(world: &mut TheWorld, name: String, r: usize, c: usize, result: f32) {
     assert_eq!(value, result);
 }
 
+#[then(expr = r"{word}[{int},{int}] = {int}\/{int}")]
+fn m_x_num_den(world: &mut TheWorld, name: String, r: usize, c: usize, num: i32, den: i32) {
+    let a = *world.get_matrix(&name);
+    let result = num as f32 / den as f32;
+
+    let value = match a {
+        AnyMatrix::Mat44(m) => m.matrix[r][c],
+        AnyMatrix::Mat33(m) => m.matrix[r][c],
+        AnyMatrix::Mat22(m) => m.matrix[r][c],
+        AnyMatrix::None => panic!("Accesssing unknown"),
+    };
+    assert_eq!(value, result);
+}
+
 #[given(expr = r"the following 2x2 matrix {word}:")]
 fn the_following_2x2_matrix_m(world: &mut TheWorld, name: String, step: &Step) {
     *world.get_matrix(&name) = parse_step_table_for_matrix(step);
@@ -125,6 +156,16 @@ fn a_not_equal_b(world: &mut TheWorld) {
     let b = *world.get_matrix("B");
 
     assert_ne!(a, b);
+}
+
+#[then(expr = r"B is the following 4x4 matrix:")]
+fn b_is_the_following_x_matrix(world: &mut TheWorld, step: &Step) {
+    let expected = parse_step_table_for_matrix(step);
+
+    let b = *world.get_matrix("B");
+
+    // assert_approx_eq!(AnyMatrix, b, expected, epsilon = 0.000001);
+    assert_approx_eq!(AnyMatrix, b, expected, ulps = 750);
 }
 
 #[then(expr = r"A * B is the following 4x4 matrix:")]
@@ -225,13 +266,13 @@ fn submatrix_a_is_the_following_x_matrix(
         AnyMatrix::Mat44(_) => unreachable!(),
         AnyMatrix::Mat33(expected) => {
             let AnyMatrix::Mat44(a) = *world.get_matrix(&name) else {unreachable!()};
-            let b = Matrix44f32::submatrix(&a, r, c);
+            let b = a.submatrix(r, c);
 
             assert_eq!(b, expected);
         }
         AnyMatrix::Mat22(expected) => {
             let AnyMatrix::Mat33(a) = *world.get_matrix(&name) else {unreachable!()};
-            let b = Matrix33f32::submatrix(&a, r, c);
+            let b = a.submatrix(r, c);
 
             assert_eq!(b, expected);
         }
@@ -269,4 +310,22 @@ fn cofactor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expect
     };
 
     assert_eq!(b, expected);
+}
+
+#[then(expr = r"A is invertible")]
+fn a_is_invertible(world: &mut TheWorld) {
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+    assert!(a.is_invertible());
+}
+
+#[then(expr = r"A is not invertible")]
+fn a_is_not_invertible(world: &mut TheWorld) {
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+    assert!(!a.is_invertible());
+}
+
+#[given(expr = r"B ← inverse\(A)")]
+fn b_inverse_a(world: &mut TheWorld) {
+    let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
+    *world.get_matrix("B") = AnyMatrix::Mat44(a.inverse().unwrap());
 }
