@@ -1079,7 +1079,6 @@ where
 
 #[cfg(test)]
 mod tests_invert {
-    use std::panic;
 
     use super::*;
 

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
-use float_cmp::ApproxEq;
 use float_cmp::assert_approx_eq;
+use float_cmp::ApproxEq;
 use rusty_ray_tracer::core3d::matrix::Cofactor;
 use rusty_ray_tracer::core3d::matrix::Determinant;
 use rusty_ray_tracer::core3d::matrix::Identity;
@@ -26,15 +26,14 @@ enum AnyMatrix {
     None,
 }
 
-impl ApproxEq for AnyMatrix
-{
+impl ApproxEq for AnyMatrix {
     type Margin = <f32 as ApproxEq>::Margin;
 
     fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
         match (self, other) {
-            (AnyMatrix::Mat44(m1), AnyMatrix::Mat44(m2)) => m1.approx_eq(m2, margin),
-            (AnyMatrix::Mat33(m1), AnyMatrix::Mat33(m2)) => m1.approx_eq(m2, margin),
-            (AnyMatrix::Mat22(m1), AnyMatrix::Mat22(m2)) => m1.approx_eq(m2, margin),
+            (Self::Mat44(m1), Self::Mat44(m2)) => m1.approx_eq(m2, margin),
+            (Self::Mat33(m1), Self::Mat33(m2)) => m1.approx_eq(m2, margin),
+            (Self::Mat22(m1), Self::Mat22(m2)) => m1.approx_eq(m2, margin),
             _ => false,
         }
     }
