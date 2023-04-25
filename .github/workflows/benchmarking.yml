@@ -1,4 +1,5 @@
 on:
+  pull_request:
   push:
     branches:
       - main
@@ -26,6 +27,12 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - name: Install Valgrind
+        continue-on-error: true
+        run: |
+          sudo apt-get update;
+          sudo apt install -y valgrind;
+          sudo apt install -y gnuplot;
       - name: Run bench
         run: cargo bench | tee output.txt
       - name: 'Upload Artifact'
@@ -34,11 +41,11 @@ jobs:
           name: bench-results-${{ runner.os }}-${{ runner.arch }}
           path: output.txt
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@master
+        uses: benchmark-action/github-action-benchmark@v1
         with:
           name: ${{ runner.os }}-${{ runner.arch }}
           tool: 'cargo'
-          output-file-path: output.txt          
+          output-file-path: output.txt
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           alert-threshold: '150%'

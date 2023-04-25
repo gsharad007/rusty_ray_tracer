@@ -1,3 +1,10 @@
+#[cfg(test)]
+extern crate test;
+#[cfg(test)]
+use test::Bencher;
+#[cfg(test)]
+const N: i32 = 1000;
+
 use std::{
     fmt::Display,
     ops::{Add, Sub},
@@ -21,14 +28,14 @@ impl Point {
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
-    /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!(1.0, point.tuple[0]);
-    /// assert_eq!(2.0, point.tuple[1]);
-    /// assert_eq!(3.0, point.tuple[2]);
-    /// assert_eq!(1.0, point.tuple[3]);
-    /// assert!(point.is_point() == true);
-    /// assert!(point.is_vector() == false);
-    /// assert!(point.is_valid());
+    /// let a = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!(1.0, a.tuple[0]);
+    /// assert_eq!(2.0, a.tuple[1]);
+    /// assert_eq!(3.0, a.tuple[2]);
+    /// assert_eq!(1.0, a.tuple[3]);
+    /// assert!(a.is_point() == true);
+    /// assert!(a.is_vector() == false);
+    /// assert!(a.is_valid());
     /// ```
     #[must_use]
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
@@ -44,27 +51,60 @@ mod tests_point {
 
     #[test]
     fn new() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+        let a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     }
 
     #[test]
     #[allow(clippy::clone_on_copy)]
     fn clone() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        let point_copy = point;
-        let point_clone = point_copy.clone();
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point_copy.tuple);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point_clone.tuple);
+        let a = Point::new(1.0, 2.0, 3.0);
+        let a_copy = a;
+        let a_clone = a_copy.clone();
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a_copy.tuple);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a_clone.tuple);
     }
 
     #[test]
     fn debug_fmt() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!(
-            "Point { tuple: [1.0, 2.0, 3.0, 1.0] }",
-            format!("{point:?}")
-        );
+        let a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!("Point { tuple: [1.0, 2.0, 3.0, 1.0] }", format!("{a:?}"));
+    }
+}
+
+#[cfg(test)]
+mod benchs_point {
+    use super::*;
+
+    #[bench]
+    fn new(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| {
+            (0..N).fold(a, |a, b| {
+                Point::new(a.x() + b as f32, a.y() + b as f32, a.z() + b as f32)
+            })
+        });
+    }
+
+    #[bench]
+    fn copy(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        let b = Point::new(4.0, 5.0, 6.0);
+        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a } else { b }));
+    }
+
+    #[bench]
+    #[allow(clippy::clone_on_copy)]
+    fn clone(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        let b = Point::new(4.0, 5.0, 6.0);
+        bench.iter(|| (0..N).fold(a, |a, i| if i == 0 { a.clone() } else { b.clone() }));
+    }
+
+    #[bench]
+    fn debug_fmt(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{a:?}")));
     }
 }
 
@@ -77,14 +117,14 @@ impl Default for Point {
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
     /// # use crate::rusty_ray_tracer::core3d::coordinates4::Coordinates4;
     ///
-    /// let point = Point::default();
-    /// assert_eq!(0.0, point.tuple[0]);
-    /// assert_eq!(0.0, point.tuple[1]);
-    /// assert_eq!(0.0, point.tuple[2]);
-    /// assert_eq!(1.0, point.tuple[3]);
-    /// assert!(point.is_point() == true);
-    /// assert!(point.is_vector() == false);
-    /// assert!(point.is_valid());
+    /// let a = Point::default();
+    /// assert_eq!(0.0, a.tuple[0]);
+    /// assert_eq!(0.0, a.tuple[1]);
+    /// assert_eq!(0.0, a.tuple[2]);
+    /// assert_eq!(1.0, a.tuple[3]);
+    /// assert!(a.is_point() == true);
+    /// assert!(a.is_vector() == false);
+    /// assert!(a.is_valid());
     /// ```
     fn default() -> Self {
         Self::new(Default::default(), Default::default(), Default::default())
@@ -99,8 +139,8 @@ impl From<[f32; 3]> for Point {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let point = Point::from([1.0, 2.0, 3.0]);
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+    /// let a = Point::from([1.0, 2.0, 3.0]);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     /// ```
     fn from(arr: [f32; 3]) -> Self {
         Self::new(arr[0], arr[1], arr[2])
@@ -115,16 +155,16 @@ impl From<Tuple> for Point {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let point = Point::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+    /// let a = Point::from(Tuple::from([1.0, 2.0, 3.0, 1.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     /// ```
     ///
     /// ```
     /// # use std::panic;
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-    /// assert!(panic::catch_unwind(|| Point::from(tuple)).is_err());
+    /// let a = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+    /// assert!(panic::catch_unwind(|| Point::from(a)).is_err());
     /// ```
     fn from(tuple: Tuple) -> Self {
         debug_assert!(tuple.is_point());
@@ -140,8 +180,8 @@ impl From<Point> for Tuple {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::tuple::Tuple;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let result = Tuple::from(Point::from([1.0, 2.0, 3.0]));
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], result.tuple);
+    /// let a = Tuple::from(Point::from([1.0, 2.0, 3.0]));
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     /// ```
     fn from(point: Point) -> Self {
         debug_assert!(point.is_point());
@@ -156,14 +196,14 @@ mod tests_from {
 
     #[test]
     fn from_array() {
-        let point = Point::from([1.0, 2.0, 3.0]);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+        let a = Point::from([1.0, 2.0, 3.0]);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     }
 
     #[test]
     fn from_tuple() {
-        let point = Point::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.tuple);
+        let a = Point::from(Tuple::new(1.0, 2.0, 3.0, 1.0));
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
 
         let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
         panic::catch_unwind(|| Point::from(tuple)).unwrap_err();
@@ -171,11 +211,11 @@ mod tests_from {
 
     #[test]
     fn into_tuple() {
-        let tuple = Tuple::from(Point::new(1.0, 2.0, 3.0));
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
+        let a = Tuple::from(Point::new(1.0, 2.0, 3.0));
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
 
-        let tuple: Tuple = Point::new(1.0, 2.0, 3.0).into();
-        assert_eq!([1.0, 2.0, 3.0, 1.0], tuple.tuple);
+        let a: Tuple = Point::new(1.0, 2.0, 3.0).into();
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.tuple);
     }
 }
 
@@ -189,8 +229,8 @@ impl ArrayBase for Point {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], point.get_array());
+    /// let a = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], a.get_array());
     /// ```
     fn get_array(self) -> [f32; 4] {
         self.tuple
@@ -202,8 +242,8 @@ impl ArrayBase for Point {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
+    /// let a = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], *a.get_array_ref());
     /// ```
     fn get_array_ref(&self) -> &[f32; 4] {
         &self.tuple
@@ -215,13 +255,13 @@ impl ArrayBase for Point {
     /// ```
     /// # use crate::rusty_ray_tracer::core3d::array_base::ArrayBase;
     /// # use crate::rusty_ray_tracer::core3d::point::Point;
-    /// let mut point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_mut());
-    /// point.get_array_mut()[0] += 10.0;
-    /// point.get_array_mut()[1] += 10.0;
-    /// point.get_array_mut()[2] += 10.0;
-    /// point.get_array_mut()[3] += 10.0;
-    /// assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_mut());
+    /// let mut a = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 1.0], *a.get_array_mut());
+    /// a.get_array_mut()[0] += 10.0;
+    /// a.get_array_mut()[1] += 10.0;
+    /// a.get_array_mut()[2] += 10.0;
+    /// a.get_array_mut()[3] += 10.0;
+    /// assert_eq!([11.0, 12.0, 13.0, 11.0], *a.get_array_mut());
     /// ```
     fn get_array_mut(&mut self) -> &mut [f32; 4] {
         &mut self.tuple
@@ -234,22 +274,22 @@ mod tests_array_base {
 
     #[test]
     fn get_array() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], point.get_array());
-        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_ref());
+        let a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], a.get_array());
+        assert_eq!([1.0, 2.0, 3.0, 1.0], *a.get_array_ref());
     }
 
     #[test]
     fn get_array_mut() {
-        let mut point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!([1.0, 2.0, 3.0, 1.0], *point.get_array_mut());
-        point.get_array_mut()[0] += 10.0;
-        point.get_array_mut()[1] += 10.0;
-        point.get_array_mut()[2] += 10.0;
-        point.get_array_mut()[3] += 10.0;
-        assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_mut());
-        assert_eq!([11.0, 12.0, 13.0, 11.0], point.get_array());
-        assert_eq!([11.0, 12.0, 13.0, 11.0], *point.get_array_ref());
+        let mut a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!([1.0, 2.0, 3.0, 1.0], *a.get_array_mut());
+        a.get_array_mut()[0] += 10.0;
+        a.get_array_mut()[1] += 10.0;
+        a.get_array_mut()[2] += 10.0;
+        a.get_array_mut()[3] += 10.0;
+        assert_eq!([11.0, 12.0, 13.0, 11.0], *a.get_array_mut());
+        assert_eq!([11.0, 12.0, 13.0, 11.0], a.get_array());
+        assert_eq!([11.0, 12.0, 13.0, 11.0], *a.get_array_ref());
     }
 }
 
@@ -262,26 +302,26 @@ mod tests_coordinates4 {
 
     #[test]
     fn assign_array() {
-        let point: Point = Point::from([3.0, 2.0, 1.0]);
-        assert_eq!(3.0, point.x());
-        assert_eq!(2.0, point.y());
-        assert_eq!(1.0, point.z());
-        assert_eq!(1.0, point.w());
-        assert!(point.is_point());
-        assert!(!point.is_vector());
-        assert!(point.is_valid());
+        let a: Point = Point::from([3.0, 2.0, 1.0]);
+        assert_eq!(3.0, a.x());
+        assert_eq!(2.0, a.y());
+        assert_eq!(1.0, a.z());
+        assert_eq!(1.0, a.w());
+        assert!(a.is_point());
+        assert!(!a.is_vector());
+        assert!(a.is_valid());
     }
 
     #[test]
     fn create_new() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!(1.0, point.x());
-        assert_eq!(2.0, point.y());
-        assert_eq!(3.0, point.z());
-        assert_eq!(1.0, point.w());
-        assert!(point.is_point());
-        assert!(!point.is_vector());
-        assert!(point.is_valid());
+        let a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!(1.0, a.x());
+        assert_eq!(2.0, a.y());
+        assert_eq!(3.0, a.z());
+        assert_eq!(1.0, a.w());
+        assert!(a.is_point());
+        assert!(!a.is_vector());
+        assert!(a.is_valid());
     }
 }
 
@@ -291,8 +331,8 @@ impl Display for Point {
     /// ```
     /// use rusty_ray_tracer::core3d::point::Point;
     ///
-    /// let point = Point::new(1.0, 2.0, 3.0);
-    /// assert_eq!("[1, 2, 3, 1]", format!("{}", point));
+    /// let a = Point::new(1.0, 2.0, 3.0);
+    /// assert_eq!("[1, 2, 3, 1]", format!("{}", a));
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
@@ -311,9 +351,20 @@ mod tests_display {
     use super::*;
 
     #[test]
-    fn eq() {
-        let point = Point::new(1.0, 2.0, 3.0);
-        assert_eq!("[1, 2, 3, 1]", format!("{point}"));
+    fn display() {
+        let a = Point::new(1.0, 2.0, 3.0);
+        assert_eq!("[1, 2, 3, 1]", format!("{a}"));
+    }
+}
+
+#[cfg(test)]
+mod benchs_display {
+    use super::*;
+
+    #[bench]
+    fn display(bench: &mut Bencher) {
+        let a = Point::new(1.0, 2.0, 3.0);
+        bench.iter(|| (0..N).fold(String::default(), |_, _| format!("{a}")));
     }
 }
 
@@ -530,6 +581,25 @@ mod tests_sub {
     }
 }
 
+#[cfg(test)]
+mod benchs_sub {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(Vector::default(), |_, _| test::black_box(a - b)));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::default();
+        bench.iter(|| (0..N).fold(Vector::default(), |_, _| test::black_box(a - b)));
+    }
+}
+
 impl Add<Vector> for Point {
     /// The resulting type after applying the `+` operator.
     type Output = Self;
@@ -597,6 +667,33 @@ mod tests_add_vector {
     }
 }
 
+#[cfg(test)]
+mod benchs_add_vector {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_associative(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        let c = Point::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a + (b - c)));
+    }
+}
+
 impl Sub<Vector> for Point {
     /// The resulting type after applying the `+` operator.
     type Output = Self;
@@ -653,5 +750,32 @@ mod tests_sub_vector {
         assert_eq!(a_bc, a - (b - c));
         assert_eq!(c_ab, c - (a - b));
         assert_eq!(b_ca, b - (c - a));
+    }
+}
+
+#[cfg(test)]
+mod benchs_sub_vector {
+    use super::*;
+
+    #[bench]
+    fn not_closure(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::new(1.11, 2.22, 3.33);
+        bench.iter(|| (0..N).fold(a, |a, _| a - b));
+    }
+
+    #[bench]
+    fn not_identity(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Vector::default();
+        bench.iter(|| (0..N).fold(a, |a, _| a + b));
+    }
+
+    #[bench]
+    fn not_associative(bench: &mut Bencher) {
+        let a = Point::new(1.23, 4.56, 7.89);
+        let b = Point::new(1.11, 2.22, 3.33);
+        let c = Point::new(5.55, 6.66, 7.77);
+        bench.iter(|| (0..N).fold(a, |a, _| a - (b - c)));
     }
 }

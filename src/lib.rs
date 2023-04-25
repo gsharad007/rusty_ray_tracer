@@ -3,6 +3,7 @@
 #![feature(slice_flatten)]
 #![feature(generic_const_exprs)]
 #![feature(associated_type_defaults)]
+#![feature(test)]
 
 pub mod asset_types;
 pub mod core3d;
