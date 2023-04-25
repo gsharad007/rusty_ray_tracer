@@ -1221,7 +1221,7 @@ mod tests_invert {
         ]);
         let m_inv_trans = m.inverse().unwrap().transpose();
         let m_trans_inv = m.transpose().inverse().unwrap();
-    
+
         assert_approx_eq!(Matrix::<4, 4, f32>, m_inv_trans, m_trans_inv);
     }
 }

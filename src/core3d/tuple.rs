@@ -1,3 +1,10 @@
+#[cfg(test)]
+extern crate test;
+#[cfg(test)]
+use test::{black_box, Bencher};
+#[cfg(test)]
+const N: i32 = 1000;
+
 use super::{array_base::ArrayBase, coordinates4::Coordinates4, dot_product::DotProduct};
 use core::ops::Add;
 use float_cmp::{approx_eq, ApproxEq};
