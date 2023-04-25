@@ -1079,8 +1079,8 @@ where
 
 #[cfg(test)]
 mod tests_invert {
-
     use super::*;
+    use float_cmp::assert_approx_eq;
 
     #[test]
     fn test_is_invertible_2x2_true() {
@@ -1186,6 +1186,43 @@ mod tests_invert {
                 [0.0, 0.0, 0.0, 1.0],
             ])
         );
+    }
+
+    #[test]
+    fn test_inverse_identity() {
+        let m = Matrix::<4, 4, f32>::new([
+            [9.0, 3.0, 0.0, 9.0],
+            [-5.0, -2.0, -6.0, -3.0],
+            [-4.0, 9.0, 6.0, 4.0],
+            [-7.0, 6.0, 6.0, 2.0],
+        ]);
+        let m_inv = m.inverse().unwrap();
+        let ident = Matrix::<4, 4, f32>::identity();
+        let prod = m * m_inv;
+
+        assert_approx_eq!(Matrix::<4, 4, f32>, prod, ident);
+    }
+
+    #[test]
+    fn test_identity_inverse() {
+        let m = Matrix::<4, 4, f32>::identity();
+        let m_inv = m.inverse().unwrap();
+
+        assert_eq!(m, m_inv);
+    }
+
+    #[test]
+    fn test_inverse_transpose() {
+        let m = Matrix::<4, 4, f32>::new([
+            [9.0, 3.0, 0.0, 9.0],
+            [-5.0, -2.0, -6.0, -3.0],
+            [-4.0, 9.0, 6.0, 4.0],
+            [-7.0, 6.0, 6.0, 2.0],
+        ]);
+        let m_inv_trans = m.inverse().unwrap().transpose();
+        let m_trans_inv = m.transpose().inverse().unwrap();
+    
+        assert_approx_eq!(Matrix::<4, 4, f32>, m_inv_trans, m_trans_inv);
     }
 }
 
