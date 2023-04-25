@@ -1,7 +1,8 @@
 use float_cmp::assert_approx_eq;
-use rusty_ray_tracer::core3d::vector::{CrossProduct, DotProduct, Magnitude, Normalize, Vector};
+use rusty_ray_tracer::core3d::vector::{CrossProduct, Magnitude, Normalize, Vector};
 use rusty_ray_tracer::core3d::{
-    color::Color, color_rgb::ColorRGB, coordinates4::Coordinates4, point::Point, tuple::Tuple,
+    color::Color, color_rgb::ColorRGB, coordinates4::Coordinates4, dot_product::DotProduct,
+    point::Point, tuple::Tuple,
 };
 
 use std::collections::HashMap;

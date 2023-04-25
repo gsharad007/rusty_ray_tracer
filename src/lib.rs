@@ -1,3 +1,8 @@
+#![feature(iter_array_chunks)]
+#![feature(slice_as_chunks)]
+#![feature(slice_flatten)]
+#![feature(generic_const_exprs)]
+#![feature(associated_type_defaults)]
 #![feature(test)]
 
 pub mod asset_types;
@@ -48,6 +53,9 @@ mod projectile_tests {
     #[test]
     // #[test_log::test] // Automatically wraps test to initialize logging
     fn projectile() {
+        const TICK_PER_FRAME: f32 = 1.0 / 120.0;
+        const PROJECTILE_COLOR: Color = Color::new(1.0, 0.2, 0.2);
+
         let projectile = Projectile {
             position: Point::new(0.0, 1.0, 0.0),
             velocity: Vector::new(1.0, 1.0, 0.0),
@@ -60,8 +68,6 @@ mod projectile_tests {
             Vector::new(0.99, 0.02, 0.0),
             projectile.velocity + environment.gravity + environment.wind
         );
-        const TICK_PER_FRAME: f32 = 1.0 / 120.0;
-        const PROJECTILE_COLOR: Color = Color::new(1.0, 0.2, 0.2);
         let mut canvas = Canvas::new(CANVAS_WIDTH, CANVAS_HEIGHT);
         let mut travelling_projectile = projectile;
         let mut accumulated_ticks = 0.0;

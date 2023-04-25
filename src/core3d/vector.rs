@@ -10,7 +10,7 @@ use std::{
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
-use super::{array_base::ArrayBase, coordinates4::Coordinates4};
+use super::{array_base::ArrayBase, coordinates4::Coordinates4, dot_product::DotProduct};
 use crate::core3d::tuple::Tuple;
 use float_cmp::{approx_eq, ApproxEq};
 
@@ -182,8 +182,8 @@ mod tests_from {
         let a = Vector::from(Tuple::new(1.0, 2.0, 3.0, 0.0));
         assert_eq!([1.0, 2.0, 3.0, 0.0], a.tuple);
 
-        let a = Tuple::from([1.0, 2.0, 3.0, 4.0]);
-        assert!(panic::catch_unwind(|| Vector::from(a)).is_err());
+        let tuple = Tuple::from([1.0, 2.0, 3.0, 4.0]);
+        panic::catch_unwind(|| Vector::from(tuple)).unwrap_err();
     }
 
     #[test]
@@ -1009,43 +1009,6 @@ mod tests_normalize {
     }
 }
 
-#[cfg(test)]
-mod benchs_normalize {
-    use super::*;
-
-    #[bench]
-    fn test(bench: &mut Bencher) {
-        let a = Vector::new(1.11, -2.22, 3.33);
-        bench.iter(|| {
-            (0..N).fold(a, |a, b| {
-                Vector::new(a.x() + b as f32, a.y() + b as f32, a.x() + b as f32).normalize()
-            })
-        });
-    }
-}
-
-pub trait DotProduct: ArrayBase<Item = f32> {
-    /// Calculate Dot Product on two Vectors
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use crate::rusty_ray_tracer::core3d::vector::Vector;
-    /// # use crate::rusty_ray_tracer::core3d::vector::*;
-    /// assert_eq!(0.0, Vector::new(0.0, 0.0, 0.0).dot(Vector::new(0.0, 0.0, 0.0)));
-    /// assert_eq!(1.0, Vector::new(1.0, 0.0, 0.0).dot(Vector::new(1.0, 0.0, 0.0)));
-    /// assert_eq!(1.0, Vector::new(0.0, 1.0, 0.0).dot(Vector::new(0.0, 1.0, 0.0)));
-    /// assert_eq!(1.0, Vector::new(0.0, 0.0, 1.0).dot(Vector::new(0.0, 0.0, 1.0)));
-    /// assert_eq!(1.0, Vector::new(0.57735029, 0.57735028, 0.57735028).dot(Vector::new(0.57735029, 0.57735028, 0.57735028)));
-    /// ```
-    #[must_use]
-    #[allow(clippy::suboptimal_flops)]
-    fn dot(self, other: Self) -> f32 {
-        Self::into_iter(self)
-            .zip(other.into_iter())
-            .fold(0.0, |acc, v| acc + (v.0 * v.1))
-    }
-}
 impl DotProduct for Vector {}
 
 #[cfg(test)]

@@ -45,18 +45,18 @@ mod tests_ppm {
 
     #[test]
     fn new() {
-        let ppm = PPM::new(16, 9, 255, vec![0u32; 432]);
+        let ppm = PPM::new(16, 9, 255, vec![0_u32; 432]);
         assert_eq!("P3", ppm.version);
         assert_eq!(16, ppm.width);
         assert_eq!(9, ppm.height);
         assert_eq!(255, ppm.max_color);
         assert_eq!(16 * 9 * 3, ppm.colors.len());
-        assert!(ppm.colors.iter().all(|&c| c == 0u32));
+        assert!(ppm.colors.iter().all(|&c| c == 0_u32));
     }
 
     #[test]
     fn debug_fmt() {
-        let canvas = PPM::new(2, 2, 255, vec![0u32; 12]);
+        let canvas = PPM::new(2, 2, 255, vec![0_u32; 12]);
         assert_eq!("PPM { version: \"P3\", width: 2, height: 2, max_color: 255, colors: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }", format!("{canvas:?}"));
     }
 
@@ -74,7 +74,7 @@ mod tests_ppm {
 
     #[test]
     fn is_color_index_new_line() {
-        let ppm = PPM::new(4, 3, 255, vec![0u32; 144]);
+        let ppm = PPM::new(4, 3, 255, vec![0_u32; 144]);
         let mut i = 0;
         for _y in 0..3 {
             assert_eq!(true, ppm.is_color_index_new_line(i));
@@ -129,7 +129,7 @@ mod tests_from {
         assert_eq!(9, ppm.height);
         assert_eq!(255, ppm.max_color);
         assert_eq!(16 * 9 * 3, ppm.colors.len());
-        assert!(ppm.colors.iter().all(|&c| c == 0u32));
+        assert!(ppm.colors.iter().all(|&c| c == 0_u32));
     }
 
     #[test]
@@ -312,7 +312,7 @@ P3
 
         #[test]
         fn start_new_line_for_new_row() {
-            let ppm = PPM::new(4, 3, 255, vec![0u32; 144]);
+            let ppm = PPM::new(4, 3, 255, vec![0_u32; 144]);
             let mut acc = String::new();
             let mut i = 0;
             for _y in 0..3 {
@@ -330,7 +330,7 @@ P3
 
         #[test]
         fn start_new_line_for_long_lines() {
-            let ppm = PPM::new(8, 3, 255, vec![0u32; 144]);
+            let ppm = PPM::new(8, 3, 255, vec![0_u32; 144]);
             let mut acc = String::new();
             let mut i = 0;
             for _y in 0..3 {
@@ -372,7 +372,7 @@ P3
 
         #[test]
         fn get_newline_for_new_row() {
-            let ppm = PPM::new(4, 3, 255, vec![0u32; 144]);
+            let ppm = PPM::new(4, 3, 255, vec![0_u32; 144]);
             let mut acc = String::new();
             let mut i = 0;
             for _y in 0..3 {
@@ -396,7 +396,7 @@ P3
 
         #[test]
         fn get_newline_for_long_lines() {
-            let ppm = PPM::new(8, 3, 255, vec![0u32; 144]);
+            let ppm = PPM::new(8, 3, 255, vec![0_u32; 144]);
             let mut acc = String::new();
             let mut i = 0;
             for _y in 0..3 {
