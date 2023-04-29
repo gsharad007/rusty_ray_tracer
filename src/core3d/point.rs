@@ -1,5 +1,6 @@
 #[cfg(test)]
 extern crate test;
+use derive_more::{Index, IndexMut};
 #[cfg(test)]
 use test::Bencher;
 #[cfg(test)]
@@ -15,7 +16,7 @@ use float_cmp::{approx_eq, ApproxEq};
 
 /// A Point in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 1.0 to allow translations from matrices
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Index, IndexMut)]
 pub struct Point {
     pub tuple: [f32; 4],
 }

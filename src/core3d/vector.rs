@@ -1,5 +1,6 @@
 #[cfg(test)]
 extern crate test;
+use derive_more::{Index, IndexMut};
 #[cfg(test)]
 use test::Bencher;
 #[cfg(test)]
@@ -15,8 +16,7 @@ use crate::core3d::tuple::Tuple;
 use float_cmp::{approx_eq, ApproxEq};
 
 /// A Vector in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 0.0 to ignore translations from matrices
-
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Copy, Clone, Default, Debug, Index, IndexMut)]
 pub struct Vector {
     pub tuple: [f32; 4],
 }

@@ -200,12 +200,13 @@ mod tests_index {
 ///     ])
 /// );
 /// ```
-pub trait Identity<const N: usize, T: std::convert::From<i8>>: Sized {
+pub trait Identity<const N: usize, T>
+where
+    Self: Sized,
+    T: Default + Copy + From<i8>,
+{
     #[must_use]
-    fn identity() -> Matrix<N, N, T>
-    where
-        T: Default + Copy,
-    {
+    fn identity() -> Matrix<N, N, T> {
         let mut matrix = Matrix::default();
         for i in 0..N {
             matrix.matrix[i][i] = T::from(1);

@@ -38,7 +38,11 @@ name = "tuples_bench"
 harness = false
 
 [[test]]
-name = "matrices_feature" # this should be the same as the filename of your test target
+name = "matrices_feature"
+harness = false
+
+[[test]]
+name = "transformations_feature"
 harness = false
 
 [[test]]
