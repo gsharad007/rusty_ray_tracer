@@ -1,6 +1,6 @@
 use cucumber::{gherkin::Step, given, then, World};
 use rusty_ray_tracer::core3d::{
-    matrix::{Invert, Matrix, Matrix44f32},
+    matrix::{Invert, Matrix44f32},
     matrix_transforms::{Transform, Translation},
     point::Point,
     vector::Vector,
