@@ -204,7 +204,7 @@ mod tests_index {
 /// ```
 pub trait Identity<const N: usize, T> {
     #[must_use]
-    fn identity() -> Matrix<N, N, T>;
+    fn identity() -> Self;
 }
 
 impl<const N: usize, T> Identity<N, T> for Matrix<N, N, T>
@@ -213,8 +213,8 @@ where
     T: Default + Copy + From<i8>,
 {
     #[must_use]
-    fn identity() -> Matrix<N, N, T> {
-        let mut matrix = Matrix::default();
+    fn identity() -> Self {
+        let mut matrix = Self::default();
         for i in 0..N {
             matrix.matrix[i][i] = T::from(1);
         }
@@ -678,7 +678,7 @@ mod tests_transpose {
     // }
 }
 
-/// This code implements the Submatrix trait for the Matrix::<4, 4, f32> type.
+/// This code implements the Submatrix trait for the `Matrix::<4, 4, f32>` type.
 /// It takes a matrix and two indices for rows and columns and returns
 /// a submatrix of the original matrix without the row and column specified
 /// by the indices.
@@ -699,12 +699,15 @@ where
         iproduct!(0..ROW, 0..COL)
             .filter(|(r, c)| *r != skiprow && *c != skipcol)
             .enumerate()
-            .fold(<Self as Submatrix<ROW, COL, T>>::Output::default(), |mut acc, (i, (r, c))| {
-                let ir = i / (COL - 1);
-                let ic = i % (COL - 1);
-                acc[(ir, ic)] = self[(r, c)];
-                acc
-            })
+            .fold(
+                <Self as Submatrix<ROW, COL, T>>::Output::default(),
+                |mut acc, (i, (r, c))| {
+                    let ir = i / (COL - 1);
+                    let ic = i % (COL - 1);
+                    acc[(ir, ic)] = self[(r, c)];
+                    acc
+                },
+            )
     }
 }
 

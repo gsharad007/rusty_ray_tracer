@@ -61,18 +61,24 @@ mod tests {
     }
 }
 
-pub trait Translation<const N: usize, T>
+pub trait Translation<const ROW: usize, const COL: usize, T>
 where
-    Self: Sized + Identity<N, T> + IndexMut<(usize, usize)>,
+    Self: Sized + Identity<COL, T> + IndexMut<(usize, usize), Output = T>,
     T: Default + Copy + std::convert::From<i8>,
 {
     #[must_use]
-    fn translation(x: T, y: T, z: T) -> Matrix<N, N, T> {
+    fn translation(x: T, y: T, z: T) -> Self {
         let mut matrix = Self::identity();
 
-        matrix[(N - 1, 0)] = x;
-        matrix[(N - 1, 1)] = y;
-        matrix[(N - 1, 2)] = z;
+        if COL > 0 {
+            matrix[(ROW - 1, 0)] = x;
+        }
+        if COL > 1 {
+            matrix[(ROW - 1, 1)] = y;
+        }
+        if COL > 2 {
+            matrix[(ROW - 1, 2)] = z;
+        }
 
         matrix
     }
@@ -95,10 +101,6 @@ mod tests_translation {
     }
 }
 
-// impl Transform<4, 4, f32, Point> for Matrix<4, 4, f32> {}
-
-// impl Transform<4, 4, f32, Vector> for Matrix<4, 4, f32> {}
-
-impl Translation<4, f32> for Matrix<4, 4, f32> {}
-impl Translation<3, f32> for Matrix<3, 3, f32> {}
-impl Translation<2, f32> for Matrix<2, 2, f32> {}
+impl Translation<4, 4, f32> for Matrix<4, 4, f32> {}
+impl Translation<3, 3, f32> for Matrix<3, 3, f32> {}
+impl Translation<2, 2, f32> for Matrix<2, 2, f32> {}
