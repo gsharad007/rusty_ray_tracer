@@ -1,7 +1,8 @@
 use cucumber::{given, then, World};
 use rusty_ray_tracer::core3d::{
     matrix::{Invert, Matrix44f32},
-    matrix_transforms::{Transform, Translation},
+    matrix_transforms::Transform,
+    matrix_translations::Translation,
     point::Point,
     vector::Vector,
 };
