@@ -77,6 +77,7 @@ mod tests_point {
 mod benchs_point {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn new(bench: &mut Bencher) {
         let a = Point::new(1.0, 2.0, 3.0);

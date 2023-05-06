@@ -1,3 +1,6 @@
+#![allow(clippy::needless_pass_by_value)]
+#![allow(clippy::float_cmp)]
+
 use std::collections::HashMap;
 
 use rusty_ray_tracer::{

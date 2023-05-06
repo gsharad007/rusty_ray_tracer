@@ -1,3 +1,5 @@
+#![allow(clippy::unused_async)]
+
 use cucumber::{given, then, when, World};
 
 // These `Cat` definitions would normally be inside your project's code,

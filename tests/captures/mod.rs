@@ -8,7 +8,7 @@ use rusty_ray_tracer::core3d::{color::Color, point::Point, tuple::Tuple, vector:
 #[param(name = "var", regex = r"[\w][^\s]*")]
 pub struct CaptureVar(String);
 
-#[derive(Parameter, Deref)]
+#[derive(Parameter, Deref, Copy, Clone)]
 #[param(
     name = "tuple",
     regex = r"tuple\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
@@ -35,7 +35,7 @@ impl FromStr for CaptureTuple {
     }
 }
 
-#[derive(Parameter, Deref)]
+#[derive(Parameter, Deref, Copy, Clone)]
 #[param(
     name = "point",
     regex = r"point\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
@@ -62,7 +62,7 @@ impl FromStr for CapturePoint {
     }
 }
 
-#[derive(Parameter, Deref)]
+#[derive(Parameter, Deref, Copy, Clone)]
 #[param(
     name = "vector",
     regex = r"vector\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"
@@ -89,7 +89,7 @@ impl FromStr for CaptureVector {
     }
 }
 
-#[derive(Parameter, Deref)]
+#[derive(Parameter, Deref, Copy, Clone)]
 #[param(
     name = "color",
     regex = r"color\(\s*[\d\.-]+\s*,\s*[\d\.-]+\s*,\s*[\d\.-]+\s*\)"

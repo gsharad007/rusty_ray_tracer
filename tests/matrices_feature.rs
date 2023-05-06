@@ -1,3 +1,6 @@
+#![allow(clippy::needless_pass_by_value)]
+#![allow(clippy::float_cmp)]
+
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
@@ -112,6 +115,7 @@ fn m_x_f(world: &mut TheWorld, name: String, r: usize, c: usize, result: f32) {
     assert_eq!(value, result);
 }
 
+#[allow(clippy::cast_precision_loss)]
 #[then(expr = r"{word}[{int},{int}] = {int}\/{int}")]
 fn m_x_num_den(world: &mut TheWorld, name: String, r: usize, c: usize, num: i32, den: i32) {
     let a = *world.get_matrix(&name);
@@ -262,7 +266,6 @@ fn submatrix_a_is_the_following_x_matrix(
     let expected = parse_step_table_for_matrix(step);
 
     match expected {
-        AnyMatrix::Mat44(_) => unreachable!(),
         AnyMatrix::Mat33(expected) => {
             let AnyMatrix::Mat44(a) = *world.get_matrix(&name) else {unreachable!()};
             let b = a.submatrix(r, c);
@@ -275,7 +278,7 @@ fn submatrix_a_is_the_following_x_matrix(
 
             assert_eq!(b, expected);
         }
-        AnyMatrix::None => unreachable!(),
+        _ => unreachable!(),
     }
 }
 

@@ -99,6 +99,7 @@ impl From<&Canvas> for PPM {
     // /// let ppm = PPM::from([1.0, 2.0, 3.0, 4.0]);
     // /// assert_eq!([1.0, 2.0, 3.0, 4.0], ppm.ppm);
     /// ```
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     fn from(canvas: &Canvas) -> Self {
         Self::new(
             u32::from(canvas.width),

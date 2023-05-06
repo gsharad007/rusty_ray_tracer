@@ -43,6 +43,8 @@ mod projectile_tests {
     const CANVAS_WIDTH: u16 = 2 * SCALE;
     const CANVAS_HEIGHT: u16 = SCALE;
     const POSITION_TO_CANVAS_SCALE: f32 = 0.66 * (SCALE as f32);
+
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     fn map_projectile_position_to_canvas(point: Point) -> (u16, u16) {
         (
             (point.x() * POSITION_TO_CANVAS_SCALE) as u16,
@@ -76,7 +78,7 @@ mod projectile_tests {
             canvas.set_pixel_at(coord.0, coord.1, PROJECTILE_COLOR);
 
             accumulated_ticks += TICK_PER_FRAME;
-            travelling_projectile = tick(TICK_PER_FRAME, travelling_projectile, &environment);
+            travelling_projectile = tick(TICK_PER_FRAME, &travelling_projectile, &environment);
             info!(
                 "travelling_projectile.position {}",
                 travelling_projectile.position
@@ -122,7 +124,7 @@ P3
         //     .expect("Failed to write to file!");
     }
 
-    fn tick(tick: f32, projectile: Projectile, environment: &Environment) -> Projectile {
+    fn tick(tick: f32, projectile: &Projectile, environment: &Environment) -> Projectile {
         let velocity = projectile.velocity + (environment.gravity + environment.wind) * tick;
         let position = projectile.position + (velocity * tick);
         Projectile { position, velocity }

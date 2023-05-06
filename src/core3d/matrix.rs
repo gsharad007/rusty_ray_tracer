@@ -12,7 +12,7 @@ pub struct Matrix<const ROW: usize, const COL: usize, T> {
 
 impl<const ROW: usize, const COL: usize, T> Matrix<ROW, COL, T> {
     #[must_use]
-    pub fn new(matrix: [[T; COL]; ROW]) -> Self {
+    pub const fn new(matrix: [[T; COL]; ROW]) -> Self {
         Self { matrix }
     }
 }
@@ -139,12 +139,16 @@ mod tests_index {
     use super::*;
 
     #[test]
-    fn test() {
+    fn test_2x2() {
         let matrix = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
         assert_eq!(1.0, matrix[(0, 0)]);
         assert_eq!(2.0, matrix[(0, 1)]);
         assert_eq!(3.0, matrix[(1, 0)]);
         assert_eq!(4.0, matrix[(1, 1)]);
+    }
+
+    #[test]
+    fn test_3x3() {
         let matrix = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
         assert_eq!(1.0, matrix[(0, 0)]);
         assert_eq!(2.0, matrix[(0, 1)]);
@@ -155,6 +159,10 @@ mod tests_index {
         assert_eq!(7.0, matrix[(2, 0)]);
         assert_eq!(8.0, matrix[(2, 1)]);
         assert_eq!(9.0, matrix[(2, 2)]);
+    }
+
+    #[test]
+    fn test_4x4() {
         let matrix = Matrix::<4, 4, f32>::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
