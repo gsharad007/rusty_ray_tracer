@@ -1307,6 +1307,9 @@ mod tests_invert {
     }
 }
 
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix44f32 = Matrix<4, 4, f32>;
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix33f32 = Matrix<3, 3, f32>;
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix22f32 = Matrix<2, 2, f32>;

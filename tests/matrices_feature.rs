@@ -259,20 +259,24 @@ fn submatrix_a_is_the_following_x_matrix(
     name: String,
     r: usize,
     c: usize,
-    _width: usize,
-    _height: usize,
+    width: usize,
+    height: usize,
     step: &Step,
 ) {
     let expected = parse_step_table_for_matrix(step);
 
     match expected {
         AnyMatrix::Mat33(expected) => {
+            assert_eq!(width, 3);
+            assert_eq!(height, 3);
             let AnyMatrix::Mat44(a) = *world.get_matrix(&name) else {unreachable!()};
             let b = a.submatrix(r, c);
 
             assert_eq!(b, expected);
         }
         AnyMatrix::Mat22(expected) => {
+            assert_eq!(width, 2);
+            assert_eq!(height, 2);
             let AnyMatrix::Mat33(a) = *world.get_matrix(&name) else {unreachable!()};
             let b = a.submatrix(r, c);
 
