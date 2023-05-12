@@ -1,6 +1,7 @@
 use cucumber::{given, then, World};
 use rusty_ray_tracer::core3d::{
     matrix::{Invert, Matrix44f32},
+    matrix_scaling::Scaling,
     matrix_transforms::Transform,
     matrix_translations::Translation,
     point::Point,
@@ -32,6 +33,11 @@ fn transform_translation(world: &mut TheWorld, x: f32, y: f32, z: f32) {
     world.transform = Matrix44f32::translation(x, y, z);
 }
 
+#[given(expr = r"transform ← scaling\({float}, {float}, {float}\)")]
+fn transform_scaling(world: &mut TheWorld, x: f32, y: f32, z: f32) {
+    world.transform = Matrix44f32::scaling(x, y, z);
+}
+
 #[given(expr = r"p ← {point}")]
 fn p_point(world: &mut TheWorld, point: CapturePoint) {
     world.p = *point;
@@ -59,8 +65,20 @@ fn inv_p_eq_point(world: &mut TheWorld, point: CapturePoint) {
     assert_eq!(result, *point);
 }
 
+#[then(expr = r"inv * v = {vector}")]
+fn inv_p_eq_vector(world: &mut TheWorld, vector: CaptureVector) {
+    let result = world.inv.transform(world.v);
+    assert_eq!(result, *vector);
+}
+
 #[then(expr = r"transform * v = v")]
 fn transform_v_eq_v(world: &mut TheWorld) {
     let result = world.transform.transform(world.v);
     assert_eq!(result, world.v);
+}
+
+#[then(expr = r"transform * v = {vector}")]
+fn transform_v_eq_vector(world: &mut TheWorld, vector: CaptureVector) {
+    let result = world.transform.transform(world.v);
+    assert_eq!(result, *vector);
 }
