@@ -51,14 +51,14 @@ where
     fn translation(x: T, y: T, z: T) -> Self {
         let mut matrix = Self::identity();
 
-        if COL > 0 {
-            matrix[(ROW - 1, 0)] = x;
+        if ROW > 0 {
+            matrix[(0, COL - 1)] = x;
         }
-        if COL > 1 {
-            matrix[(ROW - 1, 1)] = y;
+        if ROW > 1 {
+            matrix[(1, COL - 1)] = y;
         }
-        if COL > 2 {
-            matrix[(ROW - 1, 2)] = z;
+        if ROW > 2 {
+            matrix[(2, COL - 1)] = z;
         }
 
         matrix

@@ -4,7 +4,17 @@ use super::matrix::Matrix;
 
 use std::ops::Mul;
 
+/// A trait for matrix transformations.
 pub trait Transform<const ROW: usize, const COL: usize, T, Type> {
+    /// Transforms the given tuple using the matrix.
+    ///
+    /// # Arguments
+    ///
+    /// * `tuple` - The tuple/point/vector to be transformed.
+    ///
+    /// # Returns
+    ///
+    /// The transformed tuple.
     fn transform(&self, tuple: Type) -> Type;
 }
 
@@ -16,8 +26,8 @@ where
     Type: Default + Index<usize, Output = T> + IndexMut<usize>,
 {
     fn transform(&self, tuple: Type) -> Type {
-        (0..COL).fold(Type::default(), |mut acc, c| {
-            acc[c] = (0..ROW).fold(T::default(), |f, r| f + self[(r, c)] * tuple[r]);
+        (0..ROW).fold(Type::default(), |mut acc, r| {
+            acc[r] = (0..COL).fold(T::default(), |f, c| f + self[(r, c)] * tuple[c]);
             acc
         })
     }
@@ -31,10 +41,10 @@ mod tests {
     #[test]
     fn test_transform_point() {
         let m = Matrix::<4, 4, f32>::new([
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [1.0, 2.0, 3.0, 1.0],
+            [1.0, 0.0, 0.0, 1.0],
+            [0.0, 1.0, 0.0, 2.0],
+            [0.0, 0.0, 1.0, 3.0],
+            [0.0, 0.0, 0.0, 1.0],
         ]);
 
         let p = Point::new(1.0, 2.0, 3.0);
@@ -47,10 +57,10 @@ mod tests {
     #[test]
     fn test_transform_vector() {
         let m = Matrix::<4, 4, f32>::new([
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [1.0, 2.0, 3.0, 1.0],
+            [1.0, 0.0, 0.0, 1.0],
+            [0.0, 1.0, 0.0, 2.0],
+            [0.0, 0.0, 1.0, 3.0],
+            [0.0, 0.0, 0.0, 1.0],
         ]);
 
         let p = Vector::new(1.0, 2.0, 3.0);
