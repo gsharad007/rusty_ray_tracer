@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::ops::IndexMut;
 
 use super::matrix::{Identity, Matrix};
@@ -39,7 +40,7 @@ pub trait Scaling<const ROW: usize, const COL: usize, T> {
 impl<const ROW: usize, const COL: usize, T> Scaling<ROW, COL, T> for Matrix<ROW, COL, T>
 where
     Self: Sized + Identity<COL, T> + IndexMut<(usize, usize), Output = T>,
-    T: Default + Copy + std::convert::From<i8>,
+    T: Default + Copy + std::convert::From<i8> + PartialEq + Debug,
 {
     #[must_use]
     fn scaling(x: T, y: T, z: T) -> Self {
@@ -47,12 +48,18 @@ where
 
         if ROW > 0 && COL > 0 {
             matrix[(0, 0)] = x;
+        } else {
+            assert_eq!(x, T::default());
         }
         if ROW > 1 && COL > 1 {
             matrix[(1, 1)] = y;
+        } else {
+            assert_eq!(y, T::default());
         }
         if ROW > 2 && COL > 2 {
             matrix[(2, 2)] = z;
+        } else {
+            assert_eq!(z, T::default());
         }
 
         matrix
