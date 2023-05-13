@@ -1,3 +1,5 @@
+#![allow(clippy::needless_pass_by_value)]
+
 use std::collections::HashMap;
 
 use cucumber::{given, then, World};
