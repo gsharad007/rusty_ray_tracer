@@ -7,6 +7,7 @@ use rusty_ray_tracer::core3d::{
     matrix::{Invert, Matrix44f32},
     matrix_rotations::Rotations,
     matrix_scaling::Scaling,
+    matrix_shearing::Shearing,
     matrix_transforms::Transform,
     matrix_translations::Translation,
     point::Point,
@@ -63,6 +64,19 @@ fn matrix_rotation_x(world: &mut TheWorld, name: String, axis: String, div: f32)
         "z" => Matrix44f32::rotation_around_z_axis(angle),
         _ => unreachable!("Invalid axis"),
     };
+}
+
+#[given(expr = r"transform ← shearing\({float}, {float}, {float}, {float}, {float}, {float}\)")]
+fn matrix_shearing(
+    world: &mut TheWorld,
+    x_y: f32,
+    x_z: f32,
+    y_x: f32,
+    y_z: f32,
+    z_x: f32,
+    z_y: f32,
+) {
+    *world.get_matrix_mut("transform") = Matrix44f32::shearing(x_y, x_z, y_x, y_z, z_x, z_y);
 }
 
 #[given(expr = r"p ← {point}")]

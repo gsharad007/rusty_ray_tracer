@@ -8,6 +8,7 @@ pub mod matrix_rotations;
 pub mod matrix_scaling;
 pub mod matrix_transforms;
 pub mod matrix_translations;
+pub mod matrix_shearing;
 pub mod point;
 pub mod tuple;
 pub mod vector;
