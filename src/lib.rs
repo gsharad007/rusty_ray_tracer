@@ -169,17 +169,17 @@ mod clockface_test {
 
         let expected = [
             Point::new(0.0, 1.0, 0.0),
-            Point::new(-0.50000000, 0.86602545, 0.0),
-            Point::new(-0.86602545, 0.50000000, 0.0),
+            Point::new(-0.5, 0.866_025_45, 0.0),
+            Point::new(-0.866_025_45, 0.5, 0.0),
             Point::new(-1.0, 0.0, 0.0),
-            Point::new(-0.86602545, -0.50000000, 0.0),
-            Point::new(-0.50000000, -0.86602545, 0.0),
+            Point::new(-0.866_025_45, -0.5, 0.0),
+            Point::new(-0.5, -0.866_025_45, 0.0),
             Point::new(0.0, -1.0, 0.0),
-            Point::new(0.50000000, -0.86602545, 0.0),
-            Point::new(0.86602545, -0.50000000, 0.0),
+            Point::new(0.5, -0.866_025_45, 0.0),
+            Point::new(0.866_025_45, -0.5, 0.0),
             Point::new(1.0, 0.0, 0.0),
-            Point::new(0.86602545, 0.50000000, 0.0),
-            Point::new(0.50000000, 0.86602545, 0.0),
+            Point::new(0.866_025_45, 0.5, 0.0),
+            Point::new(0.5, 0.866_025_45, 0.0),
         ];
 
         let mut canvas = Canvas::new(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -188,7 +188,7 @@ mod clockface_test {
             let rotation = Matrix::rotation_around_z_axis(radians);
             let transform = rotation * translation;
             let hourmark = transform.transform(point);
-            assert_approx_eq!(Point, hourmark, expected[hour as usize], epsilon = 0.000001);
+            assert_approx_eq!(Point, hourmark, expected[hour as usize], epsilon = 0.000_001);
             let coord = map_projectile_position_to_canvas(hourmark);
             canvas.set_pixel_at(coord.0, coord.1, PROJECTILE_COLOR);
         });
