@@ -1,5 +1,6 @@
 #[cfg(test)]
 extern crate test;
+use derive_more::{Index, IndexMut};
 #[cfg(test)]
 use test::Bencher;
 #[cfg(test)]
@@ -15,8 +16,7 @@ use crate::core3d::tuple::Tuple;
 use float_cmp::{approx_eq, ApproxEq};
 
 /// A Vector in 3D (x,y,z) space is a 4 unit (x,y,z,w) set with the `w` value being 0.0 to ignore translations from matrices
-
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Copy, Clone, Default, Debug, Index, IndexMut)]
 pub struct Vector {
     pub tuple: [f32; 4],
 }
@@ -77,6 +77,7 @@ mod tests_vector {
 mod benchs_vector {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn new(bench: &mut Bencher) {
         let a = Vector::new(1.0, 2.0, 3.0);
@@ -799,6 +800,7 @@ mod tests_mul {
 mod benchs_mul {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn closure(bench: &mut Bencher) {
         let a = Vector::new(1.11, -2.22, 3.33);
@@ -868,6 +870,7 @@ mod tests_div {
 mod benchs_div {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn closure(bench: &mut Bencher) {
         let a = Vector::new(1.11, -2.22, 3.33);
@@ -936,6 +939,7 @@ mod tests_magnitude {
 mod benchs_magnitude {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn test(bench: &mut Bencher) {
         bench.iter(|| {
@@ -1066,6 +1070,7 @@ mod tests_dot_product {
 mod benchs_dot_product {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn test(bench: &mut Bencher) {
         bench.iter(|| {
@@ -1233,6 +1238,7 @@ mod tests_cross_product {
 mod benchs_cross_product {
     use super::*;
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn test(bench: &mut Bencher) {
         let a = Vector::new(1.11, -2.22, 3.33);

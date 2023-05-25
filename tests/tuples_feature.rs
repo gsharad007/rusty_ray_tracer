@@ -1,3 +1,6 @@
+#![allow(clippy::needless_pass_by_value)]
+#![allow(clippy::float_cmp)]
+
 use float_cmp::assert_approx_eq;
 use rusty_ray_tracer::core3d::vector::{CrossProduct, Magnitude, Normalize, Vector};
 use rusty_ray_tracer::core3d::{

@@ -1,3 +1,6 @@
+#![allow(clippy::needless_pass_by_value)]
+#![allow(clippy::float_cmp)]
+
 use std::collections::HashMap;
 
 use cucumber::{gherkin::Step, given, then, World};
@@ -112,6 +115,7 @@ fn m_x_f(world: &mut TheWorld, name: String, r: usize, c: usize, result: f32) {
     assert_eq!(value, result);
 }
 
+#[allow(clippy::cast_precision_loss)]
 #[then(expr = r"{word}[{int},{int}] = {int}\/{int}")]
 fn m_x_num_den(world: &mut TheWorld, name: String, r: usize, c: usize, num: i32, den: i32) {
     let a = *world.get_matrix(&name);
@@ -184,7 +188,7 @@ fn b_tuple(world: &mut TheWorld, name: String, tuple: CaptureTuple) {
 }
 
 #[then(expr = r"A * b = {tuple}")]
-fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
+fn a_b_eq_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
     let expected = *tuple;
 
     let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
@@ -195,7 +199,7 @@ fn a_b_x_d_tuple(world: &mut TheWorld, tuple: CaptureTuple) {
 }
 
 #[then(expr = r"A * identity_matrix = A")]
-fn a_identity_matrix_x_d_a(world: &mut TheWorld) {
+fn a_identity_matrix_eq_a(world: &mut TheWorld) {
     let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
     let identity = Matrix44f32::identity();
 
@@ -204,7 +208,7 @@ fn a_identity_matrix_x_d_a(world: &mut TheWorld) {
 }
 
 #[then(expr = r"identity_matrix * a = a")]
-fn identity_matrix_a_x_d_a(world: &mut TheWorld) {
+fn identity_matrix_a_eq_a(world: &mut TheWorld) {
     let identity = Matrix44f32::identity();
     let a = *world.get_tuple("a");
 
@@ -228,7 +232,7 @@ fn a_transpose_identity_matrix(world: &mut TheWorld) {
 }
 
 #[then(expr = r"A = identity_matrix")]
-fn a_x_d_identity_matrix(world: &mut TheWorld) {
+fn a_eq_identity_matrix(world: &mut TheWorld) {
     let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
     let identity = Matrix44f32::identity();
 
@@ -236,7 +240,7 @@ fn a_x_d_identity_matrix(world: &mut TheWorld) {
 }
 
 #[then(expr = r"determinant\({word}) = {int}")]
-fn determinant_a_x_d(world: &mut TheWorld, name: String, expected: f32) {
+fn determinant_a_eq(world: &mut TheWorld, name: String, expected: f32) {
     let a = *world.get_matrix(&name);
 
     let result = match a {
@@ -255,27 +259,30 @@ fn submatrix_a_is_the_following_x_matrix(
     name: String,
     r: usize,
     c: usize,
-    _width: usize,
-    _height: usize,
+    width: usize,
+    height: usize,
     step: &Step,
 ) {
     let expected = parse_step_table_for_matrix(step);
 
     match expected {
-        AnyMatrix::Mat44(_) => unreachable!(),
         AnyMatrix::Mat33(expected) => {
+            assert_eq!(width, 3);
+            assert_eq!(height, 3);
             let AnyMatrix::Mat44(a) = *world.get_matrix(&name) else {unreachable!()};
             let b = a.submatrix(r, c);
 
             assert_eq!(b, expected);
         }
         AnyMatrix::Mat22(expected) => {
+            assert_eq!(width, 2);
+            assert_eq!(height, 2);
             let AnyMatrix::Mat33(a) = *world.get_matrix(&name) else {unreachable!()};
             let b = a.submatrix(r, c);
 
             assert_eq!(b, expected);
         }
-        AnyMatrix::None => unreachable!(),
+        _ => unreachable!(),
     }
 }
 
@@ -286,7 +293,7 @@ fn b_submatrix_a(world: &mut TheWorld, name_b: String, name_a: String, r: usize,
 }
 
 #[then(expr = r"minor\({word}, {int}, {int}) = {float}")]
-fn minor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
+fn minor_a_eq(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
     let a = *world.get_matrix(&name);
 
     let b = match a {
@@ -299,7 +306,7 @@ fn minor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected:
 }
 
 #[then(expr = r"cofactor\({word}, {int}, {int}) = {float}")]
-fn cofactor_a_x_d(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
+fn cofactor_a_eq(world: &mut TheWorld, name: String, r: usize, c: usize, expected: f32) {
     let a = *world.get_matrix(&name);
 
     let b = match a {
@@ -348,7 +355,7 @@ fn c_a_b(world: &mut TheWorld) {
 }
 
 #[then(expr = r"C * inverse\(B) = A")]
-fn c_inverse_b_x_d_a(world: &mut TheWorld) {
+fn c_inverse_b_eq_a(world: &mut TheWorld) {
     let AnyMatrix::Mat44(a) = *world.get_matrix("A") else {unreachable!()};
     let AnyMatrix::Mat44(b) = *world.get_matrix("B") else {unreachable!()};
     let AnyMatrix::Mat44(c) = *world.get_matrix("C") else {unreachable!()};

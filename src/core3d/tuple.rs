@@ -70,6 +70,7 @@ mod benchs_tuple {
     const A: Tuple = Tuple::new(1.0, 2.0, 3.0, 4.0);
     const B: Tuple = Tuple::new(5.0, 6.0, 7.0, 8.0);
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn new(bench: &mut Bencher) {
         bench.iter(|| {
@@ -740,6 +741,7 @@ mod benchs_mul {
 
     const A: Tuple = Tuple::new(1.11, -2.22, 3.33, 0.0);
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn closure(bench: &mut Bencher) {
         bench.iter(|| (0..N).fold(A, |a, b| a * b as f32));
@@ -810,6 +812,7 @@ mod benchs_div {
 
     const A: Tuple = Tuple::new(1.11, -2.22, 3.33, 0.0);
 
+    #[allow(clippy::cast_precision_loss)]
     #[bench]
     fn closure(bench: &mut Bencher) {
         bench.iter(|| (0..N).fold(A, |a, b| a / b as f32));

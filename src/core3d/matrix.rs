@@ -12,7 +12,7 @@ pub struct Matrix<const ROW: usize, const COL: usize, T> {
 
 impl<const ROW: usize, const COL: usize, T> Matrix<ROW, COL, T> {
     #[must_use]
-    pub fn new(matrix: [[T; COL]; ROW]) -> Self {
+    pub const fn new(matrix: [[T; COL]; ROW]) -> Self {
         Self { matrix }
     }
 }
@@ -121,12 +121,14 @@ mod tests_default {
 impl<const ROW: usize, const COL: usize, T> Index<(usize, usize)> for Matrix<ROW, COL, T> {
     type Output = T;
 
+    #[must_use]
     fn index(&self, index: (usize, usize)) -> &Self::Output {
         &self.matrix[index.0][index.1]
     }
 }
 
 impl<const ROW: usize, const COL: usize, T> IndexMut<(usize, usize)> for Matrix<ROW, COL, T> {
+    #[must_use]
     fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
         &mut self.matrix[index.0][index.1]
     }
@@ -137,12 +139,16 @@ mod tests_index {
     use super::*;
 
     #[test]
-    fn test() {
+    fn test_2x2() {
         let matrix = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
         assert_eq!(1.0, matrix[(0, 0)]);
         assert_eq!(2.0, matrix[(0, 1)]);
         assert_eq!(3.0, matrix[(1, 0)]);
         assert_eq!(4.0, matrix[(1, 1)]);
+    }
+
+    #[test]
+    fn test_3x3() {
         let matrix = Matrix::<3, 3, f32>::new([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
         assert_eq!(1.0, matrix[(0, 0)]);
         assert_eq!(2.0, matrix[(0, 1)]);
@@ -153,6 +159,10 @@ mod tests_index {
         assert_eq!(7.0, matrix[(2, 0)]);
         assert_eq!(8.0, matrix[(2, 1)]);
         assert_eq!(9.0, matrix[(2, 2)]);
+    }
+
+    #[test]
+    fn test_4x4() {
         let matrix = Matrix::<4, 4, f32>::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
@@ -200,13 +210,19 @@ mod tests_index {
 ///     ])
 /// );
 /// ```
-pub trait Identity<const N: usize, T: std::convert::From<i8>>: Sized {
+pub trait Identity<const N: usize, T> {
     #[must_use]
-    fn identity() -> Matrix<N, N, T>
-    where
-        T: Default + Copy,
-    {
-        let mut matrix = Matrix::default();
+    fn identity() -> Self;
+}
+
+impl<const N: usize, T> Identity<N, T> for Matrix<N, N, T>
+where
+    Self: Sized,
+    T: Default + Copy + From<i8>,
+{
+    #[must_use]
+    fn identity() -> Self {
+        let mut matrix = Self::default();
         for i in 0..N {
             matrix.matrix[i][i] = T::from(1);
         }
@@ -242,30 +258,30 @@ mod tests_identity {
     }
 }
 
-impl<const ROW: usize, const COL: usize, T> From<[[T; COL]; ROW]> for Matrix<ROW, COL, T> {
-    /// Creates a new matrix from an array of scaler values
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use rusty_ray_tracer::core3d::matrix::Matrix;
-    ///
-    /// let matrix = Matrix::<4, 4, f32>::new([
-    ///     [1.0, 2.0, 3.0, 4.0],
-    ///     [5.0, 6.0, 7.0, 8.0],
-    ///     [8.0, 7.0, 6.0, 5.0],
-    ///     [4.0, 3.0, 2.0, 1.0],
-    /// ]);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0], matrix.matrix[0]);
-    /// assert_eq!([5.0, 6.0, 7.0, 8.0], matrix.matrix[1]);
-    /// assert_eq!([8.0, 7.0, 6.0, 5.0], matrix.matrix[2]);
-    /// assert_eq!([4.0, 3.0, 2.0, 1.0], matrix.matrix[3]);
-    /// ```
-    #[must_use]
-    fn from(arr: [[T; COL]; ROW]) -> Self {
-        Self { matrix: arr }
-    }
-}
+// impl<const ROW: usize, const COL: usize, T> From<[[T; COL]; ROW]> for Matrix<ROW, COL, T> {
+//     /// Creates a new matrix from an array of scaler values
+//     ///
+//     /// # Examples
+//     ///
+//     /// ```
+//     /// # use rusty_ray_tracer::core3d::matrix::Matrix;
+//     ///
+//     /// let matrix = Matrix::<4, 4, f32>::new([
+//     ///     [1.0, 2.0, 3.0, 4.0],
+//     ///     [5.0, 6.0, 7.0, 8.0],
+//     ///     [8.0, 7.0, 6.0, 5.0],
+//     ///     [4.0, 3.0, 2.0, 1.0],
+//     /// ]);
+//     /// assert_eq!([1.0, 2.0, 3.0, 4.0], matrix.matrix[0]);
+//     /// assert_eq!([5.0, 6.0, 7.0, 8.0], matrix.matrix[1]);
+//     /// assert_eq!([8.0, 7.0, 6.0, 5.0], matrix.matrix[2]);
+//     /// assert_eq!([4.0, 3.0, 2.0, 1.0], matrix.matrix[3]);
+//     /// ```
+//     #[must_use]
+//     fn from(arr: [[T; COL]; ROW]) -> Self {
+//         Self { matrix: arr }
+//     }
+// }
 
 impl<const ROW: usize, const COL: usize, T> From<Vec<Vec<T>>> for Matrix<ROW, COL, T>
 where
@@ -308,7 +324,7 @@ mod tests_from {
 
     #[test]
     fn from_array() {
-        let matrix = Matrix::<4, 4, f32>::from([
+        let matrix = Matrix::<4, 4, f32>::new([
             [1.0, 2.0, 3.0, 4.0],
             [5.0, 6.0, 7.0, 8.0],
             [8.0, 7.0, 6.0, 5.0],
@@ -370,6 +386,7 @@ where
     /// let b = Matrix::<4, 4, f32>::from(vec!(vec!(1.23, 4.56, 7.89, 1.0)));
     /// assert!(a.approx_eq(b, <Matrix::<4, 4, f32> as ApproxEq>::Margin::default().epsilon(1.0)));
     /// ```
+    #[must_use]
     fn approx_eq<M: Into<Self::Margin>>(self, other: Self, margin: M) -> bool {
         let margin = margin.into();
 
@@ -614,20 +631,9 @@ mod tests_mul_tuple {
 }
 
 // This is a trait used to transpose a 4x4 matrix.
-pub trait Transpose<const N: usize, T>: Sized
-where
-    Self: Default + Index<(usize, usize)> + IndexMut<(usize, usize)>,
-    <Self as Index<(usize, usize)>>::Output: Copy,
-{
-    fn transpose(self) -> Self
-    where
-        <Self as Index<(usize, usize)>>::Output: Sized,
-    {
-        iproduct!(0..N, 0..N).fold(Self::default(), |mut acc, (r, c)| {
-            acc[(c, r)] = self[(r, c)];
-            acc
-        })
-    }
+pub trait Transpose<const N: usize, T> {
+    #[must_use]
+    fn transpose(self) -> Self;
 }
 
 impl<const N: usize, T> Transpose<N, T> for Matrix<N, N, T>
@@ -635,6 +641,13 @@ where
     Self: Default + Index<(usize, usize)> + IndexMut<(usize, usize)>,
     <Self as Index<(usize, usize)>>::Output: Copy,
 {
+    #[must_use]
+    fn transpose(self) -> Self {
+        iproduct!(0..N, 0..N).fold(Self::default(), |mut acc, (r, c)| {
+            acc[(c, r)] = self[(r, c)];
+            acc
+        })
+    }
 }
 
 #[cfg(test)]
@@ -664,41 +677,88 @@ mod tests_transpose {
         let b = Matrix::<4, 4, f32>::identity().transpose();
         assert_eq!(a, b);
     }
+
+    // #[test]
+    // fn test_transpose_nonuniform() {
+    //     let a = Matrix::<1, 4, f32>::new([[1.0, 2.0, 3.0, 4.0]]);
+    //     let b = Matrix::<4, 1, f32>::new([[1.0], [2.0], [3.0], [4.0]]);
+    //     assert_eq!(a.transpose(), b);
+    // }
 }
 
-// This code implements the Submatrix trait for the Matrix::<4, 4, f32> type.
-// It takes a matrix and two indices for rows and columns and returns
-// a submatrix of the original matrix without the row and column specified
-// by the indices.
-// The indices are zero-based.
-// The function is used by the determinant function.
+/// This code implements the Submatrix trait for the `Matrix::<4, 4, f32>` type.
+/// It takes a matrix and two indices for rows and columns and returns
+/// a submatrix of the original matrix without the row and column specified
+/// by the indices.
+/// The indices are zero-based.
+/// The function is used by the determinant function.
 pub trait Submatrix<const ROW: usize, const COL: usize, T>
 where
     Self: Index<(usize, usize), Output = T>,
-    T: Copy,
+    T: Copy + Default,
 {
-    type Result: Default + IndexMut<(usize, usize), Output = T>;
+    type Output: Default + IndexMut<(usize, usize), Output = T>;
 
-    fn submatrix(&self, skiprow: usize, skipcol: usize) -> Self::Result {
+    fn submatrix(
+        &self,
+        skiprow: usize,
+        skipcol: usize,
+    ) -> <Self as Submatrix<ROW, COL, T>>::Output {
         iproduct!(0..ROW, 0..COL)
             .filter(|(r, c)| *r != skiprow && *c != skipcol)
             .enumerate()
-            .fold(Self::Result::default(), |mut acc, (i, (r, c))| {
-                let ir = i / (COL - 1);
-                let ic = i % (COL - 1);
-                acc[(ir, ic)] = self[(r, c)];
-                acc
-            })
+            .fold(
+                <Self as Submatrix<ROW, COL, T>>::Output::default(),
+                |mut acc, (i, (r, c))| {
+                    let ir = i / (COL - 1);
+                    let ic = i % (COL - 1);
+                    acc[(ir, ic)] = self[(r, c)];
+                    acc
+                },
+            )
     }
 }
 
-// impl Submatrix<4, 4, f32> for Matrix<4, 4, f32> {
-//     type Result = Matrix<3, 3, f32>;
+// TODO: This trait + impl cause compiler to hang
+// pub trait Submatrix<const ROW: usize, const COL: usize, T> {
+//     type Output;
+
+//     #[must_use]
+//     fn submatrix(&self, skiprow: usize, skipcol: usize) -> Self::Output;
 // }
 
-// impl Submatrix<3, 3, f32> for Matrix<3, 3, f32> {
-//     type Result = Matrix<2, 2, f32>;
+// impl<const ROW: usize, const COL: usize, T> Submatrix<ROW, COL, T> for Matrix<ROW, COL, T>
+// where
+//     Self: Index<(usize, usize), Output = T>,
+//     T: Copy,
+// {
+//     type Output = Matrix<{ROW - 1}, {COL - 1}, T>;
+
+//     #[must_use]
+//     fn submatrix(&self, skiprow: usize, skipcol: usize) -> Self::Output {
+//         iproduct!(0..ROW, 0..COL)
+//             .filter(|(r, c)| *r != skiprow && *c != skipcol)
+//             .enumerate()
+//             .fold(Self::Output::default(), |mut acc, (i, (r, c))| {
+//                 let ir = i / (COL - 1);
+//                 let ic = i % (COL - 1);
+//                 acc[(ir, ic)] = self[(r, c)];
+//                 acc
+//             })
+//     }
 // }
+
+impl Submatrix<4, 4, f32> for Matrix<4, 4, f32> {
+    type Output = Matrix<3, 3, f32>;
+}
+
+impl Submatrix<3, 3, f32> for Matrix<3, 3, f32> {
+    type Output = Matrix<2, 2, f32>;
+}
+
+impl Submatrix<2, 2, f32> for Matrix<2, 2, f32> {
+    type Output = Matrix<1, 1, f32>;
+}
 
 #[cfg(test)]
 mod tests_submatrix {
@@ -739,51 +799,56 @@ mod tests_submatrix {
 /// let m = Matrix::<2, 2, f32>::new([[1.0, 2.0], [3.0, 4.0]]);
 /// assert_eq!(m.determinant(), -2.0);
 /// ```
-// pub trait Determinant<const ROW: usize, const COL: usize, T>
-// where
-//     Self: Index<(usize, usize), Output = T> + Cofactor<ROW, COL, T>,
-//     T: Copy + Default + Add<Output = T> + Neg<Output = T>,
-// {
-//     type Output = T;
-//     fn determinant(&self) -> T {
-//         (0..COL).fold(T::default(), |acc, c| {
+pub trait Determinant<const ROW: usize, const COL: usize, T> {
+    #[must_use]
+    fn determinant(&self) -> T;
+}
+
+impl<const ROW: usize, const COL: usize, T> Determinant<ROW, COL, T> for Matrix<ROW, COL, T>
+where
+    Self: Index<(usize, usize), Output = T> + Cofactor<ROW, COL, T>,
+    T: Copy + Default + Add<Output = T> + Neg<Output = T> + Mul<Output = T>,
+{
+    #[must_use]
+    fn determinant(&self) -> T {
+        (0..COL).fold(T::default(), |acc, c| {
+            acc + (self[(0, c)] * self.cofactor(0, c))
+        })
+    }
+}
+
+// pub trait Determinant<const ROW: usize, const COL: usize, T> {
+//     type Output;
+//     fn determinant(&self) -> Self::Output;
+// }
+
+// impl Determinant<4, 4, f32> for Matrix<4, 4, f32> {
+//     type Output = f32;
+//     fn determinant(&self) -> f32 {
+//         (0..4).fold(f32::default(), |acc, c| {
 //             acc + (self[(0, c)] * self.cofactor(0, c))
 //         })
 //     }
 // }
 
-pub trait Determinant<const ROW: usize, const COL: usize, T> {
-    type Output;
-    fn determinant(&self) -> Self::Output;
-}
+// impl Determinant<3, 3, f32> for Matrix<3, 3, f32> {
+//     type Output = f32;
+//     fn determinant(&self) -> f32 {
+//         (0..3).fold(f32::default(), |acc, c| {
+//             acc + (self[(0, c)] * self.cofactor(0, c))
+//         })
+//     }
+// }
 
-impl Determinant<4, 4, f32> for Matrix<4, 4, f32> {
-    type Output = f32;
-    fn determinant(&self) -> f32 {
-        (0..4).fold(f32::default(), |acc, c| {
-            acc + (self[(0, c)] * self.cofactor(0, c))
-        })
-    }
-}
-
-impl Determinant<3, 3, f32> for Matrix<3, 3, f32> {
-    type Output = f32;
-    fn determinant(&self) -> f32 {
-        (0..3).fold(f32::default(), |acc, c| {
-            acc + (self[(0, c)] * self.cofactor(0, c))
-        })
-    }
-}
-
-impl Determinant<2, 2, f32> for Matrix<2, 2, f32> {
-    type Output = f32;
-    fn determinant(&self) -> f32 {
-        (self.matrix[0][0] * self.matrix[1][1]) - (self.matrix[0][1] * self.matrix[1][0])
-    }
-}
+// impl Determinant<2, 2, f32> for Matrix<2, 2, f32> {
+//     type Output = f32;
+//     fn determinant(&self) -> f32 {
+//         (self.matrix[0][0] * self.matrix[1][1]) - (self.matrix[0][1] * self.matrix[1][0])
+//     }
+// }
 
 impl Determinant<1, 1, f32> for Matrix<1, 1, f32> {
-    type Output = f32;
+    #[must_use]
     fn determinant(&self) -> f32 {
         self.matrix[0][0]
     }
@@ -871,14 +936,18 @@ mod tests_determinant {
 /// assert_eq!(m.minor(3, 2), 0.0);
 /// assert_eq!(m.minor(3, 3), 0.0);
 /// ```
-pub trait Minor<const ROW: usize, const COL: usize, T>
-where
-    Self: Submatrix<ROW, COL, T> + Sized,
-    T: Copy + Default + Add<Output = T>,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
-{
-    type Output = T;
+pub trait Minor<const ROW: usize, const COL: usize, T> {
+    #[must_use]
+    fn minor(&self, row: usize, col: usize) -> T;
+}
 
+impl<const ROW: usize, const COL: usize, T> Minor<ROW, COL, T> for Matrix<ROW, COL, T>
+where
+    Self: Sized + Submatrix<ROW, COL, T>,
+    T: Copy + Default,
+    <Self as Submatrix<ROW, COL, T>>::Output: Determinant<{ ROW - 1 }, { COL - 1 }, T>,
+{
+    #[must_use]
     fn minor(&self, row: usize, col: usize) -> T {
         let submatrix = self.submatrix(row, col);
         submatrix.determinant()
@@ -959,14 +1028,17 @@ mod tests_minor {
 /// assert_eq!(a.cofactor(2, 1), 6.0);
 /// assert_eq!(a.cofactor(2, 2), -3.0);
 /// ```
-pub trait Cofactor<const ROW: usize, const COL: usize, T>
-where
-    Self: Minor<ROW, COL, T, Output = T>,
-    T: Copy + Default + Add<Output = T> + Neg<Output = T>,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
-{
-    type Output = T;
+pub trait Cofactor<const ROW: usize, const COL: usize, T> {
+    #[must_use]
+    fn cofactor(&self, row: usize, col: usize) -> T;
+}
 
+impl<const ROW: usize, const COL: usize, T> Cofactor<ROW, COL, T> for Matrix<ROW, COL, T>
+where
+    Self: Minor<ROW, COL, T>,
+    T: Copy + Neg<Output = T>,
+{
+    #[must_use]
     fn cofactor(&self, row: usize, col: usize) -> T {
         let minor = self.minor(row, col);
         let is_positive_cell = (row + col) % 2 == 0;
@@ -1048,20 +1120,29 @@ mod tests_cofactor {
 /// det(C) = (C)
 /// det(D) = (D)
 /// det(M) = (A*D - B*C)
-pub trait Invert<const ROW: usize, const COL: usize, T>
+pub trait Invert<const ROW: usize, const COL: usize, T>: Sized {
+    #[must_use]
+    fn is_invertible(&self) -> bool;
+
+    #[must_use]
+    fn inverse(&self) -> Option<Self>;
+}
+
+impl<const ROW: usize, const COL: usize, T> Invert<ROW, COL, T> for Matrix<ROW, COL, T>
 where
     Self: Sized
         + Default
         + IndexMut<(usize, usize), Output = T>
-        + Determinant<ROW, COL, T, Output = T>
-        + Cofactor<ROW, COL, T, Output = T>,
-    <Self as Submatrix<ROW, COL, T>>::Result: Determinant<{ ROW - 1 }, { COL - 1 }, T, Output = T>,
-    T: Copy + Default + Add<Output = T> + Div<Output = T> + PartialEq<f32> + Neg<Output = T>,
+        + Determinant<ROW, COL, T>
+        + Cofactor<ROW, COL, T>,
+    T: Copy + Default + Add<Output = T> + Div<Output = T> + std::cmp::PartialEq,
 {
+    #[must_use]
     fn is_invertible(&self) -> bool {
-        self.determinant() != 0.0_f32
+        self.determinant() != T::default()
     }
 
+    #[must_use]
     fn inverse(&self) -> Option<Self> {
         if !self.is_invertible() {
             return None;
@@ -1226,36 +1307,9 @@ mod tests_invert {
     }
 }
 
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix44f32 = Matrix<4, 4, f32>;
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix33f32 = Matrix<3, 3, f32>;
+#[allow(clippy::module_name_repetitions)]
 pub type Matrix22f32 = Matrix<2, 2, f32>;
-// pub type Matrix11f32 = Matrix<1, 1, f32>;
-
-impl Identity<4, f32> for Matrix44f32 {}
-impl Identity<3, f32> for Matrix33f32 {}
-impl Identity<2, f32> for Matrix22f32 {}
-
-// impl Determinant<4, 4, f32> for Matrix44f32 {}
-// impl Determinant<3, 3, f32> for Matrix33f32 {}
-
-impl Submatrix<4, 4, f32> for Matrix44f32 {
-    type Result = Matrix<3, 3, f32>;
-}
-impl Submatrix<3, 3, f32> for Matrix33f32 {
-    type Result = Matrix<2, 2, f32>;
-}
-impl Submatrix<2, 2, f32> for Matrix22f32 {
-    type Result = Matrix<1, 1, f32>;
-}
-
-impl Minor<4, 4, f32> for Matrix44f32 {}
-impl Minor<3, 3, f32> for Matrix33f32 {}
-impl Minor<2, 2, f32> for Matrix22f32 {}
-
-impl Cofactor<4, 4, f32> for Matrix44f32 {}
-impl Cofactor<3, 3, f32> for Matrix33f32 {}
-impl Cofactor<2, 2, f32> for Matrix22f32 {}
-
-impl Invert<4, 4, f32> for Matrix44f32 {}
-impl Invert<3, 3, f32> for Matrix33f32 {}
-impl Invert<2, 2, f32> for Matrix22f32 {}
