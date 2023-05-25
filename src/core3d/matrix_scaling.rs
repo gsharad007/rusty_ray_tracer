@@ -124,4 +124,22 @@ mod tests {
 
         assert_eq!(m.transform(p), expected);
     }
+
+    #[test]
+    fn test_scaling_33() {
+        let m = Matrix::<3, 3, f32>::scaling(2.0, 3.0, 0.0);
+        let p = Point::new(1.0, 2.0, 3.0);
+        let expected = Point::new(2.0, 6.0, 0.0);
+
+        assert_eq!(m.transform(p), expected);
+    }
+
+    #[test]
+    fn test_scaling_22() {
+        let m = Matrix::<2, 2, f32>::scaling(2.0, 3.0, 0.0);
+        let p = Point::new(1.0, 2.0, 3.0);
+        let expected = Point::new(2.0, 6.0, 0.0);
+
+        assert_eq!(m.transform(p), expected);
+    }
 }
