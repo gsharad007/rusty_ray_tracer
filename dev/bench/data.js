@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1682464221078,
+  "lastUpdate": 1685047013124,
   "repoUrl": "https://github.com/gsharad007/rusty_ray_tracer",
   "entries": {
     "Linux-X64": [
@@ -1227,6 +1227,308 @@ window.BENCHMARK_DATA = {
             "name": "core3d::vector::benchs_vector::new",
             "value": 1584,
             "range": "± 4",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "gsharad007",
+            "username": "gsharad007"
+          },
+          "committer": {
+            "name": "gsharad007",
+            "username": "gsharad007"
+          },
+          "id": "ac713d67e8713e853fb12c50c3f81132cc4924a0",
+          "message": "Matrix transformations",
+          "timestamp": "2022-01-25T22:35:39Z",
+          "url": "https://github.com/gsharad007/rusty_ray_tracer/pull/18/commits/ac713d67e8713e853fb12c50c3f81132cc4924a0"
+        },
+        "date": 1685046991952,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "core3d::point::benchs_add_vector::not_associative",
+            "value": 1528,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_add_vector::not_closure",
+            "value": 1526,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_add_vector::not_identity",
+            "value": 1527,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_display::display",
+            "value": 433917,
+            "range": "± 847",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_point::clone",
+            "value": 885,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_point::copy",
+            "value": 884,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_point::debug_fmt",
+            "value": 651406,
+            "range": "± 2388",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_point::new",
+            "value": 1583,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_sub::not_closure",
+            "value": 2413,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_sub::not_identity",
+            "value": 2412,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_sub_vector::not_associative",
+            "value": 1575,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_sub_vector::not_closure",
+            "value": 1524,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::point::benchs_sub_vector::not_identity",
+            "value": 1527,
+            "range": "± 11",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_add::associative",
+            "value": 1582,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_add::closure",
+            "value": 1525,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_add::identity",
+            "value": 1524,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_display::display",
+            "value": 380518,
+            "range": "± 3168",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_div::closure",
+            "value": 4293,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_from::from_array",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_mul::closure",
+            "value": 1573,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_neg::double_neg",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_neg::neg",
+            "value": 47,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_sub::not_associative",
+            "value": 1584,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_sub::not_closure",
+            "value": 1526,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_sub::not_identity",
+            "value": 1525,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_tuple::clone",
+            "value": 684,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_tuple::copy",
+            "value": 684,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_tuple::debug_fmt",
+            "value": 657197,
+            "range": "± 2797",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::tuple::benchs_tuple::new",
+            "value": 1572,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_add::associative",
+            "value": 1530,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_add::closure",
+            "value": 1527,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_add::identity",
+            "value": 1527,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_cross_product::test",
+            "value": 6037,
+            "range": "± 18",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_display::display",
+            "value": 379478,
+            "range": "± 1689",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_div::closure",
+            "value": 4293,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_dot_product::test",
+            "value": 8131,
+            "range": "± 381",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_magnitude::test",
+            "value": 2755,
+            "range": "± 42",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_mul::closure",
+            "value": 1572,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_neg::double_neg",
+            "value": 0,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_neg::neg",
+            "value": 48,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_sub::not_associative",
+            "value": 1530,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_sub::not_closure",
+            "value": 1524,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_sub::not_identity",
+            "value": 1524,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_vector::clone",
+            "value": 884,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_vector::copy",
+            "value": 884,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_vector::debug_fmt",
+            "value": 599502,
+            "range": "± 2146",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "core3d::vector::benchs_vector::new",
+            "value": 1584,
+            "range": "± 5",
             "unit": "ns/iter"
           }
         ]
