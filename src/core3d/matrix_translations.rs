@@ -111,4 +111,22 @@ mod tests {
 
         assert_eq!(translation_matrix, identity_matrix);
     }
+
+    #[test]
+    fn test_translation_33() {
+        let m = Matrix::<3, 3, f32>::translation(2.0, 3.0, 4.0);
+        let p = Point::new(1.0, 2.0, 1.0);
+        let expected = Point::new(3.0, 5.0, 4.0);
+
+        assert_eq!(m.transform(p), expected);
+    }
+
+    #[test]
+    fn test_translation_22() {
+        let m = Matrix::<2, 2, f32>::translation(2.0, 3.0, 0.0);
+        let p = Point::new(1.0, 1.0, 0.0);
+        let expected = Point::new(3.0, 3.0, 0.0);
+
+        assert_eq!(m.transform(p), expected);
+    }
 }
